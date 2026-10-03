@@ -88,6 +88,48 @@ KF.graficos = {
     'B',
     'B'
   ],
+  // Explosión de una nave alienígena, en tres fases. R = rojo, Y = amarillo, B = blanco.
+  MAPAS_EXPLOSION_NAVE: [
+    [
+      '...........',
+      '...........',
+      '...........',
+      '....Y.Y....',
+      '.....B.....',
+      '....YBY....',
+      '.....B.....',
+      '....Y.Y....',
+      '...........',
+      '...........',
+      '...........'
+    ],
+    [
+      '...........',
+      '..Y.....Y..',
+      '....R.R....',
+      '...RYBYR...',
+      '..RYBBBYR..',
+      '...YBBBY...',
+      '..RYBBBYR..',
+      '...RYBYR...',
+      '....R.R....',
+      '..Y.....Y..',
+      '...........'
+    ],
+    [
+      'Y....R....Y',
+      '..R.....R..',
+      '.....Y.....',
+      '.R..R.R..R.',
+      '...R...R...',
+      'R.Y.....Y.R',
+      '...R...R...',
+      '.R..R.R..R.',
+      '.....Y.....',
+      '..R.....R..',
+      'Y....R....Y'
+    ]
+  ],
   // Explosión de la nave del jugador, en tres fases. R = rojo, Y = amarillo, B = blanco.
   MAPAS_EXPLOSION: [
     [
