@@ -1,6 +1,6 @@
 ---
 title: Partida
-depends_on: [jugador, enemigos, marcador]
+depends_on: [jugador, enemigos]
 status: draft
 threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
