@@ -69,7 +69,7 @@ KF.formacion = {
       var p = this.posicionHueco(n);
       if (r.x < p.x + this.ANCHO_NAVE / 2 && r.x + r.ancho > p.x - this.ANCHO_NAVE / 2 &&
           r.y < p.y + this.ALTO_NAVE / 2 && r.y + r.alto > p.y - this.ALTO_NAVE / 2) {
-        n.viva = false;
+        KF.enemigos.destruir(n, p.x, p.y, 'disparo');
         return n;
       }
     }
