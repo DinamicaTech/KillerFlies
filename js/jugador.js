@@ -81,12 +81,8 @@ KF.jugador = {
   }
 };
 
-(function () {
-  var g = KF.graficos, j = KF.jugador;
-  var colores = { B: '#ffffff', R: '#f02828', A: '#2a3cff', Y: '#ffff40' };
-  j.SPRITE = g.crearSprite(g.MAPA_JUGADOR, colores);
-  j.SPRITE_DISPARO = g.crearSprite(g.MAPA_DISPARO, colores);
-  j.SPRITES_EXPLOSION = g.MAPAS_EXPLOSION.map(function (m) { return g.crearSprite(m, colores); });
-})();
+KF.jugador.SPRITE = KF.graficos.SPRITE_JUGADOR;
+KF.jugador.SPRITE_DISPARO = KF.graficos.SPRITE_DISPARO;
+KF.jugador.SPRITES_EXPLOSION = KF.graficos.SPRITES_EXPLOSION_JUGADOR;
 
 KF.registrar(KF.jugador);

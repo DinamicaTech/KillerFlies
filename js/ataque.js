@@ -308,6 +308,6 @@ KF.ataque = {
   }
 };
 
-KF.ataque.SPRITE_BOMBA = KF.graficos.crearSprite(KF.graficos.MAPA_BOMBA, { B: '#ffffff' });
+KF.ataque.SPRITE_BOMBA = KF.graficos.SPRITE_BOMBA;
 KF.ataque.reiniciar();
 KF.registrar(KF.ataque);
