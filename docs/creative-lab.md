@@ -1,0 +1,11 @@
+---
+title: Creative lab
+depends_on: []
+---
+## Summary
+El espacio de ideas del proyecto: aquí se debaten mejoras y nuevos desarrollos antes de decidir si se hacen.
+Cada idea es un nodo hijo del laboratorio (`status: idea`), el paso previo a un draft; mientras se debate no se enruta a su nodo funcional.
+Sale del laboratorio cuando el propietario decide: se convierte en draft o se ejecuta, y se mueve a su lugar funcional. Una idea descartada se queda en el laboratorio con una decisión que lo dice.
+
+## Decisions
+- 2026-10-03 18:16 · Creado con el proyecto.

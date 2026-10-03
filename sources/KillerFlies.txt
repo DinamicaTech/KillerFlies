@@ -1,0 +1,20 @@
+
+Desarrollo de un video-juego: Killer flies
+
+Se trata de reimplementar un juego clásico de máquinas recreativas: Galaxy.
+Es un juego en el que en sucesivas oleadas hemos de destruir un grupo de naves alienígenas que aparecen en un bloque de seis filas de alto y diez columnas en la parte superior de la pantalla. Hay cuatro tipos de naves alienígenas (azul, lila, roja y amarilla) que dan 10, 20, 30 y 50 puntos respectivamente al ser destruidas. Las tres filas inferiores de naves azules, la tercera fila contando desde arriba, naves lilas (solo 8 naves, alineadas con las 8 naves centrales de la fila azul inferior), la segunda fila con 6 naves rojas (alineadas con las 6 naves centrales lilas inferiores) y en la primera fila, dos naves amarillas, alineadas verticalmente con las naves rojas 2 y 6 
+La nave que controla el jugador está en la parte inferior de la pantalla y solo se puede mover horizontalmente mientras dispara. Hasta que el disparo no da en un blanco o llega a la parte superior de la pantalla, no se puede volver a disparar.
+El bloque de naves se va desplazando horizontalmente de un extremo a otro de la pantalla. De forma aleatoria, alguna nave alienígena abandona la formación y cae en picado en una trayectoria suavemente irregular intentando colisionar con la nave del jugador mientras va dejando caer unas pequeñas bombas que caen manteniendo la inercia horizontal del movimiento de la nave alienígena en el momento de soltar las bombas. Las naves azules pueden lanzar hasta 2 bombas, las lilas 3, rojas y amarillas 4. 
+Si una nave amarilla abandona la formación para caer en picado, siempre intentará ir acompañada en formación de dos naves rojas (o una si no quedan más), que irán en paralelo debajo de la amarilla actuando como escudo.
+Cualquier nave cayendo en picado que llegue a la parte superior de la pantalla, aparecerá en la parte superior y volverá a su posición en la formación.
+Cuando una nave abandona la formación para atacar (o grupo de naves en caso de ser una nave amarilla) empiezan con una trayectoria ascendente en forma de pequeña parábola y luego inician el descenso. La imagen de la nave rotará 180 mientras ejecuta la parábola (sus cañones de disparo están en la parte superior cuando está en formación, con la rotación pasarán a estar en la parte inferior) y luego se orientará hacia la nave del jugador (es decir, orientará sus cañones de disparo hacia la nave del jugador)
+Cuando todas las naves enemigas hayan sido destruidas, se iniciará una nueva oleada con una velocidad de movimiento incrementada en un 5%.
+Si alguna nave alienígena o una bomba choca contra la nave del jugador, esta explota. Tiene dos naves de recambio (que aparecen pequeñitas a la derecha abajo del todo) que irá perdiendo cada vez que sea destruido. Cuando la última nave del jugador sea destruido, mensaje 'GAME OVER'
+En la parte superior izquierda se mostrará el número de oleada + "/" + número de oleada máxima conseguida por ese jugador. En la parte superior derecha, se mostrarán los puntos conseguidos + "/" + puntos máximos conseguidos por ese jugador.
+Al inicio de la partida, aparece un texto 'START GAME' grande en medio de la pantalla. Pulsando cualquier tecla, comienza la partida.
+Hay efectos de sonido:
+- Disparos de la nave del jugador
+- Ruido de explosión al resultar destruida una nave
+- Zumbido mientras una nave alienígena abandona la formación para hacer un ataque
+
+Adjunto dos capturas como referencia visual. En la primera, una formación de nave amarilla y dos rojas desciende para atacar. En la segunda, una nave lila desciende hacia la nave del jugador mientras dos bombas (líneas blancas verticales algo gruesas) van cayendo.
