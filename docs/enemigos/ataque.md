@@ -1,7 +1,6 @@
 ---
 title: Ataque
 depends_on: [enemigos, enemigos/formacion, jugador, graficos, architecture]
-status: draft
 threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
   - Ataques en picado | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFJ5MweEGxxYP7n8Day6kv9
@@ -22,6 +21,7 @@ Los ataques en picado: una nave (o una amarilla con su escolta de rojas) deja la
 - 2026-10-03 19:05 · Ritmo: el primer ataque llega a los 2 segundos y luego cada 1,5 a 3 segundos (un 10% menos por oleada); a la vez caben 1 + número de oleada ataques, hasta 6 (la amarilla con su escolta cuenta como uno). Las amarillas se eligen el triple de a menudo que el resto. No empieza ningún ataque mientras la nave del jugador está explotando. Partida indicará el número de oleada (KF.ataque.oleada) y un multiplicador de velocidad del picado y las bombas (KF.ataque.factorVelocidad); de momento es la oleada 1 a velocidad normal.
 - 2026-10-03 19:05 · Choques: una bomba o una nave en picado que toca la nave del jugador la hace explotar; la nave alienígena que choca se destruye, como en el arcade. El disparo del jugador también destruye las naves en picado. Los puntos quedan para Marcador y el zumbido para Sonido.
 - 2026-10-03 19:05 · Código en js/ataque.js; el sprite de la bomba y el dibujo girado de las naves en js/graficos.js.
+- 2026-10-03 19:02 · Validado por el owner: los ataques en picado quedan implementados y el nodo pasa a estable.
 
 ## Requirements
 - 2026-10-03 18:13 · From sources/KillerFlies.txt § 4: ataques aleatorios en picado con trayectoria suavemente irregular hacia el jugador, soltando bombas que conservan la inercia horizontal de la nave; máximo de bombas: azul 2, lila 3, roja y amarilla 4.
