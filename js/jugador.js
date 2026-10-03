@@ -59,7 +59,8 @@ KF.jugador = {
     if (!d) return;
     d.y -= this.VELOCIDAD_DISPARO * dt;
     var h = this.SPRITE_DISPARO.height;
-    if (d.y + h < 0 || KF.formacion.tocar({ x: d.x, y: d.y, ancho: 1, alto: h })) {
+    var r = { x: d.x, y: d.y, ancho: 1, alto: h };
+    if (d.y + h < 0 || KF.formacion.tocar(r) || KF.ataque.tocar(r)) {
       this.disparo = null;
     }
   },
