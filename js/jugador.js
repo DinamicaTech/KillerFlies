@@ -2,6 +2,8 @@
 // flechas y dispara con la barra espaciadora. Solo hay un disparo en pantalla:
 // no se puede volver a disparar hasta que da en un blanco o sale por arriba.
 // Explota si la alcanza una nave alienígena o una bomba (KF.jugador.explotar).
+// No reaparece sola: Partida la hace aparecer (KF.jugador.aparecer) al empezar
+// la partida y con cada nave de recambio; fuera de la partida no está.
 KF.jugador = {
   Y: KF.ALTO - 24,         // altura del centro de la nave
   VELOCIDAD: 90,           // píxeles por segundo
@@ -9,13 +11,10 @@ KF.jugador = {
   ANCHO: 13,
   ALTO: 11,
   DURACION_FASE: 0.15,     // segundos de cada fase de la explosión
-  // Provisional hasta que Partida gestione las naves de recambio: segundos
-  // tras explotar hasta que la nave vuelve a aparecer en el centro.
-  ESPERA_REAPARICION: 2,
 
   x: KF.ANCHO / 2,
-  estado: 'viva',          // 'viva' | 'explotando'
-  tiempoExplosion: 0,
+  estado: 'ausente',       // 'ausente' | 'viva' | 'explotando'
+  tiempoExplosion: 0,      // segundos desde que explotó
   disparo: null,           // {x, y} del extremo superior, o null si no hay
 
   // Rectángulo de choque de la nave, o null si no se la puede alcanzar.
@@ -31,17 +30,22 @@ KF.jugador = {
     this.tiempoExplosion = 0;
   },
 
+  // La nave aparece en el centro; la llama Partida.
+  aparecer: function () {
+    this.estado = 'viva';
+    this.x = KF.ANCHO / 2;
+  },
+
+  // La nave deja de estar en pantalla (fin de partida); la llama Partida.
+  retirar: function () {
+    this.estado = 'ausente';
+  },
+
   actualizar: function (dt) {
     this.moverDisparo(dt);
 
-    if (this.estado === 'explotando') {
-      this.tiempoExplosion += dt;
-      if (this.tiempoExplosion >= this.ESPERA_REAPARICION) {
-        this.estado = 'viva';
-        this.x = KF.ANCHO / 2;
-      }
-      return;
-    }
+    if (this.estado === 'explotando') this.tiempoExplosion += dt;
+    if (this.estado !== 'viva') return;
 
     var t = KF.teclas;
     var dir = (t.ArrowRight ? 1 : 0) - (t.ArrowLeft ? 1 : 0);
@@ -72,7 +76,7 @@ KF.jugador = {
     }
     if (this.estado === 'viva') {
       g.dibujar(ctx, this.SPRITE, this.x, this.Y);
-    } else {
+    } else if (this.estado === 'explotando') {
       var fase = Math.floor(this.tiempoExplosion / this.DURACION_FASE);
       if (fase < this.SPRITES_EXPLOSION.length) {
         g.dibujar(ctx, this.SPRITES_EXPLOSION[fase], this.x, this.Y);

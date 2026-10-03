@@ -58,16 +58,13 @@ KF.marcador = {
     } catch (e) { /* sin almacenamiento: no se guarda */ }
   },
 
-  // Ancho en píxeles de un texto con la fuente del marcador.
+  // Ancho en píxeles de un texto con la fuente de graficos.
   anchoTexto: function (texto) {
-    return texto.length * (this.FUENTE_ANCHO + 1) - 1;
+    return KF.graficos.anchoTexto(texto);
   },
 
   escribir: function (ctx, texto, x, y) {
-    for (var i = 0; i < texto.length; i++) {
-      var letra = this.LETRAS[texto[i]];
-      if (letra) ctx.drawImage(letra, x + i * (this.FUENTE_ANCHO + 1), y);
-    }
+    KF.graficos.escribir(ctx, this.LETRAS, texto, x, y);
   },
 
   dibujar: function (ctx) {
@@ -87,25 +84,7 @@ KF.marcador = {
 
 (function () {
   var mk = KF.marcador;
-  // Fuente pixel-art de 5×7 para las cifras y la barra. '#' = píxel encendido.
-  var FUENTE = {
-    '0': ['.###.', '#...#', '#..##', '#.#.#', '##..#', '#...#', '.###.'],
-    '1': ['..#..', '.##..', '..#..', '..#..', '..#..', '..#..', '.###.'],
-    '2': ['.###.', '#...#', '....#', '...#.', '..#..', '.#...', '#####'],
-    '3': ['#####', '...#.', '..#..', '...#.', '....#', '#...#', '.###.'],
-    '4': ['...#.', '..##.', '.#.#.', '#..#.', '#####', '...#.', '...#.'],
-    '5': ['#####', '#....', '####.', '....#', '....#', '#...#', '.###.'],
-    '6': ['..##.', '.#...', '#....', '####.', '#...#', '#...#', '.###.'],
-    '7': ['#####', '....#', '...#.', '..#..', '.#...', '.#...', '.#...'],
-    '8': ['.###.', '#...#', '#...#', '.###.', '#...#', '#...#', '.###.'],
-    '9': ['.###.', '#...#', '#...#', '.####', '....#', '...#.', '.##..'],
-    '/': ['.....', '....#', '...#.', '..#..', '.#...', '#....', '.....']
-  };
-  mk.FUENTE_ANCHO = 5;
-  mk.LETRAS = {};
-  for (var c in FUENTE) {
-    mk.LETRAS[c] = KF.graficos.crearSprite(FUENTE[c], { '#': mk.COLOR });
-  }
+  mk.LETRAS = KF.graficos.crearFuente(mk.COLOR);
   mk.oleadaMaxima = Math.max(1, mk.leer(mk.CLAVE_OLEADA));
   mk.puntosMaximos = mk.leer(mk.CLAVE_PUNTOS);
 
