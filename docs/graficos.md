@@ -16,3 +16,4 @@ El aspecto visual del juego: la pantalla, el fondo y los sprites pixel-art de to
 - 2026-10-03 18:22 · draft: Dibujar la pantalla y los sprites pixel-art (nave del jugador, cuatro naves alienígenas, disparo, bombas, explosión) a partir de sources/KF1.JPG y sources/KF2.JPG.
 - 2026-10-03 18:22 · question: ¿Tamaño y fondo de la pantalla? A) vertical como el arcade, escalada a la ventana, con fondo de estrellas como en las capturas (recomendado) B) ocupar toda la ventana, sin estrellas.
 - 2026-10-03 18:40 · Derived from enemigos/ataque: las naves alienígenas se dibujan rotadas a cualquier ángulo (giro de 180° al salir y orientación hacia el jugador en el picado).
+- 2026-10-03 18:42 · Derived from jugador: sprites de la nave del jugador, su disparo y su explosión.

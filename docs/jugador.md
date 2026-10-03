@@ -1,9 +1,10 @@
 ---
 title: Jugador
-depends_on: []
+depends_on: [enemigos/formacion, graficos, architecture]
 status: draft
 threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - Nave del jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi8uEd3vf7FBd7b8W9rNHB1b
 ---
 ## Summary
 La nave que controla el jugador en la parte inferior de la pantalla: se mueve en horizontal, dispara de uno en uno y explota si la alcanza una nave o una bomba.
