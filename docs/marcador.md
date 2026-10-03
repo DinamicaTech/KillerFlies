@@ -15,6 +15,7 @@ La información en pantalla: oleada actual y máxima arriba a la izquierda, punt
 - 2026-10-03 19:10 · Naves de recambio: se dibujan abajo a la derecha, pegadas al borde inferior bajo la franja de la nave del jugador, con el mismo dibujo que la nave del jugador; Gráficos podrá darles un dibujo más pequeño.
 - 2026-10-03 19:10 · Récords: la oleada máxima y los puntos máximos se guardan en el almacenamiento local del navegador en cuanto se superan, así que no se pierden si se cierra la pestaña a media partida. Si el navegador no deja guardar, duran solo mientras la página está abierta.
 - 2026-10-03 19:10 · Reparto con Partida: Partida dice al marcador la oleada en curso, las naves de recambio que quedan y cuándo empieza una partida (los puntos vuelven a cero); el marcador solo los muestra y actualiza los récords. Hasta que Partida exista: oleada 1 y dos naves de recambio fijas.
+- 2026-10-03 19:12 · Puntos: cada nave alienígena destruida, por el disparo o al chocar con el jugador, suma sus puntos (azul 10, lila 20, roja 30, amarilla 50); el marcador se apunta al aviso de nave destruida de Enemigos.
 - 2026-10-03 19:10 · Código en js/marcador.js (KF.marcador: sumarPuntos, reiniciarPuntos, ponerOleada, ponerRecambio), que se dibuja encima de todo lo demás.
 
 ## Requirements

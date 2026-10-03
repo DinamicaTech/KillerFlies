@@ -108,6 +108,11 @@ KF.marcador = {
   }
   mk.oleadaMaxima = Math.max(1, mk.leer(mk.CLAVE_OLEADA));
   mk.puntosMaximos = mk.leer(mk.CLAVE_PUNTOS);
+
+  // Cada nave destruida, por disparo o por choque con el jugador, da sus puntos.
+  KF.enemigos.alDestruir(function (nave) {
+    mk.sumarPuntos(KF.TIPOS_NAVE[nave.tipo].puntos);
+  });
 })();
 
 // Se registra el último para dibujarse encima de todo.
