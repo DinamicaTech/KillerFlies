@@ -5,7 +5,7 @@
 // así que el audio se pone en marcha con la primera pulsación.
 KF.sonido = {
   VOLUMEN: 0.5,
-  VOLUMEN_ZUMBIDO: 0.08,
+  VOLUMEN_ZUMBIDO: 0.04,
 
   ctx: null,              // AudioContext, creado con la primera tecla
   salida: null,           // ganancia general
