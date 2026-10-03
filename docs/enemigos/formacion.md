@@ -15,6 +15,7 @@ El bloque de naves alienígenas en la parte superior de la pantalla: su distribu
 - 2026-10-03 18:44 · Vuelta del bloque: cuando el hueco más extremo de las naves que quedan vivas toca el borde de la pantalla; al destruir columnas laterales el bloque recorre más espacio, como en el arcade.
 - 2026-10-03 18:44 · Velocidad inicial del vaivén: unos 4 segundos de un extremo a otro con el bloque completo (16 píxeles por segundo en la pantalla de 224 de ancho). Es un valor que Partida sube al empezar cada oleada.
 - 2026-10-03 18:44 · Código en js/formacion.js; la formación se reinicia con sus 46 naves al empezar una oleada.
+- 2026-10-03 18:55 · Impacto del disparo del jugador: la formación comprueba si un rectángulo toca alguna nave viva en su hueco (zona de 11×8 píxeles centrada en él); si es así, esa nave desaparece y se informa al disparo, que se libera. Los puntos quedan para Marcador y las naves en picado para enemigos/ataque.
 
 ## Requirements
 - 2026-10-03 18:13 · From sources/KillerFlies.txt § 2: oleadas de naves en un bloque de 6 filas por 10 columnas arriba; de abajo arriba, tres filas de 10 azules, una de 8 lilas alineadas con las 8 azules centrales, una de 6 rojas alineadas con las 6 lilas centrales y una de 2 amarillas sobre las rojas 2 y 6.

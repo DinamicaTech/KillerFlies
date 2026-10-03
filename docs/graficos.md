@@ -13,6 +13,7 @@ El aspecto visual del juego: la pantalla, el fondo y los sprites pixel-art de to
 - 2026-10-03 18:22 · Creado en la carga de requisitos inicial.
 - 2026-10-03 18:44 · Pantalla vertical como el arcade, de 224×288 píxeles lógicos escalada a la ventana. Fondo negro por ahora; el fondo de estrellas de las capturas queda pendiente en este nodo.
 - 2026-10-03 18:44 · Sprites provisionales de las cuatro naves alienígenas en formación, definidos como mapas de píxeles en js/graficos.js; este nodo los afinará a partir de las capturas.
+- 2026-10-03 18:55 · Sprites provisionales de la nave del jugador (blanca con detalles rojos y azules), su disparo (línea amarilla) y su explosión en tres fases, como mapas de píxeles en js/graficos.js; este nodo los afinará a partir de las capturas.
 
 ## Requirements
 - 2026-10-03 18:13 · Adjunto dos capturas como referencia visual. En la primera, una formación de nave amarilla y dos rojas desciende para atacar. En la segunda, una nave lila desciende hacia la nave del jugador mientras dos bombas (líneas blancas verticales algo gruesas) van cayendo.
