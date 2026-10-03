@@ -25,6 +25,16 @@ KF.graficos = {
     ctx.drawImage(sprite, Math.round(x - sprite.width / 2), Math.round(y - sprite.height / 2));
   },
 
+  // Dibuja un sprite centrado en (x, y) y girado: angulo en radianes, en
+  // sentido horario; 0 es el sprite tal cual está definido.
+  dibujarGirado: function (ctx, sprite, x, y, angulo) {
+    ctx.save();
+    ctx.translate(Math.round(x), Math.round(y));
+    ctx.rotate(angulo);
+    ctx.drawImage(sprite, -sprite.width / 2, -sprite.height / 2);
+    ctx.restore();
+  },
+
   // Naves alienígenas en formación, con los cañones hacia arriba.
   // C = cuerpo, A = alas, O = ojos.
   MAPA_NAVE: [
@@ -69,6 +79,14 @@ KF.graficos = {
     'Y',
     'Y',
     'Y'
+  ],
+  // Bomba de las naves alienígenas: línea blanca vertical. B = blanco.
+  MAPA_BOMBA: [
+    'B',
+    'B',
+    'B',
+    'B',
+    'B'
   ],
   // Explosión de la nave del jugador, en tres fases. R = rojo, Y = amarillo, B = blanco.
   MAPAS_EXPLOSION: [
