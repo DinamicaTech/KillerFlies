@@ -19,3 +19,4 @@ El ciclo de la partida: pantalla de inicio, sucesión de oleadas cada vez más r
 - 2026-10-03 18:22 · question: ¿El +5% afecta solo al desplazamiento del bloque o también a los picados y las bombas? A) a todo (recomendado) B) solo al bloque.
 - 2026-10-03 18:22 · question: Tras perder una nave, ¿la oleada sigue como estaba? A) sigue, y las naves en picado vuelven a la formación antes de que aparezca la nave de recambio (recomendado) B) se reinicia la oleada.
 - 2026-10-03 18:22 · question: Tras 'GAME OVER', ¿qué pasa? A) vuelve a 'START GAME' tras unos segundos (recomendado) B) se queda hasta pulsar una tecla.
+- 2026-10-03 19:10 · Derived from marcador: avisar al marcador de la oleada en curso y de las naves de recambio que quedan, y poner los puntos a cero al empezar cada partida.
