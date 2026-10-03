@@ -1,7 +1,6 @@
 ---
 title: Marcador
 depends_on: [enemigos, partida, architecture, jugador]
-status: draft
 threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
   - Marcador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiEmsD9WvmtQFinsch84vnYn
@@ -17,6 +16,7 @@ La información en pantalla: oleada actual y máxima arriba a la izquierda, punt
 - 2026-10-03 19:10 · Reparto con Partida: Partida dice al marcador la oleada en curso, las naves de recambio que quedan y cuándo empieza una partida (los puntos vuelven a cero); el marcador solo los muestra y actualiza los récords. Hasta que Partida exista: oleada 1 y dos naves de recambio fijas.
 - 2026-10-03 19:12 · Puntos: cada nave alienígena destruida, por el disparo o al chocar con el jugador, suma sus puntos (azul 10, lila 20, roja 30, amarilla 50); el marcador se apunta al aviso de nave destruida de Enemigos.
 - 2026-10-03 19:10 · Código en js/marcador.js (KF.marcador: sumarPuntos, reiniciarPuntos, ponerOleada, ponerRecambio), que se dibuja encima de todo lo demás.
+- 2026-10-03 19:11 · Validado por el owner: el marcador queda implementado y el nodo pasa a estable.
 
 ## Requirements
 - 2026-10-03 18:13 · En la parte superior izquierda se mostrará el número de oleada + "/" + número de oleada máxima conseguida por ese jugador. En la parte superior derecha, se mostrarán los puntos conseguidos + "/" + puntos máximos conseguidos por ese jugador.
