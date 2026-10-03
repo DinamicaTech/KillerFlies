@@ -1,7 +1,6 @@
 ---
 title: Jugador
 depends_on: [enemigos/formacion, graficos, architecture]
-status: draft
 threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
   - Nave del jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi8uEd3vf7FBd7b8W9rNHB1b
@@ -18,6 +17,7 @@ La nave que controla el jugador en la parte inferior de la pantalla: se mueve en
 - 2026-10-03 18:46 · Provisional hasta que Partida gestione las naves de recambio y el GAME OVER: dos segundos después de explotar la nave reaparece en el centro.
 - 2026-10-03 18:46 · Código en js/jugador.js; los dibujos de la nave, el disparo y la explosión, provisionales, están en js/graficos.js.
 - 2026-10-03 18:49 · Teclas: flecha izquierda y flecha derecha para moverse, barra espaciadora para disparar, confirmado por el owner. Mantener pulsado el espacio dispara de nuevo en cuanto se libera el disparo.
+- 2026-10-03 18:50 · Validado por el owner: la nave del jugador queda implementada y el nodo pasa a estable.
 
 ## Requirements
 - 2026-10-03 18:13 · La nave que controla el jugador está en la parte inferior de la pantalla y solo se puede mover horizontalmente mientras dispara.
