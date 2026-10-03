@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Killer Flies</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+</style>
+</head>
+<body>
+<canvas id="pantalla"></canvas>
+<!-- Scripts clásicos (no módulos) para que funcione abriendo el fichero desde el disco. -->
+<script src="js/base.js"></script>
+<script src="js/graficos.js"></script>
+<script src="js/enemigos.js"></script>
+<script src="js/formacion.js"></script>
+<script>KF.iniciar();</script>
+</body>
+</html>
