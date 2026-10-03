@@ -14,7 +14,8 @@ KF.ataque = {
   SEPARACION_BOMBAS: 0.3,  // segundos entre bombas de una misma nave
   ESCOLTA_DX: 11,          // posición de cada escolta respecto a la amarilla
   ESCOLTA_DY: 11,
-  PRIMER_ATAQUE: 2,        // segundos hasta el primer ataque de la oleada
+  PRIMER_ATAQUE: 2,        // segundos hasta el primer ataque de la oleada o
+                           // tras aparecer la nave de recambio
 
   // Oleada en curso: con cada oleada hay más ataques a la vez y más seguidos.
   // Partida la cambiará al empezar cada oleada.
@@ -36,6 +37,11 @@ KF.ataque = {
   // Segundos entre un ataque y el siguiente, más corto con cada oleada.
   pausa: function () {
     return (1.5 + Math.random() * 1.5) / (1 + 0.1 * (this.oleada - 1));
+  },
+
+  // Al aparecer la nave de recambio, los ataques esperan antes de empezar.
+  tregua: function () {
+    this.espera = this.PRIMER_ATAQUE;
   },
 
   reiniciar: function () {
