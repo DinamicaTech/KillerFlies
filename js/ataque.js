@@ -54,7 +54,7 @@ KF.ataque = {
       if (!a.nave.viva) continue;
       if (r.x < a.x + f.ANCHO_NAVE / 2 && r.x + r.ancho > a.x - f.ANCHO_NAVE / 2 &&
           r.y < a.y + f.ALTO_NAVE / 2 && r.y + r.alto > a.y - f.ALTO_NAVE / 2) {
-        a.nave.viva = false;
+        KF.enemigos.destruir(a.nave, a.x, a.y, 'disparo');
         return a.nave;
       }
     }
@@ -289,7 +289,7 @@ KF.ataque = {
     for (i = 0; i < this.atacantes.length; i++) {
       var a = this.atacantes[i];
       if (a.nave.viva && toca(a.x - f.ANCHO_NAVE / 2, a.y - f.ALTO_NAVE / 2, f.ANCHO_NAVE, f.ALTO_NAVE)) {
-        a.nave.viva = false;
+        KF.enemigos.destruir(a.nave, a.x, a.y, 'choque');
         KF.jugador.explotar();
         return;
       }

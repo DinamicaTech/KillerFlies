@@ -205,10 +205,13 @@ KF.graficos = {
       '...........',
       'R....Y....R'
     ]
-  ],
+  ]
+};
 
-  // Fondo de estrellas: puntos de colores que bajan despacio y parpadean,
-  // como en el arcade. Se dibuja antes que todo lo demás.
+// Fondo de estrellas: puntos de colores que bajan despacio y parpadean,
+// como en el arcade. Se registra antes que las demás partes, así que se
+// dibuja detrás de todo.
+KF.graficos.fondo = {
   NUM_ESTRELLAS: 70,
   VELOCIDAD_ESTRELLAS: 12, // píxeles por segundo
   COLORES_ESTRELLAS: ['#ffffff', '#ffffff', '#ffffff', '#f0f040', '#40e0ff', '#ff4040', '#60ff60', '#ff60ff', '#6070ff'],
@@ -265,7 +268,7 @@ KF.graficos = {
   g.SPRITE_BOMBA = g.crearSprite(g.MAPA_BOMBA, { B: '#ffffff' });
   g.SPRITES_EXPLOSION_JUGADOR = g.MAPAS_EXPLOSION_JUGADOR.map(function (m) { return g.crearSprite(m, fuego); });
   g.SPRITES_EXPLOSION_NAVE = g.MAPAS_EXPLOSION_NAVE.map(function (m) { return g.crearSprite(m, fuego); });
-  g.crearEstrellas();
+  g.fondo.crearEstrellas();
 })();
 
-KF.registrar(KF.graficos);
+KF.registrar(KF.graficos.fondo);

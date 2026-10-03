@@ -16,3 +16,4 @@ La información en pantalla: oleada actual y máxima arriba a la izquierda, punt
 - 2026-10-03 18:13 · Tiene dos naves de recambio (que aparecen pequeñitas a la derecha abajo del todo)
 - 2026-10-03 18:22 · Derived from enemigos: sumar los puntos de cada nave destruida (azul 10, lila 20, roja 30, amarilla 50).
 - 2026-10-03 18:22 · draft: Implementar el marcador: oleada/oleada máxima arriba a la izquierda, puntos/puntos máximos arriba a la derecha, naves de recambio pequeñas abajo a la derecha, y guardar los máximos en el navegador.
+- 2026-10-03 19:10 · Derived from enemigos: sumar también los puntos de la nave que choca contra el jugador; cada nave destruida se avisa con KF.enemigos.alDestruir.
