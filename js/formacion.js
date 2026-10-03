@@ -12,9 +12,9 @@ KF.formacion = {
   VELOCIDAD_INICIAL: 16,
 
   // Distribución de sources/KillerFlies.txt § 2, de arriba abajo: columnas
-  // ocupadas en cada fila. Amarillas sobre las rojas 2 y 6.
+  // ocupadas en cada fila. Amarillas sobre las rojas 2 y 5, como el arcade.
   FILAS: [
-    { tipo: 'amarilla', columnas: [3, 7] },
+    { tipo: 'amarilla', columnas: [3, 6] },
     { tipo: 'roja',     columnas: [2, 3, 4, 5, 6, 7] },
     { tipo: 'lila',     columnas: [1, 2, 3, 4, 5, 6, 7, 8] },
     { tipo: 'azul',     columnas: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
