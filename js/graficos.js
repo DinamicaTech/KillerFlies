@@ -47,5 +47,69 @@ KF.graficos = {
     'YY.YYYYY.YY',
     'Y...YYY...Y',
     '....R.R....'
+  ],
+
+  // Nave del jugador, con el cañón hacia arriba. B = blanco, R = rojo, A = azul.
+  MAPA_JUGADOR: [
+    '......B......',
+    '......B......',
+    '.....BBB.....',
+    '.....BRB.....',
+    '..A..BBB..A..',
+    '..A.BBBBB.A..',
+    '..ABBBRBBBA..',
+    '.ABBBRRRBBBA.',
+    'ABBBBBBBBBBBA',
+    'AA.BBB.BBB.AA',
+    'A...B...B...A'
+  ],
+  // Disparo del jugador. Y = amarillo.
+  MAPA_DISPARO: [
+    'Y',
+    'Y',
+    'Y',
+    'Y'
+  ],
+  // Explosión de la nave del jugador, en tres fases. R = rojo, Y = amarillo, B = blanco.
+  MAPAS_EXPLOSION: [
+    [
+      '.............',
+      '.............',
+      '.............',
+      '.....R.R.....',
+      '......Y......',
+      '....RYBYR....',
+      '......Y......',
+      '.....R.R.....',
+      '.............',
+      '.............',
+      '.............'
+    ],
+    [
+      '.............',
+      '..R.......R..',
+      '....R.Y.R....',
+      '.....YBY.....',
+      '..R.YBBBY.R..',
+      '...YBBBBBY...',
+      '..R.YBBBY.R..',
+      '.....YBY.....',
+      '....R.Y.R....',
+      '..R.......R..',
+      '.............'
+    ],
+    [
+      'R.....R.....R',
+      '...Y.....Y...',
+      '.R....Y....R.',
+      '....R...R....',
+      '..Y.......Y..',
+      'R..Y.....Y..R',
+      '..Y.......Y..',
+      '....R...R....',
+      '.R....Y....R.',
+      '...Y.....Y...',
+      'R.....R.....R'
+    ]
   ]
 };

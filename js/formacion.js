@@ -56,6 +56,26 @@ KF.formacion = {
     };
   },
 
+  // Tamaño de la zona de impacto de una nave en formación, centrada en su hueco.
+  ANCHO_NAVE: 11,
+  ALTO_NAVE: 8,
+
+  // Si el rectángulo {x, y, ancho, alto} toca una nave viva en formación, la
+  // destruye y la devuelve; si no, devuelve null. Lo usa el disparo del jugador.
+  tocar: function (r) {
+    for (var i = 0; i < this.naves.length; i++) {
+      var n = this.naves[i];
+      if (!n.viva || !n.enFormacion) continue;
+      var p = this.posicionHueco(n);
+      if (r.x < p.x + this.ANCHO_NAVE / 2 && r.x + r.ancho > p.x - this.ANCHO_NAVE / 2 &&
+          r.y < p.y + this.ALTO_NAVE / 2 && r.y + r.alto > p.y - this.ALTO_NAVE / 2) {
+        n.viva = false;
+        return n;
+      }
+    }
+    return null;
+  },
+
   actualizar: function (dt) {
     // El bloque da la vuelta cuando el hueco más extremo de las naves que
     // quedan vivas toca el borde: al destruir columnas recorre más espacio.
