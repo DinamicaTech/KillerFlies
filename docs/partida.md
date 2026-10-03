@@ -1,7 +1,6 @@
 ---
 title: Partida
 depends_on: [jugador, enemigos, enemigos/formacion, enemigos/ataque, marcador, graficos]
-status: draft
 threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
   - Ciclo de la partida | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiCY7xaWMqRabakQpAk9ek7y
@@ -18,6 +17,7 @@ El ciclo de la partida, en js/partida.js: pantalla 'START GAME' con la formació
 - 2026-10-03 19:18 · Fin: al perder la última nave, dos segundos después de explotar aparece 'GAME OVER' y se queda hasta pulsar una tecla; entonces vuelve a 'START GAME'. Las teclas del primer segundo de 'GAME OVER' no cuentan, para no saltarlo sin querer al estar disparando.
 - 2026-10-03 19:18 · Marcador: Partida le da la oleada en curso, las naves de recambio que quedan y pone los puntos a cero al empezar cada partida.
 - 2026-10-03 19:18 · Código en js/partida.js (KF.partida), que se dibuja encima de todo.
+- 2026-10-03 19:20 · Validado por el owner: el ciclo de la partida queda implementado y el nodo pasa a estable.
 
 ## Requirements
 - 2026-10-03 18:13 · Cuando todas las naves enemigas hayan sido destruidas, se iniciará una nueva oleada con una velocidad de movimiento incrementada en un 5%.
