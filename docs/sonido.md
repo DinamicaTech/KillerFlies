@@ -1,7 +1,6 @@
 ---
 title: Sonido
 depends_on: [architecture, jugador, enemigos, enemigos/ataque]
-status: draft
 threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
   - Sonido | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi5jiNUVSiXE1749BDZmXrnT
@@ -16,6 +15,7 @@ Los efectos de sonido del juego, sintetizados con Web Audio en js/sonido.js: un 
 - 2026-10-03 19:08 · [replaced by 2026-10-03 19:11] Zumbido de ataque: suena durante todo el picado, desde que una nave deja su hueco hasta que sale por abajo (no en la vuelta a la formación), y se agrava a medida que la nave más alta de las que atacan desciende. Se apaga cuando no queda ninguna nave saliendo o en picado.
 - 2026-10-03 19:11 · Zumbido de ataque: suena durante todo el picado, desde que una nave deja su hueco hasta que sale por abajo (no en la vuelta a la formación), y se agrava a medida que la nave más alta de las que atacan desciende. Se apaga cuando no queda ninguna nave saliendo o en picado. Su volumen es la mitad del inicial (ganancia 0,04), para que no predomine sobre los demás sonidos.
 - 2026-10-03 19:08 · Sonido solo observa el juego (disparo, estado del jugador, aviso de nave destruida y atacantes); las demás partes no lo llaman. El audio se pone en marcha con la primera tecla, porque los navegadores no dejan sonar nada antes, y se detiene con la pestaña oculta. Código en js/sonido.js.
+- 2026-10-03 19:12 · Validado por el owner: los tres efectos de sonido quedan implementados y el nodo pasa a estable.
 
 ## Requirements
 - 2026-10-03 18:13 · Hay efectos de sonido: disparos de la nave del jugador; ruido de explosión al resultar destruida una nave; zumbido mientras una nave alienígena abandona la formación para hacer un ataque.
