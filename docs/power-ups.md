@@ -1,12 +1,12 @@
 ---
 title: Power-ups
-status: idea
-depends_on: [creative-lab]
+status: draft
+depends_on: [jugador, enemigos, enemigos/formacion, enemigos/ataque, graficos, sonido, partida]
 threads:
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
 ---
 ## Summary
-Idea en debate: al destruir en pleno picado una amarilla y sus dos rojas de escolta, cae un power-up aleatorio como si fuese una bomba (una cápsula que parpadea, igual para todos y con la misma probabilidad; no da puntos); si el jugador lo recoge, tiene ese poder hasta acabar la oleada. Un poder nuevo sustituye al anterior y se pierde si destruyen la nave. Entre ellos hay un power-down (slow fire) que no se distingue de los demás antes de recogerlo: es parte de la gracia.
+Power-ups aleatorios, en js/powerups.js: al destruir fuera de la formación una amarilla y sus dos rojas de escolta cae, como una bomba, una cápsula que parpadea (igual para todos los poderes y sin puntos). Si la nave del jugador la recoge, obtiene un poder al azar, todos con la misma probabilidad: disparo acelerado, disparo profundo, bomba, aniquilación (un solo uso), slow fire (un power-down) o disparo triple. Dura hasta acabar la oleada, el nuevo sustituye al anterior y se pierde si destruyen la nave.
 
 ## Decisions
 - 2026-10-04 10:48 · Creada en el laboratorio como idea.
@@ -19,6 +19,12 @@ Idea en debate: al destruir en pleno picado una amarilla y sus dos rojas de esco
 - 2026-10-04 10:50 · El power-up cae como una cápsula que parpadea, con el mismo aspecto para todos los poderes.
 - 2026-10-04 10:50 · Con el disparo triple, los tres proyectiles cuentan como un único disparo activo.
 - 2026-10-04 10:50 · Recoger el power-up no da puntos.
+- 2026-10-04 10:52 · Sale del laboratorio: ejecutada, como nodo de primer nivel power-ups (antes creative-lab/power-ups).
+- 2026-10-04 10:52 · Cuándo cae: Ataque avisa (KF.ataque.alDestruirEscolta) cuando la amarilla y sus dos rojas de escolta son destruidas las tres mientras están fuera de la formación (saliendo, en picado o volviendo), por disparo o por choque; la cápsula sale donde cae la última. Una nave que ya ha vuelto a su hueco no cuenta, y una amarilla con una sola roja de escolta no suelta nada.
+- 2026-10-04 10:52 · Cápsula: de 5×7 píxeles, parpadea entre azul y rosa cada 0,15 segundos y cae a la velocidad de las bombas (que sube con la oleada). Se recoge al tocar la nave del jugador; si no, sale por abajo.
+- 2026-10-04 10:52 · Poderes: acelerado, hasta tres disparos en pantalla; profundo, el disparo no se detiene y destruye todas las naves que toca; bomba, el disparo es un rombo naranja que al dar en una nave explota y destruye las naves total o parcialmente dentro de un círculo de 55 píxeles de diámetro (5 anchos de nave), con una onda que se abre; aniquilación, el siguiente disparo no lanza proyectil, destruye todas las naves vivas (en formación y en picado) y el poder se acaba; slow fire, el disparo sube a 150 píxeles por segundo en lugar de 300; triple, tres proyectiles paralelos separados 6 píxeles que cuentan como un solo disparo (no se vuelve a disparar hasta que desaparecen los tres).
+- 2026-10-04 10:52 · Las naves destruidas por la bomba, la aniquilación o el disparo profundo dan sus puntos, como cualquier disparo.
+- 2026-10-04 10:52 · Fin del poder: se pierde al explotar la nave del jugador y al empezar cada oleada o partida (formación nueva), junto con las cápsulas que estén cayendo.
 
 ## Requirements
 - 2026-10-04 10:46 · idea: Al destruir en picado una amarilla con sus dos rojas de escolta, cae un power-up aleatorio como si fuese una bomba (una cápsula que parpadea, igual para todos y con la misma probabilidad; no da puntos); si el jugador lo recoge, obtiene ese poder hasta acabar la oleada. Posibles: disparo acelerado (hasta tres disparos activos en lugar de uno), disparo profundo (el disparo atraviesa y destruye todas las naves de su recorrido), bomba (al chocar con una nave explota y destruye las naves total o parcialmente dentro de un círculo de cinco anchos de nave), aniquilación (al disparar se destruyen todas las naves enemigas), slow fire (power-down: el disparo va a la mitad de velocidad) y disparo triple (tres proyectiles paralelos).
@@ -38,3 +44,4 @@ Idea en debate: al destruir en pleno picado una amarilla y sus dos rojas de esco
 - 2026-10-04 10:50 · answer: ¿cápsula que parpadea, igual para todos? → Sí
 - 2026-10-04 10:50 · answer: ¿el disparo triple cuenta como un único disparo activo? → Sí
 - 2026-10-04 10:50 · answer: ¿recogerlo da puntos? → No
+- 2026-10-04 10:50 · ejecuta la tarea y publica

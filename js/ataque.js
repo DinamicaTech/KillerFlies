@@ -27,6 +27,27 @@ KF.ataque = {
   bombas: [],     // {x, y, vx}
   espera: 0,      // segundos hasta el próximo ataque
   naves: null,    // lista de la formación a la que pertenecen los atacantes
+  oyentesEscolta: [],
+
+  // fn(x, y) se llama cuando una amarilla y sus dos rojas de escolta son
+  // destruidas las tres fuera de la formación; (x, y) es donde cayó la última.
+  // Lo usa power-ups para soltar la cápsula.
+  alDestruirEscolta: function (fn) {
+    this.oyentesEscolta.push(fn);
+  },
+
+  // Cuenta las naves de un grupo amarilla + dos rojas que caen fuera de la
+  // formación; la que vuelve a su hueco ya no está en atacantes.
+  contarCaida: function (nave) {
+    for (var i = 0; i < this.atacantes.length; i++) {
+      var a = this.atacantes[i];
+      if (a.nave !== nave || !a.grupo) continue;
+      if (++a.grupo.caidas === 3) {
+        for (var k = 0; k < this.oyentesEscolta.length; k++) this.oyentesEscolta[k](a.x, a.y);
+      }
+      return;
+    }
+  },
 
   // Máximo de ataques a la vez (la amarilla con su escolta cuenta como uno):
   // dos en la primera oleada y uno más en cada oleada siguiente, hasta seis.
@@ -109,12 +130,15 @@ KF.ataque = {
     var lider = this.crearAtacante(nave, lado, null, 0);
     if (nave.tipo === 'amarilla') {
       var escolta = this.elegirEscolta(nave);
+      // Solo la amarilla con dos rojas forma un grupo que suelta power-up.
+      var grupo = escolta.length === 2 ? { caidas: 0 } : null;
+      lider.grupo = grupo;
       for (var i = 0; i < escolta.length; i++) {
         // Con dos escoltas, una a cada lado; con una, del lado en que estaba.
         var hueco = escolta.length === 2 ? (i === 0 ? -1 : 1)
           : (escolta[i].columna < nave.columna ? -1 : 1);
         if (escolta.length === 2 && escolta[1].columna < escolta[0].columna) hueco = -hueco;
-        this.crearAtacante(escolta[i], lado, lider, hueco);
+        this.crearAtacante(escolta[i], lado, lider, hueco).grupo = grupo;
       }
     }
   },
@@ -135,6 +159,7 @@ KF.ataque = {
       lider: lider,     // la amarilla a la que escolta, o null
       hueco: hueco,     // -1 o 1: lado de la amarilla en que va la escolta
       puesto: null,     // posición de la escolta respecto a la amarilla
+      grupo: null,      // {caidas}: grupo amarilla + dos rojas, para power-ups
       oscilacion: Math.random() * Math.PI * 2,
       // Cuántas bombas soltará en este ataque, hasta el máximo de su tipo.
       bombas: 1 + Math.floor(Math.random() * tipo.bombas),
@@ -316,4 +341,5 @@ KF.ataque = {
 
 KF.ataque.SPRITE_BOMBA = KF.graficos.SPRITE_BOMBA;
 KF.ataque.reiniciar();
+KF.enemigos.alDestruir(function (nave) { KF.ataque.contarCaida(nave); });
 KF.registrar(KF.ataque);

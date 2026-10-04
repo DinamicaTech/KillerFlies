@@ -5,6 +5,7 @@ threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
   - Formación enemiga | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiC47GmNga6bpWeFB1oP6k6h
   - Gráficos | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiDr96WsqVT3NCseBCYwgNre
+  - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
 ---
 ## Summary
 El aspecto visual del juego: la pantalla, el fondo y los sprites pixel-art de todas las naves, bombas, disparos y explosiones, tomando como referencia las capturas del arcade. Todo está en js/graficos.js: un fondo de estrellas de colores que bajan y parpadean, los sprites ya coloreados que usan las demás partes del juego y la fuente pixel-art de los textos.
@@ -22,6 +23,7 @@ El aspecto visual del juego: la pantalla, el fondo y los sprites pixel-art de to
 - 2026-10-03 19:08 · Nave del jugador de 13×13 píxeles: cúpula roja y tres columnas blancas rellenas de celeste. Disparo: línea amarilla de 1×4. Bombas: línea blanca de 2×6. Explosión del jugador en tres fases (rojo, amarillo y blanco, con restos celestes); explosión de las naves alienígenas en cuatro fases, un destello que se abre en un anillo de chispas.
 - 2026-10-03 19:11 · Validado por el dueño: pasa a estable.
 - 2026-10-03 19:18 · Fuente: una sola fuente pixel-art de 5×7 para todos los textos, con cifras, barra, letras de la A a la Z y espacio, en js/graficos.js (KF.graficos.crearFuente(color), escribir y anchoTexto, con escala para agrandarla). Viene de la fuente de cifras que tenía el marcador.
+- 2026-10-04 10:52 · Power-ups: cápsula de 5×7 (dos sprites, azul con franja amarilla y rosa con franja blanca, para el parpadeo; KF.graficos.SPRITES_CAPSULA), bomba del jugador como un rombo naranja de 3×3 (SPRITE_BOMBA_JUGADOR) y la onda de su explosión, un círculo amarillo y naranja que se abre y se apaga (dibujarOnda).
 
 ## Requirements
 - 2026-10-03 18:13 · Adjunto dos capturas como referencia visual. En la primera, una formación de nave amarilla y dos rojas desciende para atacar. En la segunda, una nave lila desciende hacia la nave del jugador mientras dos bombas (líneas blancas verticales algo gruesas) van cayendo.
@@ -33,3 +35,4 @@ El aspecto visual del juego: la pantalla, el fondo y los sprites pixel-art de to
 - 2026-10-03 19:05 · Derived from enemigos/ataque: sprite de la bomba de las naves alienígenas.
 - 2026-10-03 19:10 · Derived from enemigos: sprite provisional de la explosión de las naves alienígenas.
 - 2026-10-03 19:18 · Derived from partida: fuente pixel-art de letras y cifras para los textos.
+- 2026-10-04 10:52 · Derived from power-ups: dibujo de la cápsula que parpadea y de la explosión de la bomba.

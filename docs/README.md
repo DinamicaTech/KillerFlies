@@ -7,11 +7,12 @@ threads:
 ## Summary
 Remake del clásico arcade Galaxian: la nave del jugador se mueve por la parte inferior de la pantalla y derriba oleadas de naves alienígenas que se lanzan en picado contra ella mientras sueltan bombas.
 La formación de cuatro tipos de naves se desplaza de lado a lado y lanza ataques en picado; cada oleada destruida da paso a otra más rápida.
-El jugador tiene tres naves; el marcador muestra oleada y puntos junto a sus récords. Se juega en el navegador con el teclado o, en el móvil, con la pantalla táctil.
+Al destruir en picado una amarilla con su escolta cae un power-up aleatorio. El jugador tiene tres naves; el marcador muestra oleada y puntos junto a sus récords. Se juega en el navegador con el teclado o, en el móvil, con la pantalla táctil.
 
 ## Decisions
 - 2026-10-03 18:16 · Proyecto creado con Claude Visual Project.
 - 2026-10-03 18:22 · Requisitos iniciales repartidos en el árbol: partida, jugador, enemigos (formación y ataque), marcador, gráficos y sonido.
+- 2026-10-04 10:52 · Nuevo nodo power-ups: poderes aleatorios al destruir una amarilla con su escolta en picado.
 
 ## Requirements
 - 2026-10-03 18:13 · Se trata de reimplementar un juego clásico de máquinas recreativas: Galaxy.
