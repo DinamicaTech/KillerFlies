@@ -2,9 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Killer Flies</title>
 <style>
   html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  /* En el móvil, los toques son del juego: sin zoom, desplazamiento ni selección. */
+  html, body, canvas { touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   body { display: flex; align-items: center; justify-content: center; }
   canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
 </style>

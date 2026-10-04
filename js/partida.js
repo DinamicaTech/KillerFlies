@@ -1,4 +1,5 @@
-// El ciclo de la partida: pantalla 'START GAME' que espera cualquier tecla,
+// El ciclo de la partida: pantalla 'START GAME' que espera cualquier tecla
+// (o una pulsación corta en la pantalla táctil),
 // oleadas sucesivas un 5% más rápidas cada una (bloque, picados y bombas),
 // tres naves del jugador (una en juego y dos de recambio) y 'GAME OVER' al
 // perder la última, que se queda hasta que se pulsa una tecla.
@@ -85,7 +86,7 @@ KF.partida = {
     }
   },
 
-  // Cualquier tecla empieza la partida en la pantalla de inicio y vuelve a
+  // Cualquier tecla o pulsación corta empieza la partida en la pantalla de inicio y vuelve a
   // ella desde 'GAME OVER'.
   pulsar: function () {
     if (this.estado === 'inicio') this.empezar();
@@ -111,6 +112,12 @@ KF.partida = {
   p.LETRAS_FIN = KF.graficos.crearFuente(p.COLOR_FIN);
   window.addEventListener('keydown', function (e) {
     if (!e.repeat) p.pulsar();
+  });
+  // La pulsación corta que empieza la partida no dispara.
+  KF.alPulsarCorto(function () {
+    var antes = p.estado;
+    p.pulsar();
+    if (p.estado !== antes) KF.tactil.disparar = false;
   });
   p.irAInicio();
 })();
