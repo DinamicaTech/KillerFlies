@@ -27,3 +27,4 @@ Formas posibles, de menos a más coste: por turnos en el mismo dispositivo (como
 - 2026-10-04 12:09 · question: Si un jugador se desconecta: A) el otro sigue solo; B) se pausa y se espera un tiempo a que vuelva; C) se acaba la partida. Recomendado B, con A si no vuelve en 30 segundos.
 - 2026-10-04 12:09 · question: Récords: A) siguen siendo locales de cada navegador, separados para partidas en línea; B) tabla de récords en línea compartida por todos. Recomendado A: B necesita guardar datos en un servidor.
 - 2026-10-04 12:09 · question: Juego cruzado móvil y ordenador: A) se puede jugar uno con el móvil y otro con el ordenador; B) solo entre dispositivos del mismo tipo. Recomendado A, ya que el juego funciona igual en ambos.
+- 2026-10-04 12:09 · question: Coste del servicio en línea: A) tiene que caber en un plan gratuito; B) se acepta un pequeño coste mensual. Recomendado A, suficiente para partidas entre amigos.
