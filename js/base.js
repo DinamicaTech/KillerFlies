@@ -1,4 +1,4 @@
-// Base del juego: pantalla, teclado y bucle de juego.
+// Base del juego: pantalla, teclado, pantalla táctil y bucle de juego.
 // Todo el juego vive en el objeto global KF. Cada parte del juego se registra
 // con KF.registrar({ actualizar(dt), dibujar(ctx) }) y el bucle la llama en
 // el orden de registro.
@@ -10,9 +10,24 @@ var KF = {
   sistemas: [],
   // Teclas mantenidas pulsadas, por código (event.code), p. ej. KF.teclas.ArrowLeft.
   teclas: {},
+  // Pantalla táctil: desplazamiento horizontal del dedo (en píxeles de la
+  // pantalla lógica) pendiente de aplicar y disparo pedido con una pulsación
+  // corta. Los recoge y los pone a cero quien los usa (Jugador).
+  tactil: { dx: 0, disparar: false },
+  // Funciones a llamar con cada pulsación corta (KF.alPulsarCorto).
+  pulsacionesCortas: [],
+  escala: 1,
+
+  // Pulsación corta: tocar y soltar en poco tiempo casi sin mover el dedo.
+  PULSACION_CORTA_SEGUNDOS: 0.25,
+  PULSACION_CORTA_MOVIMIENTO: 10,   // píxeles reales de la pantalla del móvil
 
   registrar: function (sistema) {
     this.sistemas.push(sistema);
+  },
+
+  alPulsarCorto: function (funcion) {
+    this.pulsacionesCortas.push(funcion);
   },
 
   iniciar: function () {
@@ -23,7 +38,7 @@ var KF = {
     this.ctx.imageSmoothingEnabled = false;
 
     var ajustar = function () {
-      var escala = Math.min(window.innerWidth / KF.ANCHO, window.innerHeight / KF.ALTO);
+      var escala = KF.escala = Math.min(window.innerWidth / KF.ANCHO, window.innerHeight / KF.ALTO);
       canvas.style.width = Math.floor(KF.ANCHO * escala) + 'px';
       canvas.style.height = Math.floor(KF.ALTO * escala) + 'px';
     };
@@ -42,6 +57,8 @@ var KF = {
       KF.teclas = {};
     });
 
+    this.iniciarTactil();
+
     var anterior = null;
     var paso = function (ahora) {
       // dt en segundos, acotado para que una pestaña en segundo plano no provoque saltos.
@@ -51,6 +68,48 @@ var KF = {
       requestAnimationFrame(paso);
     };
     requestAnimationFrame(paso);
+  },
+
+  // Cada dedo cuenta por separado: al deslizarlo, su desplazamiento horizontal
+  // se suma a KF.tactil.dx; si se suelta pronto y casi sin moverlo, es una
+  // pulsación corta. Se puede tocar en cualquier parte de la pantalla, y la
+  // página no hace zoom ni se desplaza.
+  iniciarTactil: function () {
+    var dedos = {};
+    var opciones = { passive: false };
+    document.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      for (var i = 0; i < e.changedTouches.length; i++) {
+        var t = e.changedTouches[i];
+        dedos[t.identifier] = { x: t.clientX, y: t.clientY, x0: t.clientX, y0: t.clientY, inicio: performance.now() };
+      }
+    }, opciones);
+    document.addEventListener('touchmove', function (e) {
+      e.preventDefault();
+      for (var i = 0; i < e.changedTouches.length; i++) {
+        var t = e.changedTouches[i], d = dedos[t.identifier];
+        if (!d) continue;
+        KF.tactil.dx += (t.clientX - d.x) / KF.escala;
+        d.x = t.clientX;
+        d.y = t.clientY;
+      }
+    }, opciones);
+    var soltar = function (e, cancelado) {
+      e.preventDefault();
+      for (var i = 0; i < e.changedTouches.length; i++) {
+        var t = e.changedTouches[i], d = dedos[t.identifier];
+        if (!d) continue;
+        delete dedos[t.identifier];
+        var segundos = (performance.now() - d.inicio) / 1000;
+        var movimiento = Math.max(Math.abs(t.clientX - d.x0), Math.abs(t.clientY - d.y0));
+        if (!cancelado && segundos < KF.PULSACION_CORTA_SEGUNDOS && movimiento < KF.PULSACION_CORTA_MOVIMIENTO) {
+          KF.tactil.disparar = true;
+          for (var j = 0; j < KF.pulsacionesCortas.length; j++) KF.pulsacionesCortas[j]();
+        }
+      }
+    };
+    document.addEventListener('touchend', function (e) { soltar(e, false); }, opciones);
+    document.addEventListener('touchcancel', function (e) { soltar(e, true); }, opciones);
   },
 
   paso: function (dt) {

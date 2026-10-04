@@ -1,5 +1,6 @@
 // La nave del jugador: se mueve en horizontal por la parte inferior con las
-// flechas y dispara con la barra espaciadora. Solo hay un disparo en pantalla:
+// flechas o deslizando el dedo, y dispara con la barra espaciadora o con una
+// pulsación corta en la pantalla táctil. Solo hay un disparo en pantalla:
 // no se puede volver a disparar hasta que da en un blanco o sale por arriba.
 // Explota si la alcanza una nave alienígena o una bomba (KF.jugador.explotar).
 // No reaparece sola: Partida la hace aparecer (KF.jugador.aparecer) al empezar
@@ -16,6 +17,7 @@ KF.jugador = {
   estado: 'ausente',       // 'ausente' | 'viva' | 'explotando'
   tiempoExplosion: 0,      // segundos desde que explotó
   disparo: null,           // {x, y} del extremo superior, o null si no hay
+  objetivo: null,          // x a la que va la nave al deslizar el dedo, o null
 
   // Rectángulo de choque de la nave, o null si no se la puede alcanzar.
   caja: function () {
@@ -34,6 +36,7 @@ KF.jugador = {
   aparecer: function () {
     this.estado = 'viva';
     this.x = KF.ANCHO / 2;
+    this.objetivo = null;
   },
 
   // La nave deja de estar en pantalla (fin de partida); la llama Partida.
@@ -45,14 +48,36 @@ KF.jugador = {
     this.moverDisparo(dt);
 
     if (this.estado === 'explotando') this.tiempoExplosion += dt;
+    // Lo pedido por la pantalla táctil se recoge siempre, aunque la nave no
+    // esté, para que no se acumule.
+    var tactil = KF.tactil;
+    var dx = tactil.dx, tocado = tactil.disparar;
+    tactil.dx = 0;
+    tactil.disparar = false;
     if (this.estado !== 'viva') return;
 
     var t = KF.teclas;
     var dir = (t.ArrowRight ? 1 : 0) - (t.ArrowLeft ? 1 : 0);
     var margen = this.ANCHO / 2;
-    this.x = Math.max(margen, Math.min(KF.ANCHO - margen, this.x + dir * this.VELOCIDAD * dt));
+    var limitar = function (x) { return Math.max(margen, Math.min(KF.ANCHO - margen, x)); };
+    if (dir) {
+      this.objetivo = null;
+    } else if (dx || this.objetivo !== null) {
+      // Al deslizar el dedo la nave va hacia donde la lleva el dedo, pero
+      // sin pasar de su velocidad normal.
+      this.objetivo = limitar((this.objetivo === null ? this.x : this.objetivo) + dx);
+      var falta = this.objetivo - this.x;
+      var paso = this.VELOCIDAD * dt;
+      if (Math.abs(falta) <= paso) {
+        this.x = this.objetivo;
+        this.objetivo = null;
+      } else {
+        dir = falta > 0 ? 1 : -1;
+      }
+    }
+    this.x = limitar(this.x + dir * this.VELOCIDAD * dt);
 
-    if (t.Space && !this.disparo) {
+    if ((t.Space || tocado) && !this.disparo) {
       this.disparo = { x: Math.round(this.x), y: this.Y - this.ALTO / 2 - this.SPRITE_DISPARO.height };
     }
   },

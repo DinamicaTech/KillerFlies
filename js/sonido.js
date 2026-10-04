@@ -1,13 +1,14 @@
 // Efectos de sonido sintetizados con Web Audio, sin ficheros: el disparo del
 // jugador, la explosión de cualquier nave y el zumbido de las naves en picado.
 // Sonido solo observa el juego: no hace falta que las demás partes lo llamen.
-// Los navegadores no dejan sonar nada hasta que el jugador pulsa una tecla,
-// así que el audio se pone en marcha con la primera pulsación.
+// Los navegadores no dejan sonar nada hasta que el jugador pulsa una tecla o
+// toca la pantalla, así que el audio se pone en marcha con la primera pulsación
+// o el primer toque.
 KF.sonido = {
   VOLUMEN: 0.5,
   VOLUMEN_ZUMBIDO: 0.04,
 
-  ctx: null,              // AudioContext, creado con la primera tecla
+  ctx: null,              // AudioContext, creado con la primera tecla o toque
   salida: null,           // ganancia general
   ruido: null,            // buffer de ruido blanco para las explosiones
   zumbido: null,          // {osc, ganancia} del zumbido, siempre en marcha
@@ -128,6 +129,7 @@ KF.sonido = {
 (function () {
   var s = KF.sonido;
   window.addEventListener('keydown', function () { s.iniciarAudio(); });
+  document.addEventListener('touchend', function () { s.iniciarAudio(); });
   // Con la pestaña oculta el juego se detiene: el sonido también.
   document.addEventListener('visibilitychange', function () {
     if (!s.ctx) return;
