@@ -6,7 +6,7 @@ threads:
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
 ---
 ## Summary
-Idea en debate: al destruir en pleno picado una amarilla y sus dos rojas de escolta, cae un power-up aleatorio como si fuese una bomba; si el jugador lo recoge, tiene ese poder hasta acabar la oleada. Un poder nuevo sustituye al anterior y se pierde si destruyen la nave. Entre ellos hay un power-down (slow fire) que no se distingue de los demás antes de recogerlo: es parte de la gracia.
+Idea en debate: al destruir en pleno picado una amarilla y sus dos rojas de escolta, cae un power-up aleatorio como si fuese una bomba (una cápsula que parpadea, igual para todos y con la misma probabilidad; no da puntos); si el jugador lo recoge, tiene ese poder hasta acabar la oleada. Un poder nuevo sustituye al anterior y se pierde si destruyen la nave. Entre ellos hay un power-down (slow fire) que no se distingue de los demás antes de recogerlo: es parte de la gracia.
 
 ## Decisions
 - 2026-10-04 10:48 · Creada en el laboratorio como idea.
@@ -15,9 +15,13 @@ Idea en debate: al destruir en pleno picado una amarilla y sus dos rojas de esco
 - 2026-10-04 10:48 · Los poderes no se acumulan: el nuevo sustituye al anterior.
 - 2026-10-04 10:48 · El power-down no se distingue en pantalla de los power-ups antes de recogerlo.
 - 2026-10-04 10:49 · El poder se pierde si destruyen la nave del jugador.
+- 2026-10-04 10:50 · Todos los poderes (incluido el power-down) salen con la misma probabilidad.
+- 2026-10-04 10:50 · El power-up cae como una cápsula que parpadea, con el mismo aspecto para todos los poderes.
+- 2026-10-04 10:50 · Con el disparo triple, los tres proyectiles cuentan como un único disparo activo.
+- 2026-10-04 10:50 · Recoger el power-up no da puntos.
 
 ## Requirements
-- 2026-10-04 10:46 · idea: Al destruir en picado una amarilla con sus dos rojas de escolta, cae un power-up aleatorio como si fuese una bomba; si el jugador lo recoge, obtiene ese poder hasta acabar la oleada. Posibles: disparo acelerado (hasta tres disparos activos en lugar de uno), disparo profundo (el disparo atraviesa y destruye todas las naves de su recorrido), bomba (al chocar con una nave explota y destruye las naves total o parcialmente dentro de un círculo de cinco anchos de nave), aniquilación (al disparar se destruyen todas las naves enemigas), slow fire (power-down: el disparo va a la mitad de velocidad) y disparo triple (tres proyectiles paralelos).
+- 2026-10-04 10:46 · idea: Al destruir en picado una amarilla con sus dos rojas de escolta, cae un power-up aleatorio como si fuese una bomba (una cápsula que parpadea, igual para todos y con la misma probabilidad; no da puntos); si el jugador lo recoge, obtiene ese poder hasta acabar la oleada. Posibles: disparo acelerado (hasta tres disparos activos en lugar de uno), disparo profundo (el disparo atraviesa y destruye todas las naves de su recorrido), bomba (al chocar con una nave explota y destruye las naves total o parcialmente dentro de un círculo de cinco anchos de nave), aniquilación (al disparar se destruyen todas las naves enemigas), slow fire (power-down: el disparo va a la mitad de velocidad) y disparo triple (tres proyectiles paralelos).
 - 2026-10-04 10:46 · Obtener unos 'power up' aleatorios cuando se destruye a una formación de nave amarilla +  dos rojas. Una vez destruidas, el boost cae (como si fuese una bomba), si se recoje, se obtiene el nuevo poder hasta finalizar la oleada.
 - 2026-10-04 10:46 · Disparo acelerado: Poder tener hasta tres disparos 'activos' en lugar de solo uno
 - 2026-10-04 10:46 · Disparo  profundo: El disparo no se elimina al chocar con una nave, continua su curso destruyendo todas las naves en su recorrido
@@ -30,3 +34,7 @@ Idea en debate: al destruir en pleno picado una amarilla y sus dos rojas de esco
 - 2026-10-04 10:48 · answer: ¿se acumulan los poderes? → Sustituyen
 - 2026-10-04 10:48 · answer: ¿se distingue el power-down antes de recogerlo? → No, es la gracia ya que te puede tocar un power-down
 - 2026-10-04 10:49 · answer: ¿se pierde el power-up si te destruyen la nave? → si
+- 2026-10-04 10:50 · answer: ¿misma probabilidad para todos los poderes? → Misma probabilidad, una fiesta del azar :-)
+- 2026-10-04 10:50 · answer: ¿cápsula que parpadea, igual para todos? → Sí
+- 2026-10-04 10:50 · answer: ¿el disparo triple cuenta como un único disparo activo? → Sí
+- 2026-10-04 10:50 · answer: ¿recogerlo da puntos? → No
