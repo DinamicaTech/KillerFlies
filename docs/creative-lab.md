@@ -9,3 +9,4 @@ Sale del laboratorio cuando el propietario decide: se convierte en draft o se ej
 
 ## Decisions
 - 2026-10-03 18:16 · Creado con el proyecto.
+- 2026-10-04 10:48 · Nueva idea en debate: creative-lab/power-ups (power-ups aleatorios al destruir una amarilla con su escolta en picado).
