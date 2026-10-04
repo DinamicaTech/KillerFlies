@@ -23,6 +23,7 @@ KF.jugador = {
   salvas: 0,               // cuántas veces ha disparado (para Sonido)
   SEPARACION_TRIPLE: 6,    // píxeles entre los proyectiles del disparo triple
   objetivo: null,          // x a la que va la nave al deslizar el dedo, o null
+  pulsacion: false,        // se ha pulsado el espacio (sin contar la repetición)
 
   // Rectángulo de choque de la nave, o null si no se la puede alcanzar.
   caja: function () {
@@ -59,6 +60,8 @@ KF.jugador = {
     var dx = tactil.dx, tocado = tactil.disparar;
     tactil.dx = 0;
     tactil.disparar = false;
+    var pulsacion = this.pulsacion;
+    this.pulsacion = false;
     if (this.estado !== 'viva') return;
 
     var t = KF.teclas;
@@ -82,7 +85,10 @@ KF.jugador = {
     }
     this.x = limitar(this.x + dir * this.VELOCIDAD * dt);
 
-    if (t.Space || tocado) this.disparar();
+    // Con el disparo acelerado, cada pulsación lanza un solo disparo:
+    // mantener pulsado el espacio no dispara más.
+    var pulsado = KF.powerups.activo === 'acelerado' ? pulsacion : t.Space;
+    if (pulsado || tocado) this.disparar();
   },
 
   // Lanza un disparo si se puede, según el power-up activo.
@@ -148,5 +154,9 @@ KF.jugador.SPRITE = KF.graficos.SPRITE_JUGADOR;
 KF.jugador.SPRITE_DISPARO = KF.graficos.SPRITE_DISPARO;
 KF.jugador.SPRITE_BOMBA = KF.graficos.SPRITE_BOMBA_JUGADOR;
 KF.jugador.SPRITES_EXPLOSION = KF.graficos.SPRITES_EXPLOSION_JUGADOR;
+
+window.addEventListener('keydown', function (e) {
+  if (e.code === 'Space' && !e.repeat) KF.jugador.pulsacion = true;
+});
 
 KF.registrar(KF.jugador);
