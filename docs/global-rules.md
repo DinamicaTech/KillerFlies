@@ -52,3 +52,4 @@ Once confirmed, the change is atomic: do all of it in this thread and one branch
 ## Project rules
 <!-- Rules of this project for every thread, added by its people or by threads with the owner's OK. -->
 - Working docs are written in Spanish.
+- Cada hilo fusiona su propio PR en main en cuanto el trabajo está terminado, sin pedir confirmación al dueño (pedido por el dueño el 2026-10-04 10:39).
