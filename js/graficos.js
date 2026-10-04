@@ -36,6 +36,19 @@ KF.graficos = {
     ctx.restore();
   },
 
+  // Onda de la explosión de la bomba del jugador: un círculo que se abre
+  // hasta el radio dado y se apaga; t va de 0 (inicio) a 1 (fin).
+  dibujarOnda: function (ctx, x, y, radio, t) {
+    ctx.save();
+    ctx.globalAlpha = 1 - t;
+    ctx.strokeStyle = t < 0.5 ? '#ffff40' : '#ff8020';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(1, radio * Math.min(1, t * 2)), 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  },
+
   // Fuente pixel-art de 5×7 para los textos: cifras, '/', letras y espacio.
   // '#' = píxel encendido.
   FUENTE: {
@@ -168,6 +181,24 @@ KF.graficos = {
     'Y',
     'Y',
     'Y'
+  ],
+  // Bomba que dispara el jugador con el power-up bomba: un rombo de 3×3.
+  // O = naranja, Y = amarillo.
+  MAPA_BOMBA_JUGADOR: [
+    '.O.',
+    'OYO',
+    '.O.'
+  ],
+  // Cápsula de power-up: igual para todos los poderes. Parpadea alternando
+  // dos paletas. C = cuerpo, B = brillo, L = franja central.
+  MAPA_CAPSULA: [
+    '.CCC.',
+    'CBCCC',
+    'CBCCC',
+    'LLLLL',
+    'CCCCC',
+    'CCCCC',
+    '.CCC.'
   ],
   // Bomba de las naves alienígenas: línea blanca vertical algo gruesa. B = blanco.
   MAPA_BOMBA: [
@@ -337,6 +368,11 @@ KF.graficos.fondo = {
   g.SPRITE_JUGADOR = g.crearSprite(g.MAPA_JUGADOR, { R: '#f02020', W: '#e8f0f8', C: '#30c0d0' });
   g.SPRITE_DISPARO = g.crearSprite(g.MAPA_DISPARO, { Y: '#ffff40' });
   g.SPRITE_BOMBA = g.crearSprite(g.MAPA_BOMBA, { B: '#ffffff' });
+  g.SPRITE_BOMBA_JUGADOR = g.crearSprite(g.MAPA_BOMBA_JUGADOR, { O: '#ff8020', Y: '#ffff40' });
+  g.SPRITES_CAPSULA = [
+    g.crearSprite(g.MAPA_CAPSULA, { C: '#30c0ff', B: '#ffffff', L: '#ffff40' }),
+    g.crearSprite(g.MAPA_CAPSULA, { C: '#ff40c0', B: '#ffffff', L: '#ffffff' })
+  ];
   g.SPRITES_EXPLOSION_JUGADOR = g.MAPAS_EXPLOSION_JUGADOR.map(function (m) { return g.crearSprite(m, fuego); });
   g.SPRITES_EXPLOSION_NAVE = g.MAPAS_EXPLOSION_NAVE.map(function (m) { return g.crearSprite(m, fuego); });
   g.fondo.crearEstrellas();

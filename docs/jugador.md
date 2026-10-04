@@ -5,9 +5,10 @@ threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
   - Nave del jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi8uEd3vf7FBd7b8W9rNHB1b
   - Controles táctiles | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiXH1tXPjNtyfwDxWQKAi9AZ
+  - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
 ---
 ## Summary
-La nave que controla el jugador en la parte inferior de la pantalla: se mueve en horizontal con las flechas o deslizando el dedo, dispara con el espacio o con una pulsación corta en la pantalla táctil, de uno en uno (el disparo se libera al dar en una nave, en formación o en picado, o al salir por arriba) y explota si la alcanza una nave o una bomba. No reaparece sola: Partida la hace aparecer en el centro al empezar la partida y con cada nave de recambio, y fuera de la partida no está.
+La nave que controla el jugador en la parte inferior de la pantalla: se mueve en horizontal con las flechas o deslizando el dedo, dispara con el espacio o con una pulsación corta en la pantalla táctil, de uno en uno (el disparo se libera al dar en una nave, en formación o en picado, o al salir por arriba; el power-up activo lo cambia) y explota si la alcanza una nave o una bomba. No reaparece sola: Partida la hace aparecer en el centro al empezar la partida y con cada nave de recambio, y fuera de la partida no está.
 
 ## Decisions
 - 2026-10-03 18:22 · Creado en la carga de requisitos inicial.
@@ -22,6 +23,7 @@ La nave que controla el jugador en la parte inferior de la pantalla: se mueve en
 - 2026-10-03 19:05 · El disparo también alcanza a las naves en picado: además de la formación, se lo comprueba a enemigos/ataque, que destruye la nave alcanzada.
 - 2026-10-03 19:18 · Aparición: la nave no reaparece sola tras explotar. Partida la hace aparecer en el centro (KF.jugador.aparecer) al empezar la partida y con cada nave de recambio, y la retira (KF.jugador.retirar) al acabar; mientras no está, no se mueve, no dispara ni se la puede alcanzar.
 - 2026-10-04 10:16 · Controles: flecha izquierda y flecha derecha o deslizar el dedo para moverse; barra espaciadora o pulsación corta en la pantalla táctil para disparar. Mantener pulsado el espacio dispara de nuevo en cuanto se libera el disparo. Al deslizar el dedo la nave va hacia donde la lleva el desplazamiento horizontal del dedo (sin salir de la pantalla), pero nunca más rápido que su velocidad normal de 90 píxeles por segundo, para que no sea más fácil que con las flechas; si se suelta el dedo, termina de llegar. Pulsar una flecha cancela ese destino. Una pulsación corta dispara si no hay disparo en pantalla; si lo hay, no se guarda para después. Lo pedido con el dedo mientras la nave no está en juego se descarta.
+- 2026-10-04 10:52 · Disparo con power-ups: la nave dispara según KF.powerups.activo: hasta tres disparos a la vez (acelerado), un disparo que no se detiene al dar en una nave (profundo), una bomba que explota al dar en una nave (bomba), la destrucción de todas las naves sin lanzar proyectil (aniquilación), un disparo a 150 píxeles por segundo (slow fire) o tres proyectiles paralelos que cuentan como uno (triple). Los disparos en vuelo están en KF.jugador.disparos y KF.jugador.salvas cuenta cada vez que dispara.
 
 ## Requirements
 - 2026-10-03 18:13 · La nave que controla el jugador está en la parte inferior de la pantalla y solo se puede mover horizontalmente mientras dispara.
@@ -33,3 +35,4 @@ La nave que controla el jugador en la parte inferior de la pantalla: se mueve en
 - 2026-10-03 19:05 · Derived from enemigos/ataque: el disparo también destruye las naves que están en picado.
 - 2026-10-03 19:18 · Derived from partida: la nave ya no reaparece sola; Partida la hace aparecer y fuera de la partida no está.
 - 2026-10-04 10:16 · Derived from architecture: mover la nave deslizando el dedo y disparar con una pulsación corta.
+- 2026-10-04 10:52 · Derived from power-ups: el disparo cambia según el poder activo (hasta tres disparos, atraviesa, bomba, aniquilación, mitad de velocidad, triple).

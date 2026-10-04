@@ -4,6 +4,7 @@ depends_on: [enemigos, enemigos/formacion, jugador, graficos, architecture]
 threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
   - Ataques en picado | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFJ5MweEGxxYP7n8Day6kv9
+  - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
 ---
 ## Summary
 Los ataques en picado: una nave (o una amarilla con su escolta de rojas) deja la formación con una pequeña parábola, gira, baja hacia el jugador soltando bombas y, si no choca, sale por abajo, reaparece arriba y vuelve a su sitio. Empiezan uno o dos ataques a la vez y son más con cada oleada, que además los hace más rápidos. Al salir la nave de recambio del jugador, los ataques esperan dos segundos. La amarilla sale con las dos rojas de debajo (o las más próximas). Una nave en picado que choca con el jugador lo hace explotar y se destruye; el disparo del jugador también la alcanza.
@@ -23,6 +24,7 @@ Los ataques en picado: una nave (o una amarilla con su escolta de rojas) deja la
 - 2026-10-03 19:05 · Código en js/ataque.js; el sprite de la bomba y el dibujo girado de las naves en js/graficos.js.
 - 2026-10-03 19:02 · Validado por el owner: los ataques en picado quedan implementados y el nodo pasa a estable.
 - 2026-10-03 19:18 · Ritmo: el primer ataque llega a los 2 segundos y luego cada 1,5 a 3 segundos (un 10% menos por oleada); a la vez caben 1 + número de oleada ataques, hasta 6 (la amarilla con su escolta cuenta como uno). Las amarillas se eligen el triple de a menudo que el resto. No empieza ningún ataque mientras la nave del jugador no está en juego (explotando o fuera de la partida). Al salir la nave de recambio, los ataques esperan otra vez 2 segundos (KF.ataque.tregua). Partida da el número de oleada (KF.ataque.oleada) y el multiplicador de velocidad del picado y las bombas (KF.ataque.factorVelocidad), un 5% más por oleada.
+- 2026-10-04 10:52 · Escolta y power-ups: la amarilla que sale con dos rojas forma un grupo; cuando las tres son destruidas fuera de la formación, Ataque avisa a quien se apunte con KF.ataque.alDestruirEscolta(fn(x, y)), con la posición de la última. Una nave que ya ha vuelto a su hueco deja de contar.
 
 ## Requirements
 - 2026-10-03 18:13 · From sources/KillerFlies.txt § 4: ataques aleatorios en picado con trayectoria suavemente irregular hacia el jugador, soltando bombas que conservan la inercia horizontal de la nave; máximo de bombas: azul 2, lila 3, roja y amarilla 4.
@@ -35,3 +37,4 @@ Los ataques en picado: una nave (o una amarilla con su escolta de rojas) deja la
 - 2026-10-03 18:40 · 3.A (hacer antes Formación y Jugador, cada uno en su hilo, y retomar este después)
 - 2026-10-03 18:54 · Sí, la escolta las dos naves rojas debajo, si no hay, las más próximas
 - 2026-10-03 19:18 · Derived from partida: al salir la nave de recambio, los ataques esperan 2 segundos antes de empezar.
+- 2026-10-04 10:52 · Derived from power-ups: avisar cuando la amarilla y sus dos rojas de escolta son destruidas las tres fuera de la formación.

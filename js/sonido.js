@@ -12,7 +12,7 @@ KF.sonido = {
   salida: null,           // ganancia general
   ruido: null,            // buffer de ruido blanco para las explosiones
   zumbido: null,          // {osc, ganancia} del zumbido, siempre en marcha
-  ultimoDisparo: null,   // para notar cada disparo nuevo (es otro objeto)
+  ultimasSalvas: 0,      // para notar cada disparo nuevo
   estadoJugador: 'viva',
 
   iniciarAudio: function () {
@@ -114,9 +114,9 @@ KF.sonido = {
 
   actualizar: function () {
     var j = KF.jugador;
-    var disparoNuevo = j.disparo && j.disparo !== this.ultimoDisparo;
+    var disparoNuevo = j.salvas !== this.ultimasSalvas;
     var jugadorExplota = j.estado === 'explotando' && this.estadoJugador !== 'explotando';
-    this.ultimoDisparo = j.disparo;
+    this.ultimasSalvas = j.salvas;
     this.estadoJugador = j.estado;
 
     if (!this.ctx || this.ctx.state !== 'running') return;

@@ -2,6 +2,9 @@
 // flechas o deslizando el dedo, y dispara con la barra espaciadora o con una
 // pulsación corta en la pantalla táctil. Solo hay un disparo en pantalla:
 // no se puede volver a disparar hasta que da en un blanco o sale por arriba.
+// El power-up activo (KF.powerups.activo) cambia el disparo: hasta tres a la
+// vez, que atraviese las naves, una bomba, la aniquilación, la mitad de
+// velocidad o tres proyectiles paralelos que cuentan como un solo disparo.
 // Explota si la alcanza una nave alienígena o una bomba (KF.jugador.explotar).
 // No reaparece sola: Partida la hace aparecer (KF.jugador.aparecer) al empezar
 // la partida y con cada nave de recambio; fuera de la partida no está.
@@ -16,7 +19,9 @@ KF.jugador = {
   x: KF.ANCHO / 2,
   estado: 'ausente',       // 'ausente' | 'viva' | 'explotando'
   tiempoExplosion: 0,      // segundos desde que explotó
-  disparo: null,           // {x, y} del extremo superior, o null si no hay
+  disparos: [],            // {x, y, bomba} del extremo superior de cada proyectil
+  salvas: 0,               // cuántas veces ha disparado (para Sonido)
+  SEPARACION_TRIPLE: 6,    // píxeles entre los proyectiles del disparo triple
   objetivo: null,          // x a la que va la nave al deslizar el dedo, o null
 
   // Rectángulo de choque de la nave, o null si no se la puede alcanzar.
@@ -77,27 +82,56 @@ KF.jugador = {
     }
     this.x = limitar(this.x + dir * this.VELOCIDAD * dt);
 
-    if ((t.Space || tocado) && !this.disparo) {
-      this.disparo = { x: Math.round(this.x), y: this.Y - this.ALTO / 2 - this.SPRITE_DISPARO.height };
+    if (t.Space || tocado) this.disparar();
+  },
+
+  // Lanza un disparo si se puede, según el power-up activo.
+  disparar: function () {
+    var poder = KF.powerups.activo;
+    var maximo = poder === 'acelerado' ? 3 : 1;
+    if (this.disparos.length >= maximo) return;
+    this.salvas++;
+    if (poder === 'aniquilacion') {
+      KF.powerups.aniquilar();
+      return;
+    }
+    var x = Math.round(this.x), y = this.Y - this.ALTO / 2 - this.SPRITE_DISPARO.height;
+    if (poder === 'triple') {
+      for (var i = -1; i <= 1; i++) this.disparos.push({ x: x + i * this.SEPARACION_TRIPLE, y: y, bomba: false });
+    } else {
+      this.disparos.push({ x: x, y: y, bomba: poder === 'bomba' });
     }
   },
 
-  // El disparo sigue su camino aunque la nave explote.
+  // Los disparos siguen su camino aunque la nave explote. El disparo profundo
+  // no se detiene al dar en una nave; la bomba explota al darle.
   moverDisparo: function (dt) {
-    var d = this.disparo;
-    if (!d) return;
-    d.y -= this.VELOCIDAD_DISPARO * dt;
+    var poder = KF.powerups.activo;
+    var v = this.VELOCIDAD_DISPARO * (poder === 'lento' ? 0.5 : 1);
     var h = this.SPRITE_DISPARO.height;
-    var r = { x: d.x, y: d.y, ancho: 1, alto: h };
-    if (d.y + h < 0 || KF.formacion.tocar(r) || KF.ataque.tocar(r)) {
-      this.disparo = null;
-    }
+    this.disparos = this.disparos.filter(function (d) {
+      d.y -= v * dt;
+      if (d.y + h < 0) return false;
+      var r = d.bomba ? { x: d.x - 1, y: d.y, ancho: 3, alto: 3 } : { x: d.x, y: d.y, ancho: 1, alto: h };
+      var nave = KF.formacion.tocar(r) || KF.ataque.tocar(r);
+      if (!nave) return true;
+      if (d.bomba) {
+        KF.powerups.explotarBomba(d.x, d.y + 1);
+        return false;
+      }
+      if (poder !== 'profundo') return false;
+      // Atraviesa: también caen las demás naves que toque en este instante.
+      while (KF.formacion.tocar(r) || KF.ataque.tocar(r)) {}
+      return true;
+    });
   },
 
   dibujar: function (ctx) {
     var g = KF.graficos;
-    if (this.disparo) {
-      ctx.drawImage(this.SPRITE_DISPARO, this.disparo.x, Math.round(this.disparo.y));
+    for (var i = 0; i < this.disparos.length; i++) {
+      var d = this.disparos[i];
+      if (d.bomba) g.dibujar(ctx, this.SPRITE_BOMBA, d.x, d.y + 1);
+      else ctx.drawImage(this.SPRITE_DISPARO, d.x, Math.round(d.y));
     }
     if (this.estado === 'viva') {
       g.dibujar(ctx, this.SPRITE, this.x, this.Y);
@@ -112,6 +146,7 @@ KF.jugador = {
 
 KF.jugador.SPRITE = KF.graficos.SPRITE_JUGADOR;
 KF.jugador.SPRITE_DISPARO = KF.graficos.SPRITE_DISPARO;
+KF.jugador.SPRITE_BOMBA = KF.graficos.SPRITE_BOMBA_JUGADOR;
 KF.jugador.SPRITES_EXPLOSION = KF.graficos.SPRITES_EXPLOSION_JUGADOR;
 
 KF.registrar(KF.jugador);
