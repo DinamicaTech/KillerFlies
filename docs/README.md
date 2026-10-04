@@ -6,7 +6,7 @@ threads:
 ---
 ## Summary
 Remake del clásico arcade Galaxian: la nave del jugador se mueve por la parte inferior de la pantalla y derriba oleadas de naves alienígenas que se lanzan en picado contra ella mientras sueltan bombas.
-La formación de cuatro tipos de naves se desplaza de lado a lado y lanza ataques en picado; cada oleada destruida da paso a otra más rápida.
+La formación se desplaza de lado a lado y lanza ataques; cada oleada destruida da paso a otra más rápida, con una formación y una mezcla de naves distintas: a los cuatro tipos del arcade se suman tres con ataques propios (zigzag, embestida y tirador).
 Al destruir en picado una amarilla con su escolta cae un power-up aleatorio. El jugador tiene tres naves; el marcador muestra oleada y puntos junto a sus récords. Se juega en el navegador con el teclado o, en el móvil, con la pantalla táctil.
 
 ## Decisions

@@ -1,9 +1,14 @@
-// Los cuatro tipos de nave alienígena: puntos y máximo de bombas por ataque.
+// Los tipos de nave alienígena: puntos, máximo de bombas por ataque y forma
+// de atacar (js/ataque.js): 'picado' el de siempre, 'zigzag', 'embestida' (sin
+// bombas) o 'tirador' (sus bombas salen en una ráfaga apuntada).
 KF.TIPOS_NAVE = {
-  azul:     { puntos: 10, bombas: 2 },
-  lila:     { puntos: 20, bombas: 3 },
-  roja:     { puntos: 30, bombas: 4 },
-  amarilla: { puntos: 50, bombas: 4 }
+  azul:     { puntos: 10, bombas: 2, ataque: 'picado' },
+  lila:     { puntos: 20, bombas: 3, ataque: 'picado' },
+  roja:     { puntos: 30, bombas: 4, ataque: 'picado' },
+  amarilla: { puntos: 50, bombas: 4, ataque: 'picado' },
+  verde:    { puntos: 40, bombas: 2, ataque: 'zigzag' },
+  naranja:  { puntos: 60, bombas: 0, ataque: 'embestida' },
+  cian:     { puntos: 80, bombas: 3, ataque: 'tirador' }
 };
 
 // Cada tipo toma su sprite, ya coloreado, de js/graficos.js.

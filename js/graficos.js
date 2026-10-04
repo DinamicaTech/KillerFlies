@@ -154,7 +154,11 @@ KF.graficos = {
     azul:     { C: '#40d0c8', O: '#203080', A: '#2028e0' },
     lila:     { C: '#b028e0', O: '#ffffff', A: '#7020c0' },
     roja:     { C: '#f02020', O: '#ffd8a0', A: '#3088e8' },
-    amarilla: { N: '#f07818', Y: '#f8e830', W: '#ffffff', A: '#1820c0' }
+    amarilla: { N: '#f07818', Y: '#f8e830', W: '#ffffff', A: '#1820c0' },
+    // Tipos que aparecen a partir de la oleada 2.
+    verde:    { C: '#30e040', O: '#ffffff', A: '#108020' },
+    naranja:  { C: '#ff8c18', O: '#202020', A: '#c03010' },
+    cian:     { C: '#60ffff', O: '#202020', A: '#e020a0' }
   },
 
   // Nave del jugador, con el cañón hacia arriba: cúpula roja y tres columnas

@@ -38,13 +38,13 @@ KF.partida = {
     KF.jugador.aparecer();
   },
 
-  // Formación nueva con la velocidad de la oleada n; Ataque deja atrás los
-  // ataques de la anterior al ver la formación nueva.
+  // Formación nueva, la que toca a la oleada n, con su velocidad; Ataque deja
+  // atrás los ataques de la anterior al ver la formación nueva.
   ponerOleada: function (n) {
     var factor = Math.pow(this.AUMENTO_OLEADA, n - 1);
     this.oleada = n;
     this.esperaOleada = 0;
-    KF.formacion.reiniciar(KF.formacion.VELOCIDAD_INICIAL * factor);
+    KF.formacion.reiniciar(KF.formacion.VELOCIDAD_INICIAL * factor, n);
     KF.ataque.oleada = n;
     KF.ataque.factorVelocidad = factor;
     KF.marcador.ponerOleada(n);
