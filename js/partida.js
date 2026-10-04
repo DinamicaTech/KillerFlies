@@ -5,6 +5,7 @@
 // perder la última, que se queda hasta que se pulsa una tecla.
 KF.partida = {
   NAVES_RECAMBIO: 2,       // naves de recambio al empezar la partida
+  MAXIMO_RECAMBIO: 5,      // tope de naves de recambio (power-up vida extra)
   AUMENTO_OLEADA: 1.05,    // cada oleada va un 5% más rápida que la anterior
   ESPERA_OLEADA: 2,        // segundos entre destruir la última nave y la oleada siguiente
   ESPERA_RECAMBIO: 2,      // segundos mínimos entre explotar y salir la nave de recambio
@@ -47,6 +48,13 @@ KF.partida = {
     KF.ataque.oleada = n;
     KF.ataque.factorVelocidad = factor;
     KF.marcador.ponerOleada(n);
+  },
+
+  // Una nave de recambio más (power-up vida extra), hasta el tope.
+  sumarRecambio: function () {
+    if (this.recambio >= this.MAXIMO_RECAMBIO) return;
+    this.recambio++;
+    KF.marcador.ponerRecambio(this.recambio);
   },
 
   quedanNaves: function () {

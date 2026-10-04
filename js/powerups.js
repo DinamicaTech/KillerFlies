@@ -3,6 +3,8 @@
 // la nave del jugador la recoge, obtiene un poder al azar (todos con la misma
 // probabilidad) que dura hasta acabar la oleada; el nuevo sustituye al
 // anterior y se pierde si destruyen la nave. Uno de ellos es un power-down.
+// La vida extra no es un poder que dure: suma una nave de recambio al momento
+// y deja el poder que hubiera.
 // El disparo de cada poder lo hace la nave del jugador (js/jugador.js).
 KF.powerups = {
   PODERES: [
@@ -11,7 +13,8 @@ KF.powerups = {
     'bomba',         // explota al dar en una nave y destruye las de alrededor
     'aniquilacion',  // un solo uso: al disparar se destruyen todas las naves
     'lento',         // power-down: el disparo va a la mitad de velocidad
-    'triple'         // tres proyectiles paralelos que cuentan como un disparo
+    'triple',        // tres proyectiles paralelos que cuentan como un disparo
+    'vida'           // vida extra: una nave de recambio más (hasta 5)
   ],
   RADIO_BOMBA: 27.5,       // círculo de 5 anchos de nave (11 píxeles) de diámetro
   DURACION_ONDA: 0.4,      // segundos que se ve la onda de la explosión
@@ -29,6 +32,12 @@ KF.powerups = {
     this.capsulas = [];
     this.ondas = [];
     this.naves = KF.formacion.naves;
+  },
+
+  // La nave recibe un poder, al recoger una cápsula o por la puerta trasera.
+  otorgar: function (poder) {
+    if (poder === 'vida') KF.partida.sumarRecambio();
+    else this.activo = poder;
   },
 
   soltar: function (x, y) {
@@ -91,7 +100,7 @@ KF.powerups = {
       k.y += vy * dt;
       if (c && k.x - s.width / 2 < c.x + c.ancho && k.x + s.width / 2 > c.x &&
           k.y - s.height / 2 < c.y + c.alto && k.y + s.height / 2 > c.y) {
-        self.activo = self.PODERES[Math.floor(Math.random() * self.PODERES.length)];
+        self.otorgar(self.PODERES[Math.floor(Math.random() * self.PODERES.length)]);
         return false;
       }
       return k.y < KF.ALTO + 8;
@@ -119,11 +128,11 @@ KF.powerups.SPRITES_CAPSULA = KF.graficos.SPRITES_CAPSULA;
 KF.powerups.reiniciar();
 KF.ataque.alDestruirEscolta(function (x, y) { KF.powerups.soltar(x, y); });
 
-// Puerta trasera para probar los poderes, solo con teclado: Mayúsculas+1…6
+// Puerta trasera para probar los poderes, solo con teclado: Mayúsculas+1…7
 // da el poder de ese número (en el orden de PODERES) con la nave en juego.
 window.addEventListener('keydown', function (e) {
-  var m = /^Digit([1-6])$/.exec(e.code);
+  var m = /^Digit([1-7])$/.exec(e.code);
   if (!m || !e.shiftKey || KF.jugador.estado !== 'viva') return;
-  KF.powerups.activo = KF.powerups.PODERES[m[1] - 1];
+  KF.powerups.otorgar(KF.powerups.PODERES[m[1] - 1]);
 });
 KF.registrar(KF.powerups);
