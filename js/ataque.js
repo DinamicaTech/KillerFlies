@@ -3,6 +3,8 @@
 // con una trayectoria suavemente irregular soltando bombas, sale por abajo,
 // reaparece arriba y vuelve a su hueco. La amarilla sale escoltada por las
 // dos rojas que tiene debajo (o las más próximas) que bajan bajo ella.
+// Los tipos nuevos bajan a su manera: la verde en zigzag, la naranja embiste
+// en línea recta y la cian se para a media pantalla y dispara una ráfaga.
 KF.ataque = {
   RADIO_SALIDA: 12,        // radio de la parábola de salida, en píxeles
   DURACION_SALIDA: 0.8,    // segundos que dura la parábola
@@ -14,6 +16,12 @@ KF.ataque = {
   SEPARACION_BOMBAS: 0.3,  // segundos entre bombas de una misma nave
   ESCOLTA_DX: 11,          // posición de cada escolta respecto a la amarilla
   ESCOLTA_DY: 11,
+  ZIGZAG: 75,              // amplitud de la velocidad lateral del zigzag
+  FRECUENCIA_ZIGZAG: 4.5,  // radianes por segundo del zigzag
+  FACTOR_EMBESTIDA: 2,     // la embestida va al doble de velocidad
+  ALTURA_TIRADOR: 144,     // altura (media pantalla) a la que se para la cian
+  PARADA_TIRADOR: 1,       // segundos que se queda flotando
+  ABANICO: 30,             // píxeles por segundo laterales entre bombas de la ráfaga
   PRIMER_ATAQUE: 2,        // segundos hasta el primer ataque de la oleada o
                            // tras aparecer la nave de recambio
 
@@ -162,7 +170,9 @@ KF.ataque = {
       grupo: null,      // {caidas}: grupo amarilla + dos rojas, para power-ups
       oscilacion: Math.random() * Math.PI * 2,
       // Cuántas bombas soltará en este ataque, hasta el máximo de su tipo.
-      bombas: 1 + Math.floor(Math.random() * tipo.bombas),
+      bombas: tipo.bombas ? 1 + Math.floor(Math.random() * tipo.bombas) : 0,
+      estilo: lider ? 'picado' : tipo.ataque,
+      parada: 0,        // tirador: segundos flotando (-1 cuando ya disparó)
       esperaBomba: 0
     };
     nave.enFormacion = false;
@@ -228,6 +238,19 @@ KF.ataque = {
         a.y = lider.y + a.puesto.y;
         a.vx = dt > 0 ? (a.x - xAntes) / dt : 0;
         a.angulo = lider.angulo;
+      } else if (a.estilo === 'embestida') {
+        this.embestir(a, dt);
+      } else if (a.estilo === 'tirador' && a.parada >= 0 && a.y >= this.ALTURA_TIRADOR) {
+        this.flotar(a, dt);
+      } else if (a.estilo === 'zigzag') {
+        // Zigzag cerrado de lado a lado con una ligera deriva hacia el jugador.
+        var meta = KF.jugador.estado === 'viva' ? KF.jugador.x : a.x;
+        var lateral = this.ZIGZAG * Math.sin(a.oscilacion + a.t * this.FRECUENCIA_ZIGZAG) +
+          Math.max(-20, Math.min(20, (meta - a.x) * 0.4));
+        a.vx = lateral;
+        a.x = Math.max(6, Math.min(KF.ANCHO - 6, a.x + a.vx * v * dt));
+        a.y += this.VELOCIDAD_BAJADA * v * dt;
+        a.angulo = Math.atan2(a.vx, -this.VELOCIDAD_BAJADA);
       } else {
         // Hacia el jugador, con una oscilación suave que la hace irregular.
         var objetivo = KF.jugador.estado === 'viva' ? KF.jugador.x : a.x;
@@ -246,7 +269,7 @@ KF.ataque = {
           this.girarHacia(a, Math.atan2(KF.jugador.x - a.x, -(KF.jugador.Y - a.y)), dt);
         }
       }
-      this.soltarBombas(a, dt);
+      if (a.estilo !== 'tirador') this.soltarBombas(a, dt);
       if (a.y > KF.ALTO + 8) {
         // Sale por abajo y reaparece arriba, encima de su hueco.
         a.fase = 'vuelta';
@@ -267,6 +290,48 @@ KF.ataque = {
     } else {
       a.x += dx / d * paso;
       a.y += dy / d * paso;
+    }
+  },
+
+  // Embestida: al acabar la salida apunta a donde está el jugador y se lanza
+  // en línea recta hacia allí al doble de velocidad, sin bombas.
+  embestir: function (a, dt) {
+    var v = this.factorVelocidad * this.FACTOR_EMBESTIDA * this.VELOCIDAD_BAJADA;
+    if (!a.rumbo) {
+      var j = KF.jugador;
+      var dx = j.estado === 'viva' ? j.x - a.x : 0;
+      var dy = Math.max(40, j.Y - a.y);
+      var d = Math.sqrt(dx * dx + dy * dy);
+      a.rumbo = { x: dx / d, y: dy / d };
+      a.angulo = Math.atan2(a.rumbo.x, -a.rumbo.y);
+    }
+    a.vx = a.rumbo.x * v;
+    a.x = Math.max(6, Math.min(KF.ANCHO - 6, a.x + a.vx * dt));
+    a.y += a.rumbo.y * v * dt;
+  },
+
+  // Tirador: flota a media pantalla siguiendo al jugador con los cañones,
+  // dispara a la mitad de la parada una ráfaga en abanico apuntada a él y
+  // luego sigue bajando en línea recta.
+  flotar: function (a, dt) {
+    var j = KF.jugador;
+    var antes = a.parada;
+    a.parada += dt;
+    a.vx = 0;
+    this.girarHacia(a, Math.atan2(j.x - a.x, -(j.Y - a.y)), dt);
+    var mitad = this.PARADA_TIRADOR / 2;
+    if (antes < mitad && a.parada >= mitad && j.estado === 'viva') {
+      var vy = this.VELOCIDAD_BOMBA * this.factorVelocidad;
+      var centro = (j.x - a.x) / Math.max(20, j.Y - a.y) * vy;
+      var n = a.bombas;
+      for (var i = 0; i < n; i++) {
+        this.bombas.push({ x: a.x, y: a.y + 5, vx: centro + (i - (n - 1) / 2) * this.ABANICO });
+      }
+      a.bombas = 0;
+    }
+    if (a.parada >= this.PARADA_TIRADOR) {
+      a.parada = -1;
+      a.vx = 0;
     }
   },
 

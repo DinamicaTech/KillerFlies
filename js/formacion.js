@@ -1,6 +1,7 @@
-// La formación: 46 naves en un bloque de 6 filas por 10 columnas que se
-// desplaza de un extremo a otro de la pantalla. Cada nave conserva su hueco
-// para volver a él tras un ataque.
+// La formación: un bloque de naves en una rejilla de 6 filas por 10 columnas
+// que se desplaza de un extremo a otro de la pantalla; cada oleada tiene su
+// propia forma y mezcla de tipos. Cada nave conserva su hueco para volver a
+// él tras un ataque.
 KF.formacion = {
   COLUMNAS: 10,
   ANCHO_HUECO: 16,
@@ -11,32 +12,83 @@ KF.formacion = {
   // unos 4 segundos de un extremo a otro. Partida la sube con cada oleada.
   VELOCIDAD_INICIAL: 16,
 
-  // Distribución de sources/KillerFlies.txt § 2, de arriba abajo: columnas
-  // ocupadas en cada fila. Amarillas sobre las rojas 2 y 5, como el arcade.
-  FILAS: [
-    { tipo: 'amarilla', columnas: [3, 6] },
-    { tipo: 'roja',     columnas: [2, 3, 4, 5, 6, 7] },
-    { tipo: 'lila',     columnas: [1, 2, 3, 4, 5, 6, 7, 8] },
-    { tipo: 'azul',     columnas: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
-    { tipo: 'azul',     columnas: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
-    { tipo: 'azul',     columnas: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+  // Una formación para cada oleada, de arriba abajo en la rejilla de 10
+  // columnas por 6 filas. A amarilla, R roja, L lila, B azul, V verde,
+  // N naranja, C cian y · hueco vacío. La 1 es la de sources/KillerFlies.txt
+  // § 2 (amarillas sobre las rojas 2 y 5, como el arcade); desde la oleada 7
+  // se repiten en orden la 2 a la 6. Todas tienen amarillas con rojas cerca
+  // para que la escolta pueda soltar el power-up.
+  FORMACIONES: [
+    { nombre: 'Clásica', filas: [
+      '···A··A···',
+      '··RRRRRR··',
+      '·LLLLLLLL·',
+      'BBBBBBBBBB',
+      'BBBBBBBBBB',
+      'BBBBBBBBBB'] },
+    { nombre: 'Uve', filas: [
+      '····AA····',
+      '···RRRR···',
+      '··LLVVLL··',
+      '·BBVVVVBB·',
+      'BBV····VBB',
+      'BV······VB'] },
+    { nombre: 'Rombo', filas: [
+      '····AA····',
+      '···RNNR···',
+      '··LRNNRL··',
+      '·BLLBBLLB·',
+      '··BBNNBB··',
+      '····BB····'] },
+    { nombre: 'Columnas', filas: [
+      '·A······A·',
+      'RRR·CC·RRR',
+      'LLL·CC·LLL',
+      'BBB·CC·BBB',
+      'BBB····BBB',
+      'BBB····BBB'] },
+    { nombre: 'Ajedrez', filas: [
+      '··A····A··',
+      '·R·R··R·R·',
+      'C·V·NN·V·C',
+      '·L·L··L·L·',
+      'B·V·BB·V·B',
+      '·B·N··N·B·'] },
+    { nombre: 'Fortaleza', filas: [
+      '···A··A···',
+      '··RRCCRR··',
+      '·NLLLLLLN·',
+      'VVBBBBBBVV',
+      'CBBNBBNBBC',
+      'BBBBBBBBBB'] }
   ],
+  LETRAS: { A: 'amarilla', R: 'roja', L: 'lila', B: 'azul', V: 'verde', N: 'naranja', C: 'cian' },
+
+  // La formación que toca a la oleada n (1, 2…).
+  formacionDeOleada: function (n) {
+    var total = this.FORMACIONES.length;
+    var i = n <= total ? n - 1 : 1 + (n - total - 1) % (total - 1);
+    return this.FORMACIONES[Math.max(0, i)];
+  },
 
   naves: [],
   x: 0,          // borde izquierdo de la columna 0
   direccion: 1,  // 1 = derecha, -1 = izquierda
   velocidad: 0,
 
-  // Coloca las 46 naves en sus huecos y centra el bloque (inicio de oleada).
-  reiniciar: function (velocidad) {
+  // Coloca las naves de la formación de la oleada en sus huecos y centra el
+  // bloque (inicio de oleada).
+  reiniciar: function (velocidad, oleada) {
+    var filas = this.formacionDeOleada(oleada || 1).filas;
     this.naves = [];
-    for (var f = 0; f < this.FILAS.length; f++) {
-      var fila = this.FILAS[f];
-      for (var i = 0; i < fila.columnas.length; i++) {
+    for (var f = 0; f < filas.length; f++) {
+      for (var c = 0; c < filas[f].length; c++) {
+        var tipo = this.LETRAS[filas[f][c]];
+        if (!tipo) continue;
         this.naves.push({
-          tipo: fila.tipo,
+          tipo: tipo,
           fila: f,
-          columna: fila.columnas[i],
+          columna: c,
           viva: true,
           // false mientras la nave está fuera de su hueco (ataque en picado).
           enFormacion: true
