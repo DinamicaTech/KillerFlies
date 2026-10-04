@@ -16,6 +16,7 @@ KF.powerups = {
   RADIO_BOMBA: 27.5,       // círculo de 5 anchos de nave (11 píxeles) de diámetro
   DURACION_ONDA: 0.4,      // segundos que se ve la onda de la explosión
   PARPADEO: 0.15,          // segundos de cada color de la cápsula
+  FACTOR_CAIDA: 0.5,       // la cápsula cae a la mitad de la velocidad de las bombas
 
   activo: null,            // poder en curso, o null
   capsulas: [],            // {x, y, t}
@@ -80,8 +81,9 @@ KF.powerups = {
     var j = KF.jugador;
     if (j.estado !== 'viva') this.activo = null;
 
-    // Las cápsulas caen como las bombas y se recogen al tocar la nave.
-    var vy = KF.ataque.VELOCIDAD_BOMBA * KF.ataque.factorVelocidad;
+    // Las cápsulas caen a la mitad de velocidad que las bombas y se recogen
+    // al tocar la nave.
+    var vy = KF.ataque.VELOCIDAD_BOMBA * KF.ataque.factorVelocidad * this.FACTOR_CAIDA;
     var c = j.caja(), s = this.SPRITES_CAPSULA[0];
     var self = this;
     this.capsulas = this.capsulas.filter(function (k) {
@@ -116,4 +118,12 @@ KF.powerups = {
 KF.powerups.SPRITES_CAPSULA = KF.graficos.SPRITES_CAPSULA;
 KF.powerups.reiniciar();
 KF.ataque.alDestruirEscolta(function (x, y) { KF.powerups.soltar(x, y); });
+
+// Puerta trasera para probar los poderes, solo con teclado: Mayúsculas+1…6
+// da el poder de ese número (en el orden de PODERES) con la nave en juego.
+window.addEventListener('keydown', function (e) {
+  var m = /^Digit([1-6])$/.exec(e.code);
+  if (!m || !e.shiftKey || KF.jugador.estado !== 'viva') return;
+  KF.powerups.activo = KF.powerups.PODERES[m[1] - 1];
+});
 KF.registrar(KF.powerups);
