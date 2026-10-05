@@ -11,6 +11,8 @@
 // Al aparecer, parpadea dos segundos y mientras tanto es invulnerable: lo que
 // choca con ella no la hace explotar (la nave alienígena que choca se destruye
 // igualmente y la bomba desaparece).
+// Al explotar lanza fragmentos que se dispersan y se apagan en un segundo;
+// terminan su recorrido aunque la nave vuelva a aparecer o acabe la partida.
 KF.jugador = {
   Y: KF.ALTO - 24,         // altura del centro de la nave
   VELOCIDAD: 90,           // píxeles por segundo
@@ -21,12 +23,17 @@ KF.jugador = {
   DURACION_DESTELLO: 0.06, // segundos que dura el destello del cañón al disparar
   DURACION_ESCUDO: 2,      // segundos de invulnerabilidad al aparecer
   PARPADEO: 0.1,           // segundos visible o invisible al parpadear
+  FRAGMENTOS: 16,          // fragmentos que lanza la explosión
+  VELOCIDAD_FRAGMENTO: [30, 90], // píxeles por segundo al salir (mínima y máxima)
+  FRENADO_FRAGMENTO: 0.5,  // fracción de la velocidad que pierden en cada segundo
+  DURACION_FRAGMENTO: 1,   // segundos hasta que se apagan del todo
 
   x: KF.ANCHO / 2,
   estado: 'ausente',       // 'ausente' | 'viva' | 'explotando'
   tiempoExplosion: 0,      // segundos desde que explotó
   destello: 0,             // segundos que le quedan al destello del cañón
   escudo: 0,               // segundos que le quedan de invulnerabilidad
+  fragmentos: [],          // {x, y, vx, vy, tam, color, vida} de la explosión
   disparos: [],            // {x, y, bomba} del extremo superior de cada proyectil
   salvas: 0,               // cuántas veces ha disparado (para Sonido)
   SEPARACION_TRIPLE: 6,    // píxeles entre los proyectiles del disparo triple
@@ -44,6 +51,36 @@ KF.jugador = {
     if (this.estado !== 'viva' || this.escudo > 0) return;
     this.estado = 'explotando';
     this.tiempoExplosion = 0;
+    this.lanzarFragmentos();
+  },
+
+  // Fragmentos desde el centro de la nave, en direcciones y velocidades al azar.
+  lanzarFragmentos: function () {
+    var colores = KF.graficos.COLORES_FRAGMENTOS;
+    var v = this.VELOCIDAD_FRAGMENTO;
+    for (var i = 0; i < this.FRAGMENTOS; i++) {
+      var angulo = Math.random() * Math.PI * 2;
+      var rapidez = v[0] + Math.random() * (v[1] - v[0]);
+      this.fragmentos.push({
+        x: this.x, y: this.Y,
+        vx: Math.cos(angulo) * rapidez, vy: Math.sin(angulo) * rapidez,
+        tam: Math.random() < 0.5 ? 1 : 2,
+        color: colores[Math.floor(Math.random() * colores.length)],
+        vida: this.DURACION_FRAGMENTO
+      });
+    }
+  },
+
+  moverFragmentos: function (dt) {
+    var frenado = Math.pow(1 - this.FRENADO_FRAGMENTO, dt);
+    this.fragmentos = this.fragmentos.filter(function (f) {
+      f.x += f.vx * dt;
+      f.y += f.vy * dt;
+      f.vx *= frenado;
+      f.vy *= frenado;
+      f.vida -= dt;
+      return f.vida > 0;
+    });
   },
 
   // La nave aparece en el centro; la llama Partida.
@@ -62,6 +99,7 @@ KF.jugador = {
 
   actualizar: function (dt) {
     this.moverDisparo(dt);
+    this.moverFragmentos(dt);
     this.destello = Math.max(0, this.destello - dt);
     this.escudo = Math.max(0, this.escudo - dt);
 
@@ -164,6 +202,14 @@ KF.jugador = {
         g.dibujar(ctx, this.SPRITES_EXPLOSION[fase], this.x, this.Y);
       }
     }
+    // Los fragmentos van encima y se apagan a medida que se les acaba la vida.
+    for (var j = 0; j < this.fragmentos.length; j++) {
+      var f = this.fragmentos[j];
+      ctx.globalAlpha = f.vida / this.DURACION_FRAGMENTO;
+      ctx.fillStyle = f.color;
+      ctx.fillRect(Math.round(f.x - f.tam / 2), Math.round(f.y - f.tam / 2), f.tam, f.tam);
+    }
+    ctx.globalAlpha = 1;
   }
 };
 
