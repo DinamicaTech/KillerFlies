@@ -11,11 +11,15 @@
 // Al aparecer, parpadea dos segundos y mientras tanto es invulnerable: lo que
 // choca con ella no la hace explotar (la nave alienígena que choca se destruye
 // igualmente y la bomba desaparece).
+// No se mueve a velocidad fija: acelera hasta su velocidad máxima y frena
+// hasta pararse de forma suave, con las flechas y al deslizar el dedo.
 // Al explotar lanza fragmentos que se dispersan y se apagan en un segundo;
 // terminan su recorrido aunque la nave vuelva a aparecer o acabe la partida.
 KF.jugador = {
   Y: KF.ALTO - 24,         // altura del centro de la nave
-  VELOCIDAD: 90,           // píxeles por segundo
+  VELOCIDAD: 90,           // velocidad máxima, en píxeles por segundo
+  ACELERACION: 450,        // píxeles por segundo cada segundo (de parada a máxima en 0,2 s)
+  FRENADO: 600,            // píxeles por segundo cada segundo (de máxima a parada en 0,15 s)
   VELOCIDAD_DISPARO: 300,  // píxeles por segundo
   ANCHO: 13,
   ALTO: 11,
@@ -29,6 +33,7 @@ KF.jugador = {
   DURACION_FRAGMENTO: 1,   // segundos hasta que se apagan del todo
 
   x: KF.ANCHO / 2,
+  vx: 0,                   // velocidad horizontal actual (negativa hacia la izquierda)
   estado: 'ausente',       // 'ausente' | 'viva' | 'explotando'
   tiempoExplosion: 0,      // segundos desde que explotó
   destello: 0,             // segundos que le quedan al destello del cañón
@@ -50,6 +55,7 @@ KF.jugador = {
   explotar: function () {
     if (this.estado !== 'viva' || this.escudo > 0) return;
     this.estado = 'explotando';
+    this.vx = 0;
     this.tiempoExplosion = 0;
     this.lanzarFragmentos();
   },
@@ -88,12 +94,14 @@ KF.jugador = {
     this.estado = 'viva';
     this.x = KF.ANCHO / 2;
     this.objetivo = null;
+    this.vx = 0;
     this.escudo = this.DURACION_ESCUDO;
   },
 
   // La nave deja de estar en pantalla (fin de partida); la llama Partida.
   retirar: function () {
     this.estado = 'ausente';
+    this.vx = 0;
     this.escudo = 0;
   },
 
@@ -118,27 +126,53 @@ KF.jugador = {
     var dir = (t.ArrowRight ? 1 : 0) - (t.ArrowLeft ? 1 : 0);
     var margen = this.ANCHO / 2;
     var limitar = function (x) { return Math.max(margen, Math.min(KF.ANCHO - margen, x)); };
+    var deseada = dir * this.VELOCIDAD;
     if (dir) {
       this.objetivo = null;
     } else if (dx || this.objetivo !== null) {
-      // Al deslizar el dedo la nave va hacia donde la lleva el dedo, pero
-      // sin pasar de su velocidad normal.
+      // Al deslizar el dedo la nave va hacia donde la lleva el dedo, sin pasar
+      // de su velocidad máxima, y frena a tiempo para pararse justo allí.
       this.objetivo = limitar((this.objetivo === null ? this.x : this.objetivo) + dx);
       var falta = this.objetivo - this.x;
-      var paso = this.VELOCIDAD * dt;
-      if (Math.abs(falta) <= paso) {
-        this.x = this.objetivo;
-        this.objetivo = null;
-      } else {
-        dir = falta > 0 ? 1 : -1;
-      }
+      var rapidez = Math.min(this.VELOCIDAD, Math.sqrt(2 * this.FRENADO * Math.abs(falta)));
+      deseada = falta > 0 ? rapidez : -rapidez;
     }
-    this.x = limitar(this.x + dir * this.VELOCIDAD * dt);
+    this.vx = this.acercarVelocidad(this.vx, deseada, dt);
+    var antes = this.x;
+    this.x += this.vx * dt;
+    if (this.objetivo !== null && (this.x - this.objetivo) * (antes - this.objetivo) <= 0) {
+      // Ha llegado (o se pasaría): se queda en el destino, parada.
+      this.x = this.objetivo;
+      this.objetivo = null;
+      this.vx = 0;
+    }
+    var dentro = limitar(this.x);
+    if (dentro !== this.x) {
+      // Contra el borde de la pantalla se para en seco.
+      this.x = dentro;
+      this.vx = 0;
+    }
 
     // Con el disparo acelerado, cada pulsación lanza un solo disparo:
     // mantener pulsado el espacio no dispara más.
     var pulsado = KF.powerups.activo === 'acelerado' ? pulsacion : t.Space;
     if (pulsado || tocado) this.disparar();
+  },
+
+  // Lleva la velocidad v hacia la deseada: frena si tiene que ir más despacio
+  // o hacia el otro lado (primero hasta pararse) y si no, acelera.
+  acercarVelocidad: function (v, deseada, dt) {
+    var hacia, ritmo;
+    if (v !== 0 && (v * deseada < 0 || Math.abs(deseada) < Math.abs(v))) {
+      hacia = v * deseada < 0 ? 0 : deseada;
+      ritmo = this.FRENADO;
+    } else {
+      hacia = deseada;
+      ritmo = this.ACELERACION;
+    }
+    var paso = ritmo * dt;
+    if (Math.abs(hacia - v) <= paso) return hacia;
+    return v + (hacia > v ? paso : -paso);
   },
 
   // Lanza un disparo si se puede, según el power-up activo.
