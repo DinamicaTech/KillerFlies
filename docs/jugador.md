@@ -6,9 +6,10 @@ threads:
   - Nave del jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi8uEd3vf7FBd7b8W9rNHB1b
   - Controles táctiles | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiXH1tXPjNtyfwDxWQKAi9AZ
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
+  - Stack de drafts en Jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
 ---
 ## Summary
-La nave que controla el jugador en la parte inferior de la pantalla: se mueve en horizontal con las flechas o deslizando el dedo, dispara con el espacio o con una pulsación corta en la pantalla táctil, de uno en uno (el disparo se libera al dar en una nave, en formación o en picado, o al salir por arriba; el power-up activo lo cambia) y explota si la alcanza una nave o una bomba. No reaparece sola: Partida la hace aparecer en el centro al empezar la partida y con cada nave de recambio, y fuera de la partida no está.
+La nave que controla el jugador en la parte inferior de la pantalla: se mueve en horizontal con las flechas o deslizando el dedo, dispara con el espacio o con una pulsación corta en la pantalla táctil, de uno en uno (el disparo se libera al dar en una nave, en formación o en picado, o al salir por arriba; el power-up activo lo cambia) y explota si la alcanza una nave o una bomba. No reaparece sola: Partida la hace aparecer en el centro al empezar la partida y con cada nave de recambio, y fuera de la partida no está. Seis mejoras pendientes en drafts hijos: escudo al aparecer, estela del motor, inercia, destello al disparar, explosión con fragmentos y temblor al morir.
 
 ## Decisions
 - 2026-10-03 18:22 · Creado en la carga de requisitos inicial.
@@ -25,6 +26,7 @@ La nave que controla el jugador en la parte inferior de la pantalla: se mueve en
 - 2026-10-04 10:16 · Controles: flecha izquierda y flecha derecha o deslizar el dedo para moverse; barra espaciadora o pulsación corta en la pantalla táctil para disparar. Mantener pulsado el espacio dispara de nuevo en cuanto se libera el disparo. Al deslizar el dedo la nave va hacia donde la lleva el desplazamiento horizontal del dedo (sin salir de la pantalla), pero nunca más rápido que su velocidad normal de 90 píxeles por segundo, para que no sea más fácil que con las flechas; si se suelta el dedo, termina de llegar. Pulsar una flecha cancela ese destino. Una pulsación corta dispara si no hay disparo en pantalla; si lo hay, no se guarda para después. Lo pedido con el dedo mientras la nave no está en juego se descarta.
 - 2026-10-04 10:52 · Disparo con power-ups: la nave dispara según KF.powerups.activo: hasta tres disparos a la vez (acelerado), un disparo que no se detiene al dar en una nave (profundo), una bomba que explota al dar en una nave (bomba), la destrucción de todas las naves sin lanzar proyectil (aniquilación), un disparo a 150 píxeles por segundo (slow fire) o tres proyectiles paralelos que cuentan como uno (triple). Los disparos en vuelo están en KF.jugador.disparos y KF.jugador.salvas cuenta cada vez que dispara.
 - 2026-10-04 11:30 · Con el disparo acelerado, cada pulsación del espacio (sin contar la repetición al mantenerlo) o cada toque lanza un solo disparo; sin él, mantener pulsado el espacio sigue disparando en cuanto se libera el disparo.
+- 2026-10-05 11:51 · Seis drafts hijos para probar el apilado de cajas de Claude Visual Project: jugador/escudo-al-aparecer, jugador/estela-motor, jugador/inercia, jugador/destello-disparo, jugador/explosion-fragmentos y jugador/temblor-al-morir. Son independientes entre sí.
 
 ## Requirements
 - 2026-10-03 18:13 · La nave que controla el jugador está en la parte inferior de la pantalla y solo se puede mover horizontalmente mientras dispara.
