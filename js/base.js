@@ -6,6 +6,10 @@ var KF = {
   // Pantalla lógica vertical, como el arcade; se escala a la ventana.
   ANCHO: 224,
   ALTO: 288,
+  // El lienzo real tiene RESOLUCION veces más píxeles por lado que la
+  // pantalla lógica, para que se vea el detalle de las naves; todo el juego
+  // sigue midiendo y dibujando en píxeles lógicos.
+  RESOLUCION: 4,
 
   sistemas: [],
   // Teclas mantenidas pulsadas, por código (event.code), p. ej. KF.teclas.ArrowLeft.
@@ -32,8 +36,8 @@ var KF = {
 
   iniciar: function () {
     var canvas = document.getElementById('pantalla');
-    canvas.width = this.ANCHO;
-    canvas.height = this.ALTO;
+    canvas.width = this.ANCHO * this.RESOLUCION;
+    canvas.height = this.ALTO * this.RESOLUCION;
     this.ctx = canvas.getContext('2d');
     this.ctx.imageSmoothingEnabled = false;
 
@@ -117,6 +121,7 @@ var KF = {
     for (i = 0; i < this.sistemas.length; i++) {
       if (this.sistemas[i].actualizar) this.sistemas[i].actualizar(dt);
     }
+    this.ctx.setTransform(this.RESOLUCION, 0, 0, this.RESOLUCION, 0, 0);
     this.ctx.fillStyle = '#000';
     this.ctx.fillRect(0, 0, this.ANCHO, this.ALTO);
     for (i = 0; i < this.sistemas.length; i++) {
