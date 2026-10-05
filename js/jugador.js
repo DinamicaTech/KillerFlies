@@ -15,10 +15,12 @@ KF.jugador = {
   ANCHO: 13,
   ALTO: 11,
   DURACION_FASE: 0.15,     // segundos de cada fase de la explosión
+  DURACION_DESTELLO: 0.06, // segundos que dura el destello del cañón al disparar
 
   x: KF.ANCHO / 2,
   estado: 'ausente',       // 'ausente' | 'viva' | 'explotando'
   tiempoExplosion: 0,      // segundos desde que explotó
+  destello: 0,             // segundos que le quedan al destello del cañón
   disparos: [],            // {x, y, bomba} del extremo superior de cada proyectil
   salvas: 0,               // cuántas veces ha disparado (para Sonido)
   SEPARACION_TRIPLE: 6,    // píxeles entre los proyectiles del disparo triple
@@ -52,6 +54,7 @@ KF.jugador = {
 
   actualizar: function (dt) {
     this.moverDisparo(dt);
+    this.destello = Math.max(0, this.destello - dt);
 
     if (this.estado === 'explotando') this.tiempoExplosion += dt;
     // Lo pedido por la pantalla táctil se recoge siempre, aunque la nave no
@@ -101,6 +104,7 @@ KF.jugador = {
       KF.powerups.aniquilar();
       return;
     }
+    this.destello = this.DURACION_DESTELLO;
     var x = Math.round(this.x), y = this.Y - this.ALTO / 2 - this.SPRITE_DISPARO.height;
     if (poder === 'triple') {
       for (var i = -1; i <= 1; i++) this.disparos.push({ x: x + i * this.SEPARACION_TRIPLE, y: y, bomba: false });
@@ -141,6 +145,8 @@ KF.jugador = {
     }
     if (this.estado === 'viva') {
       g.dibujar(ctx, this.SPRITE, this.x, this.Y);
+      // El destello va justo encima de la punta del cañón y sigue a la nave.
+      if (this.destello > 0) g.dibujar(ctx, this.SPRITE_DESTELLO, this.x, this.Y - 8);
     } else if (this.estado === 'explotando') {
       var fase = Math.floor(this.tiempoExplosion / this.DURACION_FASE);
       if (fase < this.SPRITES_EXPLOSION.length) {
@@ -152,6 +158,7 @@ KF.jugador = {
 
 KF.jugador.SPRITE = KF.graficos.SPRITE_JUGADOR;
 KF.jugador.SPRITE_DISPARO = KF.graficos.SPRITE_DISPARO;
+KF.jugador.SPRITE_DESTELLO = KF.graficos.SPRITE_DESTELLO;
 KF.jugador.SPRITE_BOMBA = KF.graficos.SPRITE_BOMBA_JUGADOR;
 KF.jugador.SPRITES_EXPLOSION = KF.graficos.SPRITES_EXPLOSION_JUGADOR;
 
