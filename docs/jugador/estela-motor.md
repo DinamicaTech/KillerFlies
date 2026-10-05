@@ -1,17 +1,17 @@
 ---
-title: Estela del motor
+title: Engine trail
 depends_on: []
 threads:
-  - Stack de drafts en Jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
-  - Estela del motor | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQBdx8sringjXy3tdpEhHwb
+  - Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
+  - Engine trail | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQBdx8sringjXy3tdpEhHwb
 ---
 ## Summary
-Mientras la nave del jugador se desplaza, una pequeña llama naranja con punta amarilla parpadea justo debajo de ella.
+While the player ship is moving, a small orange flame with a yellow tip flickers just below it.
 
 ## Decisions
-- 2026-10-05 11:51 · Creado como draft hijo de Jugador, uno de los seis para probar el apilado de cajas de Claude Visual Project.
-- 2026-10-05 12:43 · Llama del motor: mientras la nave se desplaza (velocidad distinta de cero, con flechas o con el dedo, también mientras frena por la inercia) aparece justo bajo ella una llama de 3×3 píxeles que alterna dos formas cada 0,05 segundos. Parada o detenida contra el borde no hay llama; tampoco mientras está invisible por el parpadeo del escudo ni al explotar. Código en js/jugador.js (tiempoLlama, CAMBIO_LLAMA); los dibujos son KF.graficos.SPRITES_LLAMA.
-- 2026-10-05 12:45 · Validado por el dueño: pasa a estable.
+- 2026-10-05 11:51 · Created as a child draft of Player, one of the six to test Claude Visual Project's box stacking.
+- 2026-10-05 12:43 · Engine flame: while the ship is moving (speed other than zero, with the arrows or with a finger, also while braking due to inertia) a 3×3 pixel flame appears just below it, alternating between two shapes every 0.05 seconds. When stopped or held against the edge there is no flame; nor while it is invisible due to the shield's blinking, nor when exploding. Code in js/jugador.js (tiempoLlama, CAMBIO_LLAMA); the drawings are KF.graficos.SPRITES_LLAMA.
+- 2026-10-05 12:45 · Validated by the owner: becomes stable.
 
 ## Requirements
-- 2026-10-05 11:51 · draft: Mostrar una pequeña llama parpadeante bajo la nave del jugador mientras se mueve.
+- 2026-10-05 11:51 · draft: Show a small flickering flame under the player ship while it moves.

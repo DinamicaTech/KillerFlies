@@ -1,16 +1,16 @@
 ---
-title: Aspecto de la nave con poder
+title: Look of the powered-up ship
 status: draft
 depends_on: []
 threads:
-  - Aspecto de la nave con poder | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiKnMhEbDrKQq5FAr4HocuWC
+  - Look of the powered-up ship | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiKnMhEbDrKQq5FAr4HocuWC
 ---
 ## Summary
-Pendiente: que la nave del jugador cambie de diseño al recoger un power-up, con un aspecto distinto para cada poder, y vuelva a su diseño normal cuando el poder se pierde o se acaba.
+Pending: make the player ship change design on picking up a power-up, with a different look for each power, and return to its normal design when the power is lost or ends.
 
 ## Decisions
-- 2026-10-05 10:13 · Creado como draft bajo Power-ups (el nodo que define los poderes); Gráficos pondrá los sprites cuando se ejecute.
+- 2026-10-05 10:13 · Created as a draft under Power-ups (the node that defines the powers); Graphics will provide the sprites when it is implemented.
 
 ## Requirements
-- 2026-10-05 10:12 · Al recoger el PowerUp, que se modifique el diseño de la nave para representar el power-up obtenido
-- 2026-10-05 10:13 · draft: Al recoger un power-up, cambiar el diseño de la nave del jugador para representar el poder obtenido (un aspecto distinto por cada poder); la nave vuelve a su diseño normal cuando el poder se pierde o se acaba.
+- 2026-10-05 10:12 · On picking up the PowerUp, have the ship's design change to represent the power-up obtained
+- 2026-10-05 10:13 · draft: On picking up a power-up, change the design of the player ship to represent the power obtained (a different look for each power); the ship returns to its normal design when the power is lost or ends.
