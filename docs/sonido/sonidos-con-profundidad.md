@@ -12,6 +12,6 @@ Pendiente: sustituir los sonidos actuales por otros con más profundidad (más c
 - 2026-10-05 10:55 · Takes over the draft de sonidos con más profundidad que estaba dentro de `sonido`: pasa a ser su propio nodo hijo (CVP rules versión 8).
 
 ## Requirements
-- 2026-10-05 10:11 · Draft: Modificar los sonidos por otros con más profundidad
+- 2026-10-05 10:11 · Modificar los sonidos por otros con más profundidad
 - 2026-10-05 10:16 · Incluimos power-up e inicio de oleada
 - 2026-10-05 10:16 · draft: Sustituir los sonidos actuales (disparo, explosiones y zumbido de ataque) por otros con más profundidad (más capas, cuerpo y graves), manteniendo sus momentos y volúmenes relativos, y añadir dos sonidos nuevos con la misma calidad: uno al recoger un power-up y otro al empezar cada oleada.
