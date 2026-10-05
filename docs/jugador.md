@@ -9,7 +9,7 @@ threads:
   - Stack de drafts en Jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
 ---
 ## Summary
-La nave que controla el jugador en la parte inferior de la pantalla: se mueve en horizontal con las flechas o deslizando el dedo, dispara con el espacio o con una pulsación corta en la pantalla táctil, de uno en uno (el disparo se libera al dar en una nave, en formación o en picado, o al salir por arriba; el power-up activo lo cambia) y explota si la alcanza una nave o una bomba. No reaparece sola: Partida la hace aparecer en el centro al empezar la partida y con cada nave de recambio, y fuera de la partida no está. Seis mejoras pendientes en drafts hijos: escudo al aparecer, estela del motor, inercia, destello al disparar, explosión con fragmentos y temblor al morir.
+La nave que controla el jugador en la parte inferior de la pantalla: se mueve en horizontal con las flechas o deslizando el dedo, dispara con el espacio o con una pulsación corta en la pantalla táctil, de uno en uno (el disparo se libera al dar en una nave, en formación o en picado, o al salir por arriba; el power-up activo lo cambia) y explota si la alcanza una nave o una bomba. No reaparece sola: Partida la hace aparecer en el centro al empezar la partida y con cada nave de recambio, y fuera de la partida no está. Al aparecer parpadea dos segundos y mientras tanto es invulnerable (jugador/escudo-al-aparecer). Mejoras pendientes en drafts hijos: estela del motor, inercia, destello al disparar, explosión con fragmentos y temblor al morir.
 
 ## Decisions
 - 2026-10-03 18:22 · Creado en la carga de requisitos inicial.
