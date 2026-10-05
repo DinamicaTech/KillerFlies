@@ -8,6 +8,9 @@
 // Explota si la alcanza una nave alienígena o una bomba (KF.jugador.explotar).
 // No reaparece sola: Partida la hace aparecer (KF.jugador.aparecer) al empezar
 // la partida y con cada nave de recambio; fuera de la partida no está.
+// Al aparecer, parpadea dos segundos y mientras tanto es invulnerable: lo que
+// choca con ella no la hace explotar (la nave alienígena que choca se destruye
+// igualmente y la bomba desaparece).
 KF.jugador = {
   Y: KF.ALTO - 24,         // altura del centro de la nave
   VELOCIDAD: 90,           // píxeles por segundo
@@ -16,11 +19,14 @@ KF.jugador = {
   ALTO: 11,
   DURACION_FASE: 0.15,     // segundos de cada fase de la explosión
   DURACION_DESTELLO: 0.06, // segundos que dura el destello del cañón al disparar
+  DURACION_ESCUDO: 2,      // segundos de invulnerabilidad al aparecer
+  PARPADEO: 0.1,           // segundos visible o invisible al parpadear
 
   x: KF.ANCHO / 2,
   estado: 'ausente',       // 'ausente' | 'viva' | 'explotando'
   tiempoExplosion: 0,      // segundos desde que explotó
   destello: 0,             // segundos que le quedan al destello del cañón
+  escudo: 0,               // segundos que le quedan de invulnerabilidad
   disparos: [],            // {x, y, bomba} del extremo superior de cada proyectil
   salvas: 0,               // cuántas veces ha disparado (para Sonido)
   SEPARACION_TRIPLE: 6,    // píxeles entre los proyectiles del disparo triple
@@ -35,7 +41,7 @@ KF.jugador = {
 
   // La llama quien detecta el choque con una nave alienígena o una bomba.
   explotar: function () {
-    if (this.estado !== 'viva') return;
+    if (this.estado !== 'viva' || this.escudo > 0) return;
     this.estado = 'explotando';
     this.tiempoExplosion = 0;
   },
@@ -45,16 +51,19 @@ KF.jugador = {
     this.estado = 'viva';
     this.x = KF.ANCHO / 2;
     this.objetivo = null;
+    this.escudo = this.DURACION_ESCUDO;
   },
 
   // La nave deja de estar en pantalla (fin de partida); la llama Partida.
   retirar: function () {
     this.estado = 'ausente';
+    this.escudo = 0;
   },
 
   actualizar: function (dt) {
     this.moverDisparo(dt);
     this.destello = Math.max(0, this.destello - dt);
+    this.escudo = Math.max(0, this.escudo - dt);
 
     if (this.estado === 'explotando') this.tiempoExplosion += dt;
     // Lo pedido por la pantalla táctil se recoge siempre, aunque la nave no
@@ -143,7 +152,9 @@ KF.jugador = {
       if (d.bomba) g.dibujar(ctx, this.SPRITE_BOMBA, d.x, d.y + 1);
       else ctx.drawImage(this.SPRITE_DISPARO, d.x, Math.round(d.y));
     }
-    if (this.estado === 'viva') {
+    // Con el escudo, la nave se ve y se deja de ver a intervalos (parpadeo).
+    var oculta = this.escudo > 0 && Math.floor(this.escudo / this.PARPADEO) % 2 === 1;
+    if (this.estado === 'viva' && !oculta) {
       g.dibujar(ctx, this.SPRITE, this.x, this.Y);
       // El destello va justo encima de la punta del cañón y sigue a la nave.
       if (this.destello > 0) g.dibujar(ctx, this.SPRITE_DESTELLO, this.x, this.Y - 8);
