@@ -1,42 +1,42 @@
 ---
-title: Jugador
+title: Player
 depends_on: [enemigos/formacion, graficos, architecture]
 threads:
-  - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
-  - Nave del jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi8uEd3vf7FBd7b8W9rNHB1b
-  - Controles táctiles | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiXH1tXPjNtyfwDxWQKAi9AZ
+  - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - Player ship | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi8uEd3vf7FBd7b8W9rNHB1b
+  - Touch controls | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiXH1tXPjNtyfwDxWQKAi9AZ
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
-  - Stack de drafts en Jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
+  - Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
 ---
 ## Summary
-La nave que controla el jugador en la parte inferior de la pantalla: se mueve en horizontal con las flechas o deslizando el dedo, dispara con el espacio o con una pulsación corta en la pantalla táctil, de uno en uno (el disparo se libera al dar en una nave, en formación o en picado, o al salir por arriba; el power-up activo lo cambia) y explota si la alcanza una nave o una bomba. No reaparece sola: Partida la hace aparecer en el centro al empezar la partida y con cada nave de recambio, y fuera de la partida no está. Al aparecer parpadea dos segundos y mientras tanto es invulnerable (jugador/escudo-al-aparecer). Al disparar, el cañón da un breve destello (jugador/destello-disparo). Al explotar lanza fragmentos que se dispersan y se apagan (jugador/explosion-fragmentos). Acelera y frena de forma suave, a 90 píxeles por segundo como máximo (jugador/inercia). Mientras se mueve, una llamita parpadea bajo ella (jugador/estela-motor). Mejora pendiente en un draft hijo: temblor al morir.
+The ship the player controls at the bottom of the screen: it moves horizontally with the arrow keys or by sliding a finger, fires with the space bar or a short tap on the touch screen, one shot at a time (the shot is freed when it hits a ship, in formation or diving, or when it leaves through the top; the active power-up changes this), and explodes if a ship or a bomb hits it. It does not respawn by itself: Game makes it appear in the center when the game starts and with each spare ship, and outside a game it is not there. When it appears it blinks for two seconds and is invulnerable meanwhile (jugador/escudo-al-aparecer). When it fires, the cannon gives a brief flash (jugador/destello-disparo). When it explodes it throws out fragments that scatter and fade out (jugador/explosion-fragmentos). It accelerates and brakes smoothly, at 90 pixels per second at most (jugador/inercia). While it moves, a small flame flickers under it (jugador/estela-motor). Improvement pending in a child draft: shake on death.
 
 ## Decisions
-- 2026-10-03 18:22 · Creado en la carga de requisitos inicial.
-- 2026-10-03 18:46 · [replaced by 2026-10-03 18:49] Teclas: flecha izquierda y flecha derecha para moverse, barra espaciadora para disparar (opción A de la pregunta, recomendada, a falta de que el owner la confirme). Mantener pulsado el espacio dispara de nuevo en cuanto se libera el disparo.
-- 2026-10-03 18:46 · [replaced by jugador/inercia 2026-10-05 12:45] Movimiento: la nave se mueve a 90 píxeles por segundo (unos 2,5 segundos de lado a lado) y no sale de la pantalla; su centro está a 24 píxeles del borde inferior, dejando sitio debajo para las naves de recambio.
-- 2026-10-03 18:46 · Disparo: uno solo en pantalla, sube a 300 píxeles por segundo y se libera al tocar una nave de la formación (que lo comprueba y destruye esa nave) o al salir por arriba. Si la nave explota, el disparo ya lanzado sigue su camino.
-- 2026-10-03 18:46 · Explosión: la nave expone su rectángulo de choque y una orden de explotar, que llamará quien detecte el choque con una nave alienígena o una bomba (enemigos/ataque). La explosión dura tres fases de 0,15 segundos y mientras tanto la nave no se mueve ni dispara.
-- 2026-10-03 18:46 · [replaced by 2026-10-03 19:18] Provisional hasta que Partida gestione las naves de recambio y el GAME OVER: dos segundos después de explotar la nave reaparece en el centro.
-- 2026-10-03 18:46 · Código en js/jugador.js; los dibujos de la nave, el disparo y la explosión, provisionales, están en js/graficos.js.
-- 2026-10-03 18:49 · [replaced by 2026-10-04 10:16] Teclas: flecha izquierda y flecha derecha para moverse, barra espaciadora para disparar, confirmado por el owner. Mantener pulsado el espacio dispara de nuevo en cuanto se libera el disparo.
-- 2026-10-03 18:50 · Validado por el owner: la nave del jugador queda implementada y el nodo pasa a estable.
-- 2026-10-03 19:05 · El disparo también alcanza a las naves en picado: además de la formación, se lo comprueba a enemigos/ataque, que destruye la nave alcanzada.
-- 2026-10-03 19:18 · Aparición: la nave no reaparece sola tras explotar. Partida la hace aparecer en el centro (KF.jugador.aparecer) al empezar la partida y con cada nave de recambio, y la retira (KF.jugador.retirar) al acabar; mientras no está, no se mueve, no dispara ni se la puede alcanzar.
-- 2026-10-04 10:16 · Controles: flecha izquierda y flecha derecha o deslizar el dedo para moverse; barra espaciadora o pulsación corta en la pantalla táctil para disparar. Mantener pulsado el espacio dispara de nuevo en cuanto se libera el disparo. Al deslizar el dedo la nave va hacia donde la lleva el desplazamiento horizontal del dedo (sin salir de la pantalla), pero nunca más rápido que su velocidad normal de 90 píxeles por segundo, para que no sea más fácil que con las flechas; si se suelta el dedo, termina de llegar. Pulsar una flecha cancela ese destino. Una pulsación corta dispara si no hay disparo en pantalla; si lo hay, no se guarda para después. Lo pedido con el dedo mientras la nave no está en juego se descarta.
-- 2026-10-04 10:52 · Disparo con power-ups: la nave dispara según KF.powerups.activo: hasta tres disparos a la vez (acelerado), un disparo que no se detiene al dar en una nave (profundo), una bomba que explota al dar en una nave (bomba), la destrucción de todas las naves sin lanzar proyectil (aniquilación), un disparo a 150 píxeles por segundo (slow fire) o tres proyectiles paralelos que cuentan como uno (triple). Los disparos en vuelo están en KF.jugador.disparos y KF.jugador.salvas cuenta cada vez que dispara.
-- 2026-10-04 11:30 · Con el disparo acelerado, cada pulsación del espacio (sin contar la repetición al mantenerlo) o cada toque lanza un solo disparo; sin él, mantener pulsado el espacio sigue disparando en cuanto se libera el disparo.
-- 2026-10-05 11:51 · Seis drafts hijos para probar el apilado de cajas de Claude Visual Project: jugador/escudo-al-aparecer, jugador/estela-motor, jugador/inercia, jugador/destello-disparo, jugador/explosion-fragmentos y jugador/temblor-al-morir. Son independientes entre sí.
+- 2026-10-03 18:22 · Created in the initial requirements load.
+- 2026-10-03 18:46 · [replaced by 2026-10-03 18:49] Keys: left arrow and right arrow to move, space bar to fire (option A of the question, recommended, pending the owner's confirmation). Holding the space bar fires again as soon as the shot is freed.
+- 2026-10-03 18:46 · [replaced by jugador/inercia 2026-10-05 12:45] Movement: the ship moves at 90 pixels per second (about 2.5 seconds from side to side) and does not leave the screen; its center is 24 pixels from the bottom edge, leaving room below for the spare ships.
+- 2026-10-03 18:46 · Shot: only one on screen, it rises at 300 pixels per second and is freed when it touches a formation ship (which checks it and destroys that ship) or when it leaves through the top. If the ship explodes, the shot already fired continues on its way.
+- 2026-10-03 18:46 · Explosion: the ship exposes its collision rectangle and an explode command, which will be called by whoever detects the collision with an alien ship or a bomb (enemigos/ataque). The explosion lasts three phases of 0.15 seconds and meanwhile the ship neither moves nor fires.
+- 2026-10-03 18:46 · [replaced by 2026-10-03 19:18] Provisional until Game manages the spare ships and the GAME OVER: two seconds after exploding, the ship reappears in the center.
+- 2026-10-03 18:46 · Code in js/jugador.js; the provisional drawings of the ship, the shot and the explosion are in js/graficos.js.
+- 2026-10-03 18:49 · [replaced by 2026-10-04 10:16] Keys: left arrow and right arrow to move, space bar to fire, confirmed by the owner. Holding the space bar fires again as soon as the shot is freed.
+- 2026-10-03 18:50 · Validated by the owner: the player ship is implemented and the node becomes stable.
+- 2026-10-03 19:05 · The shot also hits diving ships: besides the formation, it is checked against enemigos/ataque, which destroys the ship hit.
+- 2026-10-03 19:18 · Appearance: the ship does not respawn by itself after exploding. Game makes it appear in the center (KF.jugador.aparecer) when the game starts and with each spare ship, and removes it (KF.jugador.retirar) when it ends; while it is not there, it does not move, does not fire and cannot be hit.
+- 2026-10-04 10:16 · Controls: left arrow and right arrow or sliding a finger to move; space bar or a short tap on the touch screen to fire. Holding the space bar fires again as soon as the shot is freed. When sliding a finger, the ship heads to where the finger's horizontal displacement takes it (without leaving the screen), but never faster than its normal speed of 90 pixels per second, so that it is not easier than with the arrows; if the finger is lifted, it finishes getting there. Pressing an arrow cancels that target. A short tap fires if there is no shot on screen; if there is one, it is not saved for later. Whatever is requested with the finger while the ship is not in play is discarded.
+- 2026-10-04 10:52 · Firing with power-ups: the ship fires according to KF.powerups.activo: up to three shots at once (rapid), a shot that does not stop when it hits a ship (deep), a bomb that explodes when it hits a ship (bomb), the destruction of all ships without firing a projectile (annihilation), a shot at 150 pixels per second (slow fire) or three parallel projectiles that count as one (triple). The shots in flight are in KF.jugador.disparos and KF.jugador.salvas counts each time it fires.
+- 2026-10-04 11:30 · With rapid fire, each press of the space bar (not counting the repeat while holding it) or each tap fires a single shot; without it, holding the space bar keeps firing as soon as the shot is freed.
+- 2026-10-05 11:51 · Six child drafts to test Claude Visual Project's box stacking: jugador/escudo-al-aparecer, jugador/estela-motor, jugador/inercia, jugador/destello-disparo, jugador/explosion-fragmentos and jugador/temblor-al-morir. They are independent of each other.
 
 ## Requirements
-- 2026-10-03 18:13 · La nave que controla el jugador está en la parte inferior de la pantalla y solo se puede mover horizontalmente mientras dispara.
-- 2026-10-03 18:13 · Hasta que el disparo no da en un blanco o llega a la parte superior de la pantalla, no se puede volver a disparar.
-- 2026-10-03 18:13 · Si alguna nave alienígena o una bomba choca contra la nave del jugador, esta explota.
-- 2026-10-03 18:22 · draft: Implementar la nave del jugador: movimiento horizontal con el teclado en la parte inferior, un único disparo en pantalla que se libera al impactar o salir por arriba, y explosión al chocar con una nave alienígena o una bomba.
-- 2026-10-03 18:48 · Flechas + espacio
-- 2026-10-03 18:54 · Sí, claro, los ataques a una nave esté en formación o no.
-- 2026-10-03 19:05 · Derived from enemigos/ataque: el disparo también destruye las naves que están en picado.
-- 2026-10-03 19:18 · Derived from partida: la nave ya no reaparece sola; Partida la hace aparecer y fuera de la partida no está.
-- 2026-10-04 10:16 · Derived from architecture: mover la nave deslizando el dedo y disparar con una pulsación corta.
-- 2026-10-04 10:52 · Derived from power-ups: el disparo cambia según el poder activo (hasta tres disparos, atraviesa, bomba, aniquilación, mitad de velocidad, triple).
-- 2026-10-04 11:30 · Derived from power-ups: con el disparo acelerado, un solo disparo por pulsación.
+- 2026-10-03 18:13 · The ship the player controls is at the bottom of the screen and can only move horizontally while it fires.
+- 2026-10-03 18:13 · Until the shot hits a target or reaches the top of the screen, you cannot fire again.
+- 2026-10-03 18:13 · If any alien ship or a bomb collides with the player ship, it explodes.
+- 2026-10-03 18:22 · draft: Implement the player ship: horizontal movement with the keyboard at the bottom, a single shot on screen that is freed when it hits or leaves through the top, and explosion when colliding with an alien ship or a bomb.
+- 2026-10-03 18:48 · Arrows + space
+- 2026-10-03 18:54 · Yes, of course, it attacks a ship whether it is in formation or not.
+- 2026-10-03 19:05 · Derived from enemigos/ataque: the shot also destroys the ships that are diving.
+- 2026-10-03 19:18 · Derived from partida: the ship no longer respawns by itself; Game makes it appear and outside a game it is not there.
+- 2026-10-04 10:16 · Derived from architecture: move the ship by sliding a finger and fire with a short tap.
+- 2026-10-04 10:52 · Derived from power-ups: the shot changes according to the active power (up to three shots, goes through, bomb, annihilation, half speed, triple).
+- 2026-10-04 11:30 · Derived from power-ups: with rapid fire, a single shot per press.

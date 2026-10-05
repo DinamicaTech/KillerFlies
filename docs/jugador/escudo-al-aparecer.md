@@ -1,18 +1,18 @@
 ---
-title: Escudo al aparecer
+title: Shield on spawn
 depends_on: []
 threads:
-  - Stack de drafts en Jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
-  - Escudo al aparecer | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiF2yKDQhz2dpj7kMYn4YEgz
+  - Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
+  - Shield on spawn | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiF2yKDQhz2dpj7kMYn4YEgz
 ---
 ## Summary
-Al aparecer, la nave del jugador parpadea dos segundos y mientras tanto es invulnerable; la nave alienígena que choca con ella se destruye y la bomba desaparece.
+When it appears, the player ship blinks for two seconds and is invulnerable meanwhile; the alien ship that collides with it is destroyed and the bomb disappears.
 
 ## Decisions
-- 2026-10-05 11:51 · Creado como draft hijo de Jugador, uno de los seis para probar el apilado de cajas de Claude Visual Project.
-- 2026-10-05 12:12 · Escudo: cada vez que Partida hace aparecer la nave (KF.jugador.aparecer), durante 2 segundos parpadea (0,1 segundos visible y 0,1 invisible) y KF.jugador.explotar no tiene efecto; se mueve y dispara con normalidad. La nave alienígena en picado que choca con ella se destruye igualmente (y da sus puntos) y la bomba que la toca desaparece. Código en js/jugador.js (KF.jugador.escudo); Ataque y Partida no cambian.
-- 2026-10-05 12:12 · Validado por el owner: el nodo pasa a estable.
+- 2026-10-05 11:51 · Created as a child draft of Player, one of the six to test Claude Visual Project's box stacking.
+- 2026-10-05 12:12 · Shield: each time Game makes the ship appear (KF.jugador.aparecer), for 2 seconds it blinks (0.1 seconds visible and 0.1 invisible) and KF.jugador.explotar has no effect; it moves and fires normally. The diving alien ship that collides with it is destroyed all the same (and gives its points) and the bomb that touches it disappears. Code in js/jugador.js (KF.jugador.escudo); Attack and Game do not change.
+- 2026-10-05 12:12 · Validated by the owner: the node becomes stable.
 
 ## Requirements
-- 2026-10-05 11:51 · draft: Al aparecer, la nave del jugador parpadea dos segundos y durante ese tiempo es invulnerable.
-- 2026-10-05 12:09 · Mejor que se destruya la nave enemiga
+- 2026-10-05 11:51 · draft: When it appears, the player ship blinks for two seconds and during that time it is invulnerable.
+- 2026-10-05 12:09 · Better that the enemy ship gets destroyed

@@ -1,46 +1,46 @@
 ---
-title: Gráficos
+title: Graphics
 depends_on: [architecture, enemigos]
 threads:
-  - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
-  - Formación enemiga | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiC47GmNga6bpWeFB1oP6k6h
-  - Gráficos | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiDr96WsqVT3NCseBCYwgNre
+  - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - Enemy formation | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiC47GmNga6bpWeFB1oP6k6h
+  - Graphics | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiDr96WsqVT3NCseBCYwgNre
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
-  - Formaciones por oleada | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
+  - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
 ---
 ## Summary
-El aspecto visual del juego: la pantalla, el fondo y los sprites de todas las naves, bombas, disparos y explosiones, tomando como referencia las capturas del arcade. Todo está en js/graficos.js: un fondo de estrellas de colores que bajan y parpadean, los sprites ya coloreados que usan las demás partes del juego (las naves dibujadas con detalle a más resolución, como "naves del siglo XXI"; lo demás en pixel-art) y la fuente pixel-art de los textos.
+The game's visual look: the screen, the background and the sprites of all ships, bombs, shots and explosions, using the arcade screenshots as reference. Everything is in js/graficos.js: a background of coloured stars that drift down and twinkle, the pre-coloured sprites the other parts of the game use (the ships drawn in detail at a higher resolution, as "21st-century ships"; everything else in pixel art) and the pixel-art font for the texts.
 
 ## Decisions
-- 2026-10-03 18:22 · Creado en la carga de requisitos inicial.
-- 2026-10-03 18:44 · [replaced by 2026-10-03 19:08] Pantalla vertical como el arcade, de 224×288 píxeles lógicos escalada a la ventana. Fondo negro por ahora; el fondo de estrellas de las capturas queda pendiente en este nodo.
-- 2026-10-03 18:44 · [replaced by 2026-10-03 19:08] Sprites provisionales de las cuatro naves alienígenas en formación, definidos como mapas de píxeles en js/graficos.js; este nodo los afinará a partir de las capturas.
-- 2026-10-03 18:46 · [replaced by 2026-10-03 19:08] Sprites provisionales de la nave del jugador (blanca con detalles rojos y azules), su disparo (línea amarilla) y su explosión en tres fases, como mapas de píxeles en js/graficos.js; este nodo los afinará a partir de las capturas.
-- 2026-10-03 19:05 · [replaced by 2026-10-03 19:08] Dibujo girado: las naves se pueden dibujar centradas y giradas a cualquier ángulo (lo usan las naves en picado). Sprite provisional de la bomba: línea blanca vertical de 1×5 píxeles, en js/graficos.js.
-- 2026-10-03 19:10 · [replaced by 2026-10-03 19:08] Sprite provisional de la explosión de las naves alienígenas, en tres fases (roja, amarilla y blanca), como mapas de píxeles en js/graficos.js; este nodo lo afinará.
-- 2026-10-03 19:08 · Pantalla vertical como el arcade, de 224×288 píxeles lógicos escalada a la ventana, con fondo de estrellas: 70 puntos de colores (sobre todo blancos) que bajan a 12 píxeles por segundo y parpadean, cada uno con su ritmo. Se dibuja detrás de todo.
-- 2026-10-03 19:08 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] Sprites a partir de sources/KF1.JPG y sources/KF2.JPG, como mapas de píxeles en js/graficos.js, que también da cada sprite ya coloreado (KF.graficos.SPRITES_NAVE, SPRITE_JUGADOR, SPRITE_DISPARO, SPRITE_BOMBA, SPRITES_EXPLOSION_JUGADOR, SPRITES_EXPLOSION_NAVE); las demás partes solo los usan. Las naves se pueden dibujar centradas y giradas a cualquier ángulo (lo usan las naves en picado).
-- 2026-10-03 19:08 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] Naves alienígenas de 11 píxeles de ancho, con dos antenas, brazos con las puntas hacia arriba, ojos y alas bajo los brazos: azul (cuerpo celeste, alas azules), lila (cuerpo y alas lila), roja (cuerpo rojo, alas azul claro). La amarilla (nodriza) tiene cúpula naranja, cuerpo amarillo con bordes blancos, alas azul oscuro y cola. Sin aleteo en la formación (el dueño aceptó la recomendación).
-- 2026-10-03 19:08 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] Nave del jugador de 13×13 píxeles: cúpula roja y tres columnas blancas rellenas de celeste. Disparo: línea amarilla de 1×4. Bombas: línea blanca de 2×6. Explosión del jugador en tres fases (rojo, amarillo y blanco, con restos celestes); explosión de las naves alienígenas en cuatro fases, un destello que se abre en un anillo de chispas.
-- 2026-10-03 19:11 · Validado por el dueño: pasa a estable.
-- 2026-10-03 19:18 · Fuente: una sola fuente pixel-art de 5×7 para todos los textos, con cifras, barra, letras de la A a la Z y espacio, en js/graficos.js (KF.graficos.crearFuente(color), escribir y anchoTexto, con escala para agrandarla). Viene de la fuente de cifras que tenía el marcador.
-- 2026-10-04 10:52 · Power-ups: cápsula de 5×7 (dos sprites, azul con franja amarilla y rosa con franja blanca, para el parpadeo; KF.graficos.SPRITES_CAPSULA), bomba del jugador como un rombo naranja de 3×3 (SPRITE_BOMBA_JUGADOR) y la onda de su explosión, un círculo amarillo y naranja que se abre y se apaga (dibujarOnda).
-- 2026-10-04 12:05 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] Naves nuevas: verde (cuerpo verde, ojos blancos, alas verde oscuro), naranja (cuerpo naranja, ojos oscuros, alas rojizas) y cian (cuerpo cian claro, ojos oscuros, alas rosa), con el mismo dibujo de 11 píxeles que la azul, la lila y la roja.
-- 2026-10-05 12:05 · Destello del cañón de la nave del jugador al disparar: estrella de 5×3 blanca con centro amarillo (KF.graficos.SPRITE_DESTELLO), para jugador/destello-disparo.
-- 2026-10-05 12:23 · Colores de los fragmentos de la explosión del jugador: los mismos rojo, amarillo, blanco y celeste de su explosión (KF.graficos.COLORES_FRAGMENTOS), para jugador/explosion-fragmentos.
-- 2026-10-05 12:43 · Llama del motor de la nave del jugador: dos formas de 3×3, naranja con punta amarilla, que se alternan para parpadear (KF.graficos.SPRITES_LLAMA), para jugador/estela-motor.
+- 2026-10-03 18:22 · Created in the initial requirements load.
+- 2026-10-03 18:44 · [replaced by 2026-10-03 19:08] Vertical screen like the arcade, 224×288 logical pixels scaled to the window. Black background for now; the star background from the screenshots remains pending in this node.
+- 2026-10-03 18:44 · [replaced by 2026-10-03 19:08] Provisional sprites of the four alien ships in formation, defined as pixel maps in js/graficos.js; this node will refine them from the screenshots.
+- 2026-10-03 18:46 · [replaced by 2026-10-03 19:08] Provisional sprites of the player ship (white with red and blue details), its shot (yellow line) and its explosion in three phases, as pixel maps in js/graficos.js; this node will refine them from the screenshots.
+- 2026-10-03 19:05 · [replaced by 2026-10-03 19:08] Rotated drawing: ships can be drawn centred and rotated to any angle (used by diving ships). Provisional bomb sprite: vertical white line of 1×5 pixels, in js/graficos.js.
+- 2026-10-03 19:10 · [replaced by 2026-10-03 19:08] Provisional sprite of the alien ships' explosion, in three phases (red, yellow and white), as pixel maps in js/graficos.js; this node will refine it.
+- 2026-10-03 19:08 · Vertical screen like the arcade, 224×288 logical pixels scaled to the window, with a star background: 70 coloured dots (mostly white) that move down at 12 pixels per second and twinkle, each at its own rhythm. It is drawn behind everything.
+- 2026-10-03 19:08 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] Sprites based on sources/KF1.JPG and sources/KF2.JPG, as pixel maps in js/graficos.js, which also provides each sprite pre-coloured (KF.graficos.SPRITES_NAVE, SPRITE_JUGADOR, SPRITE_DISPARO, SPRITE_BOMBA, SPRITES_EXPLOSION_JUGADOR, SPRITES_EXPLOSION_NAVE); the other parts only use them. Ships can be drawn centred and rotated to any angle (used by diving ships).
+- 2026-10-03 19:08 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] Alien ships 11 pixels wide, with two antennae, arms with the tips pointing up, eyes and wings under the arms: blue (light-blue body, blue wings), purple (purple body and wings), red (red body, light-blue wings). The yellow one (mothership) has an orange dome, yellow body with white edges, dark-blue wings and a tail. No wing-flapping in the formation (the owner accepted the recommendation).
+- 2026-10-03 19:08 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] Player ship of 13×13 pixels: red dome and three white columns filled with light blue. Shot: yellow line of 1×4. Bombs: white line of 2×6. Player explosion in three phases (red, yellow and white, with light-blue debris); alien ships' explosion in four phases, a flash that opens into a ring of sparks.
+- 2026-10-03 19:11 · Validated by the owner: becomes stable.
+- 2026-10-03 19:18 · Font: a single 5×7 pixel-art font for all texts, with digits, slash, letters A to Z and space, in js/graficos.js (KF.graficos.crearFuente(color), escribir and anchoTexto, with a scale to enlarge it). It comes from the digit font the scoreboard had.
+- 2026-10-04 10:52 · Power-ups: 5×7 capsule (two sprites, blue with a yellow stripe and pink with a white stripe, for the blinking; KF.graficos.SPRITES_CAPSULA), player bomb as a 3×3 orange diamond (SPRITE_BOMBA_JUGADOR) and the wave of its explosion, a yellow and orange circle that expands and fades out (dibujarOnda).
+- 2026-10-04 12:05 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] New ships: green (green body, white eyes, dark-green wings), orange (orange body, dark eyes, reddish wings) and cyan (light-cyan body, dark eyes, pink wings), with the same 11-pixel drawing as the blue, purple and red ones.
+- 2026-10-05 12:05 · Muzzle flash of the player ship's cannon when shooting: 5×3 white star with a yellow centre (KF.graficos.SPRITE_DESTELLO), for jugador/destello-disparo.
+- 2026-10-05 12:23 · Colours of the player explosion fragments: the same red, yellow, white and light blue as its explosion (KF.graficos.COLORES_FRAGMENTOS), for jugador/explosion-fragmentos.
+- 2026-10-05 12:43 · Engine flame of the player ship: two 3×3 shapes, orange with a yellow tip, that alternate to flicker (KF.graficos.SPRITES_LLAMA), for jugador/estela-motor.
 
 ## Requirements
-- 2026-10-03 18:13 · Adjunto dos capturas como referencia visual. En la primera, una formación de nave amarilla y dos rojas desciende para atacar. En la segunda, una nave lila desciende hacia la nave del jugador mientras dos bombas (líneas blancas verticales algo gruesas) van cayendo.
-- 2026-10-03 18:22 · draft: Dibujar la pantalla y los sprites pixel-art (nave del jugador, cuatro naves alienígenas, disparo, bombas, explosión) a partir de sources/KF1.JPG y sources/KF2.JPG.
-- 2026-10-03 18:40 · Derived from enemigos/ataque: las naves alienígenas se dibujan rotadas a cualquier ángulo (giro de 180° al salir y orientación hacia el jugador en el picado).
-- 2026-10-03 18:42 · 2. A (pantalla vertical como el arcade, escalada a la ventana, fondo negro por ahora; las estrellas quedan para Gráficos)
-- 2026-10-03 18:44 · Derived from enemigos/formacion: sprites de las cuatro naves alienígenas en formación.
-- 2026-10-03 18:42 · Derived from jugador: sprites de la nave del jugador, su disparo y su explosión.
-- 2026-10-03 19:05 · Derived from enemigos/ataque: sprite de la bomba de las naves alienígenas.
-- 2026-10-03 19:10 · Derived from enemigos: sprite provisional de la explosión de las naves alienígenas.
-- 2026-10-03 19:18 · Derived from partida: fuente pixel-art de letras y cifras para los textos.
-- 2026-10-04 10:52 · Derived from power-ups: dibujo de la cápsula que parpadea y de la explosión de la bomba.
-- 2026-10-04 12:05 · Derived from enemigos/formacion: los sprites de las naves verde, naranja y cian.
-- 2026-10-05 12:05 · Derived from jugador/destello-disparo: sprite del destello del cañón (SPRITE_DESTELLO).
-- 2026-10-05 12:43 · Derived from jugador/estela-motor: sprites de la llama del motor (SPRITES_LLAMA).
+- 2026-10-03 18:13 · I attach two screenshots as visual reference. In the first one, a formation of a yellow ship and two red ones descends to attack. In the second one, a purple ship descends towards the player ship while two bombs (somewhat thick vertical white lines) are falling.
+- 2026-10-03 18:22 · draft: Draw the screen and the pixel-art sprites (player ship, four alien ships, shot, bombs, explosion) based on sources/KF1.JPG and sources/KF2.JPG.
+- 2026-10-03 18:40 · Derived from enemigos/ataque: the alien ships are drawn rotated to any angle (180° turn when leaving and orientation towards the player in the dive).
+- 2026-10-03 18:42 · 2. A (vertical screen like the arcade, scaled to the window, black background for now; the stars are left for Graphics)
+- 2026-10-03 18:44 · Derived from enemigos/formacion: sprites of the four alien ships in formation.
+- 2026-10-03 18:42 · Derived from jugador: sprites of the player ship, its shot and its explosion.
+- 2026-10-03 19:05 · Derived from enemigos/ataque: sprite of the alien ships' bomb.
+- 2026-10-03 19:10 · Derived from enemigos: provisional sprite of the alien ships' explosion.
+- 2026-10-03 19:18 · Derived from partida: pixel-art font of letters and digits for the texts.
+- 2026-10-04 10:52 · Derived from power-ups: drawing of the blinking capsule and of the bomb's explosion.
+- 2026-10-04 12:05 · Derived from enemigos/formacion: the sprites of the green, orange and cyan ships.
+- 2026-10-05 12:05 · Derived from jugador/destello-disparo: sprite of the cannon's muzzle flash (SPRITE_DESTELLO).
+- 2026-10-05 12:43 · Derived from jugador/estela-motor: sprites of the engine flame (SPRITES_LLAMA).

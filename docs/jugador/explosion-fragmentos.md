@@ -1,17 +1,17 @@
 ---
-title: Explosión con fragmentos
+title: Explosion with fragments
 depends_on: []
 threads:
-  - Stack de drafts en Jugador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
-  - Explosión con fragmentos | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi84jLToNjHSuRTTfkLNAWVf
+  - Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
+  - Explosion with fragments | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi84jLToNjHSuRTTfkLNAWVf
 ---
 ## Summary
-Al explotar, la nave del jugador lanza 16 fragmentos de 1 o 2 píxeles con los colores de su explosión, que se dispersan desde su centro, frenando un poco, y se apagan en un segundo. Validado por el dueño.
+When it explodes, the player ship throws out 16 fragments of 1 or 2 pixels in the colors of its explosion, which scatter from its center, slowing down a little, and fade out within one second. Validated by the owner.
 
 ## Decisions
-- 2026-10-05 11:51 · Creado como draft hijo de Jugador, uno de los seis para probar el apilado de cajas de Claude Visual Project.
-- 2026-10-05 12:23 · Fragmentos: al explotar, la nave lanza 16 fragmentos cuadrados de 1 o 2 píxeles desde su centro, en direcciones al azar, a entre 30 y 90 píxeles por segundo; pierden la mitad de su velocidad cada segundo y se apagan poco a poco hasta desaparecer al cabo de 1 segundo. Cada uno tiene uno de los colores de la explosión (rojo, amarillo, blanco o celeste). Se dibujan encima de la explosión de tres fases, que no cambia, no dañan nada y terminan su recorrido aunque Partida saque la nave de recambio o acabe la partida. Código en js/jugador.js (KF.jugador.fragmentos, lanzarFragmentos, moverFragmentos); los colores son KF.graficos.COLORES_FRAGMENTOS.
-- 2026-10-05 12:25 · Validado por el dueño: pasa a estable.
+- 2026-10-05 11:51 · Created as a child draft of Player, one of the six to test Claude Visual Project's box stacking.
+- 2026-10-05 12:23 · Fragments: when it explodes, the ship throws out 16 square fragments of 1 or 2 pixels from its center, in random directions, at between 30 and 90 pixels per second; they lose half their speed every second and fade out gradually until they disappear after 1 second. Each one has one of the explosion's colors (red, yellow, white or light blue). They are drawn on top of the three-phase explosion, which does not change, they damage nothing and they finish their path even if Game brings out the spare ship or the game ends. Code in js/jugador.js (KF.jugador.fragmentos, lanzarFragmentos, moverFragmentos); the colors are KF.graficos.COLORES_FRAGMENTOS.
+- 2026-10-05 12:25 · Validated by the owner: becomes stable.
 
 ## Requirements
-- 2026-10-05 11:51 · draft: Que la explosión de la nave del jugador lance fragmentos que se dispersan y se apagan.
+- 2026-10-05 11:51 · draft: Make the player ship's explosion throw out fragments that scatter and fade out.

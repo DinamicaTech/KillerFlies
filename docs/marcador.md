@@ -1,30 +1,30 @@
 ---
-title: Marcador
+title: Scoreboard
 depends_on: [enemigos, partida, architecture, jugador]
 threads:
-  - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
-  - Marcador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiEmsD9WvmtQFinsch84vnYn
+  - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - Scoreboard | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiEmsD9WvmtQFinsch84vnYn
 ---
 ## Summary
-La información en pantalla: oleada actual y máxima arriba a la izquierda, puntos y récord arriba a la derecha, y las naves de recambio abajo a la derecha. Los récords se guardan en el navegador en cuanto se superan. Muestra los valores que le da Partida (oleada, naves de recambio, inicio de partida), con la fuente de Gráficos. El 'hall of fame' (pedir el nombre al entrar en los 10 mejores y mostrar los mejores al final de la partida) está pendiente en el draft hijo `marcador/hall-of-fame`.
+The on-screen information: current and best wave at the top left, points and high score at the top right, and the spare ships at the bottom right. High scores are saved in the browser as soon as they are beaten. It shows the values Game gives it (wave, spare ships, game start), with the font from Graphics. The 'hall of fame' (asking for the name on entering the top 10 and showing the best at the end of the game) is pending in the child draft `marcador/hall-of-fame`.
 
 ## Decisions
-- 2026-10-03 18:22 · Creado en la carga de requisitos inicial.
-- 2026-10-03 19:10 · [replaced by 2026-10-03 19:18] Formato: arriba a la izquierda "oleada/oleada máxima" (p. ej. "1/3") y arriba a la derecha "puntos/puntos máximos" (p. ej. "350/1230"), a 4 píxeles del borde, en blanco con una fuente pixel-art de 5×7 dibujada por código (solo cifras y la barra).
-- 2026-10-03 19:10 · Naves de recambio: se dibujan abajo a la derecha, pegadas al borde inferior bajo la franja de la nave del jugador, con el mismo dibujo que la nave del jugador; Gráficos podrá darles un dibujo más pequeño.
-- 2026-10-03 19:10 · Récords: la oleada máxima y los puntos máximos se guardan en el almacenamiento local del navegador en cuanto se superan, así que no se pierden si se cierra la pestaña a media partida. Si el navegador no deja guardar, duran solo mientras la página está abierta.
-- 2026-10-03 19:10 · [replaced by 2026-10-03 19:18] Reparto con Partida: Partida dice al marcador la oleada en curso, las naves de recambio que quedan y cuándo empieza una partida (los puntos vuelven a cero); el marcador solo los muestra y actualiza los récords. Hasta que Partida exista: oleada 1 y dos naves de recambio fijas.
-- 2026-10-03 19:12 · Puntos: cada nave alienígena destruida, por el disparo o al chocar con el jugador, suma sus puntos (azul 10, lila 20, roja 30, amarilla 50); el marcador se apunta al aviso de nave destruida de Enemigos.
-- 2026-10-03 19:10 · Código en js/marcador.js (KF.marcador: sumarPuntos, reiniciarPuntos, ponerOleada, ponerRecambio), que se dibuja encima de todo lo demás.
-- 2026-10-03 19:11 · Validado por el owner: el marcador queda implementado y el nodo pasa a estable.
-- 2026-10-03 19:18 · Formato: arriba a la izquierda "oleada/oleada máxima" (p. ej. "1/3") y arriba a la derecha "puntos/puntos máximos" (p. ej. "350/1230"), a 4 píxeles del borde, en blanco con la fuente pixel-art de 5×7 de Gráficos.
-- 2026-10-03 19:18 · Reparto con Partida: Partida dice al marcador la oleada en curso, las naves de recambio que quedan y cuándo empieza una partida (los puntos vuelven a cero); el marcador solo los muestra y actualiza los récords.
-- 2026-10-05 10:55 · El borrador del hall of fame pasa a su propio nodo hijo, `marcador/hall-of-fame`, y Marcador vuelve a estable: cada draft es un nodo propio (CVP rules versión 8).
+- 2026-10-03 18:22 · Created in the initial requirements load.
+- 2026-10-03 19:10 · [replaced by 2026-10-03 19:18] Format: at the top left "wave/best wave" (e.g. "1/3") and at the top right "points/best points" (e.g. "350/1230"), 4 pixels from the edge, in white with a 5×7 pixel-art font drawn in code (digits and the slash only).
+- 2026-10-03 19:10 · Spare ships: drawn at the bottom right, against the bottom edge below the player ship's strip, with the same drawing as the player ship; Graphics may give them a smaller drawing.
+- 2026-10-03 19:10 · High scores: the best wave and the best points are saved in the browser's local storage as soon as they are beaten, so they are not lost if the tab is closed mid-game. If the browser does not allow saving, they last only while the page is open.
+- 2026-10-03 19:10 · [replaced by 2026-10-03 19:18] Split with Game: Game tells the scoreboard the current wave, the spare ships left and when a game starts (points go back to zero); the scoreboard only shows them and updates the high scores. Until Game exists: wave 1 and two fixed spare ships.
+- 2026-10-03 19:12 · Points: each alien ship destroyed, by the shot or by colliding with the player, adds its points (blue 10, purple 20, red 30, yellow 50); the scoreboard subscribes to Enemies' ship-destroyed notification.
+- 2026-10-03 19:10 · Code in js/marcador.js (KF.marcador: sumarPuntos, reiniciarPuntos, ponerOleada, ponerRecambio), drawn on top of everything else.
+- 2026-10-03 19:11 · Validated by the owner: the scoreboard is implemented and the node becomes stable.
+- 2026-10-03 19:18 · Format: at the top left "wave/best wave" (e.g. "1/3") and at the top right "points/best points" (e.g. "350/1230"), 4 pixels from the edge, in white with the 5×7 pixel-art font from Graphics.
+- 2026-10-03 19:18 · Split with Game: Game tells the scoreboard the current wave, the spare ships left and when a game starts (points go back to zero); the scoreboard only shows them and updates the high scores.
+- 2026-10-05 10:55 · The hall of fame draft moves to its own child node, `marcador/hall-of-fame`, and Scoreboard goes back to stable: each draft is its own node (CVP rules version 8).
 
 ## Requirements
-- 2026-10-03 18:13 · En la parte superior izquierda se mostrará el número de oleada + "/" + número de oleada máxima conseguida por ese jugador. En la parte superior derecha, se mostrarán los puntos conseguidos + "/" + puntos máximos conseguidos por ese jugador.
-- 2026-10-03 18:13 · Tiene dos naves de recambio (que aparecen pequeñitas a la derecha abajo del todo)
-- 2026-10-03 18:22 · Derived from enemigos: sumar los puntos de cada nave destruida (azul 10, lila 20, roja 30, amarilla 50).
-- 2026-10-03 18:22 · draft: Implementar el marcador: oleada/oleada máxima arriba a la izquierda, puntos/puntos máximos arriba a la derecha, naves de recambio pequeñas abajo a la derecha, y guardar los máximos en el navegador.
-- 2026-10-03 19:10 · Derived from enemigos: sumar también los puntos de la nave que choca contra el jugador; cada nave destruida se avisa con KF.enemigos.alDestruir.
-- 2026-10-03 19:18 · Derived from partida: usar la fuente de Gráficos.
+- 2026-10-03 18:13 · At the top left the wave number + "/" + the highest wave number reached by that player will be shown. At the top right, the points earned + "/" + the highest points earned by that player will be shown.
+- 2026-10-03 18:13 · It has two spare ships (which appear tiny at the very bottom right)
+- 2026-10-03 18:22 · Derived from enemigos: add up the points of each destroyed ship (blue 10, purple 20, red 30, yellow 50).
+- 2026-10-03 18:22 · draft: Implement the scoreboard: wave/best wave at the top left, points/best points at the top right, small spare ships at the bottom right, and save the bests in the browser.
+- 2026-10-03 19:10 · Derived from enemigos: also add the points of the ship that collides with the player; each destroyed ship is signalled with KF.enemigos.alDestruir.
+- 2026-10-03 19:18 · Derived from partida: use the font from Graphics.

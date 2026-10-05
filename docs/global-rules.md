@@ -3,11 +3,12 @@ title: Global rules
 depends_on: []
 ---
 ## Summary
-Las reglas que sigue todo hilo que trabaja sobre un nodo de este proyecto. Los prompts que copia la página apuntan aquí en vez de repetirlas.
-"CVP rules" las escribe Claude Visual Project y las reemplaza "Update rules"; "Project rules" son las propias de este proyecto y la página nunca las toca.
+The rules followed by every thread that works on a node of this project. The prompts the page copies point here instead of repeating them.
+"CVP rules" are written by Claude Visual Project and replaced by "Update rules"; "Project rules" belong to this project and the page never touches them.
 
 ## Decisions
-- 2026-10-03 18:16 · Creado por Claude Visual Project con su versión 5 de las reglas.
+- 2026-10-03 18:16 · Created by Claude Visual Project with version 5 of its rules.
+- 2026-10-05 14:19 · Working docs are written in English, no longer in Spanish, because the project is published as a demo of CVP; the owner can keep chatting in Spanish.
 
 ## CVP rules
 <!-- cvp-rules 8 begin · Written by Claude Visual Project ("Update rules" in the page). Do not edit: an update replaces everything up to the end marker. Add your own rules under ## Project rules. -->
@@ -51,5 +52,5 @@ Once confirmed, the change is atomic: do all of it in this thread and one branch
 
 ## Project rules
 <!-- Rules of this project for every thread, added by its people or by threads with the owner's OK. -->
-- Working docs are written in Spanish.
-- Cada hilo fusiona su propio PR en main en cuanto el trabajo está terminado, sin pedir confirmación al dueño (pedido por el dueño el 2026-10-04 10:39).
+- Working docs are written in English (changed from Spanish at the owner's request on 2026-10-05 13:29); the owner may keep chatting in Spanish.
+- Each thread merges its own PR into main as soon as the work is done, without asking the owner for confirmation (asked by the owner on 2026-10-04 10:39).

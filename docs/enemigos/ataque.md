@@ -1,47 +1,47 @@
 ---
-title: Ataque
+title: Attack
 depends_on: [enemigos, enemigos/formacion, jugador, graficos, architecture]
 threads:
-  - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
-  - Ataques en picado | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFJ5MweEGxxYP7n8Day6kv9
+  - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - Dive attacks | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFJ5MweEGxxYP7n8Day6kv9
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
-  - Formaciones por oleada | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
+  - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
 ---
 ## Summary
-Los ataques: una nave (o una amarilla con su escolta de rojas) deja la formación con una pequeña parábola, gira, baja hacia el jugador soltando bombas y, si no choca, sale por abajo, reaparece arriba y vuelve a su sitio. Los tipos nuevos bajan a su manera: la verde en zigzag, la naranja embiste en línea recta sin bombas y la cian se para a media pantalla y dispara una ráfaga apuntada. Empiezan uno o dos ataques a la vez y son más con cada oleada, que además los hace más rápidos. Al salir la nave de recambio del jugador, los ataques esperan dos segundos. La amarilla sale con las dos rojas de debajo (o las más próximas). Una nave atacante que choca con el jugador lo hace explotar y se destruye; el disparo del jugador también la alcanza.
+The attacks: a ship (or a yellow with its escort of reds) leaves the formation with a small parabola, turns, dives toward the player dropping bombs and, if it does not collide, exits at the bottom, reappears at the top and returns to its place. The new types come down in their own way: the green in zigzag, the orange rams in a straight line without bombs and the cyan stops at mid-screen and fires an aimed burst. One or two attacks start at a time and there are more with each wave, which also makes them faster. When the player's spare ship comes out, attacks wait two seconds. The yellow leaves with the two reds below it (or the nearest ones). An attacking ship that collides with the player makes it explode and is destroyed; the player's shot also hits it.
 
 ## Decisions
-- 2026-10-03 18:22 · Creado en la carga de requisitos inicial.
-- 2026-10-03 18:40 · El borde del § 6 es el inferior: la nave en picado que sale por abajo reaparece por arriba y vuelve a su hueco en la formación.
-- 2026-10-03 18:40 · Ritmo de ataques: uno o dos ataques a la vez al principio, y más con cada oleada.
-- 2026-10-03 18:40 · Orden: este nodo se implementa después de enemigos/formacion y jugador, que siguen en borrador sin código; hasta entonces sigue como draft.
-- 2026-10-03 19:05 · Salida: la nave deja su hueco con media vuelta hacia arriba de 12 píxeles de radio en 0,8 segundos, hacia el lado de la pantalla en que está, y gira 180° mientras la hace.
-- 2026-10-03 19:05 · Picado: baja a 70 píxeles por segundo; mientras está por encima del jugador se desvía hacia él (hasta 55 píxeles por segundo en horizontal) con una oscilación suave que hace irregular la trayectoria, y orienta los cañones hacia él. Una vez pasado el jugador sigue recto.
-- 2026-10-03 19:05 · [replaced by 2026-10-04 12:05] Bombas: cada nave suelta al azar entre una y el máximo de su tipo (azul 2, lila 3, roja y amarilla 4), separadas al menos 0,3 segundos, solo mientras baja entre la altura 90 y 60 píxeles por encima del jugador. Caen a 110 píxeles por segundo conservando la velocidad horizontal que llevaba la nave al soltarlas.
-- 2026-10-03 19:05 · Escolta: al atacar una amarilla salen con ella las dos rojas vivas en su hueco más próximas a su columna (las de debajo si están, si no las más cercanas; una si solo queda una). Hacen su propia parábola y luego bajan en paralelo debajo de ella, una a cada lado, con su orientación. Si la amarilla es destruida, siguen el picado por su cuenta.
-- 2026-10-03 19:05 · Vuelta: la nave que sale por abajo reaparece arriba sobre su hueco, baja hasta él siguiendo el vaivén de la formación, se endereza en los últimos 60 píxeles y vuelve a la formación.
-- 2026-10-03 19:05 · [replaced by 2026-10-03 19:18] Ritmo: el primer ataque llega a los 2 segundos y luego cada 1,5 a 3 segundos (un 10% menos por oleada); a la vez caben 1 + número de oleada ataques, hasta 6 (la amarilla con su escolta cuenta como uno). Las amarillas se eligen el triple de a menudo que el resto. No empieza ningún ataque mientras la nave del jugador está explotando. Partida indicará el número de oleada (KF.ataque.oleada) y un multiplicador de velocidad del picado y las bombas (KF.ataque.factorVelocidad); de momento es la oleada 1 a velocidad normal.
-- 2026-10-03 19:05 · Choques: una bomba o una nave en picado que toca la nave del jugador la hace explotar; la nave alienígena que choca se destruye, como en el arcade. El disparo del jugador también destruye las naves en picado. Los puntos quedan para Marcador y el zumbido para Sonido.
-- 2026-10-03 19:05 · Código en js/ataque.js; el sprite de la bomba y el dibujo girado de las naves en js/graficos.js.
-- 2026-10-03 19:02 · Validado por el owner: los ataques en picado quedan implementados y el nodo pasa a estable.
-- 2026-10-03 19:18 · Ritmo: el primer ataque llega a los 2 segundos y luego cada 1,5 a 3 segundos (un 10% menos por oleada); a la vez caben 1 + número de oleada ataques, hasta 6 (la amarilla con su escolta cuenta como uno). Las amarillas se eligen el triple de a menudo que el resto. No empieza ningún ataque mientras la nave del jugador no está en juego (explotando o fuera de la partida). Al salir la nave de recambio, los ataques esperan otra vez 2 segundos (KF.ataque.tregua). Partida da el número de oleada (KF.ataque.oleada) y el multiplicador de velocidad del picado y las bombas (KF.ataque.factorVelocidad), un 5% más por oleada.
-- 2026-10-04 10:52 · Escolta y power-ups: la amarilla que sale con dos rojas forma un grupo; cuando las tres son destruidas fuera de la formación, Ataque avisa a quien se apunte con KF.ataque.alDestruirEscolta(fn(x, y)), con la posición de la última. Una nave que ya ha vuelto a su hueco deja de contar.
-- 2026-10-04 12:05 · Bombas: cada nave suelta al azar entre una y el máximo de su tipo (azul y verde 2, lila 3, roja y amarilla 4; la naranja ninguna), separadas al menos 0,3 segundos, solo mientras baja entre la altura 90 y 60 píxeles por encima del jugador. Caen a 110 píxeles por segundo conservando la velocidad horizontal que llevaba la nave al soltarlas. La cian no las suelta así: las dispara en su ráfaga.
-- 2026-10-04 12:05 · Zigzag (verde): tras la salida baja a 70 píxeles por segundo en un zigzag cerrado de lado a lado (velocidad lateral de hasta 75 píxeles por segundo, unos 1,4 segundos por ida y vuelta) con una ligera deriva hacia el jugador, orientada según su rumbo.
-- 2026-10-04 12:05 · Embestida (naranja): tras la salida apunta a donde está el jugador en ese momento y se lanza en línea recta hacia allí al doble de la velocidad del picado (140 píxeles por segundo), sin bombas; no corrige el rumbo.
-- 2026-10-04 12:05 · Tirador (cian): baja como el picado hasta media pantalla (altura 144), se queda flotando un segundo con los cañones hacia el jugador y a la mitad dispara una ráfaga en abanico, apuntada a él, con las bombas de su ataque (de una a tres, separadas 30 píxeles por segundo de velocidad lateral); luego sigue bajando.
-- 2026-10-04 12:05 · Las rojas que escoltan a una amarilla bajan siempre con ella; los ataques nuevos son solo de los tipos verde, naranja y cian, que nunca escoltan.
+- 2026-10-03 18:22 · Created in the initial requirements load.
+- 2026-10-03 18:40 · The edge in § 6 is the bottom one: the diving ship that exits at the bottom reappears at the top and returns to its slot in the formation.
+- 2026-10-03 18:40 · Attack pace: one or two attacks at a time at first, and more with each wave.
+- 2026-10-03 18:40 · Order: this node is implemented after enemigos/formacion and jugador, which are still drafts without code; until then it stays as a draft.
+- 2026-10-03 19:05 · Exit: the ship leaves its slot with an upward half-turn of 12 pixel radius in 0.8 seconds, toward the side of the screen it is on, and rotates 180° while doing it.
+- 2026-10-03 19:05 · Dive: it descends at 70 pixels per second; while it is above the player it veers toward them (up to 55 pixels per second horizontally) with a gentle oscillation that makes the trajectory irregular, and points its cannons at them. Once past the player it continues straight.
+- 2026-10-03 19:05 · [replaced by 2026-10-04 12:05] Bombs: each ship drops at random between one and its type's maximum (blue 2, purple 3, red and yellow 4), at least 0.3 seconds apart, only while descending between 90 and 60 pixels above the player. They fall at 110 pixels per second keeping the horizontal speed the ship had when dropping them.
+- 2026-10-03 19:05 · Escort: when a yellow attacks, the two living reds in their slot closest to its column leave with it (the ones below if present, otherwise the nearest; one if only one is left). They do their own parabola and then descend in parallel below it, one on each side, with their own orientation. If the yellow is destroyed, they continue the dive on their own.
+- 2026-10-03 19:05 · Return: the ship that exits at the bottom reappears at the top above its slot, descends to it following the formation's sway, straightens up in the last 60 pixels and rejoins the formation.
+- 2026-10-03 19:05 · [replaced by 2026-10-03 19:18] Pace: the first attack comes at 2 seconds and then every 1.5 to 3 seconds (10% less per wave); 1 + wave number attacks fit at the same time, up to 6 (the yellow with its escort counts as one). Yellows are chosen three times as often as the rest. No attack starts while the player ship is exploding. Game will provide the wave number (KF.ataque.oleada) and a speed multiplier for the dive and the bombs (KF.ataque.factorVelocidad); for now it is wave 1 at normal speed.
+- 2026-10-03 19:05 · Collisions: a bomb or a diving ship that touches the player ship makes it explode; the alien ship that collides is destroyed, as in the arcade. The player's shot also destroys diving ships. Points are left to Scoreboard and the buzzing to Sound.
+- 2026-10-03 19:05 · Code in js/ataque.js; the bomb sprite and the rotated drawing of the ships in js/graficos.js.
+- 2026-10-03 19:02 · Validated by the owner: dive attacks are implemented and the node becomes stable.
+- 2026-10-03 19:18 · Pace: the first attack comes at 2 seconds and then every 1.5 to 3 seconds (10% less per wave); 1 + wave number attacks fit at the same time, up to 6 (the yellow with its escort counts as one). Yellows are chosen three times as often as the rest. No attack starts while the player ship is not in play (exploding or out of the game). When the spare ship comes out, attacks again wait 2 seconds (KF.ataque.tregua). Game provides the wave number (KF.ataque.oleada) and the speed multiplier for the dive and the bombs (KF.ataque.factorVelocidad), 5% more per wave.
+- 2026-10-04 10:52 · Escort and power-ups: the yellow that leaves with two reds forms a group; when all three are destroyed outside the formation, Attack notifies whoever subscribes with KF.ataque.alDestruirEscolta(fn(x, y)), with the position of the last one. A ship that has already returned to its slot no longer counts.
+- 2026-10-04 12:05 · Bombs: each ship drops at random between one and its type's maximum (blue and green 2, purple 3, red and yellow 4; orange none), at least 0.3 seconds apart, only while descending between 90 and 60 pixels above the player. They fall at 110 pixels per second keeping the horizontal speed the ship had when dropping them. The cyan does not drop them this way: it fires them in its burst.
+- 2026-10-04 12:05 · Zigzag (green): after the exit it descends at 70 pixels per second in a tight side-to-side zigzag (lateral speed up to 75 pixels per second, about 1.4 seconds per round trip) with a slight drift toward the player, oriented according to its heading.
+- 2026-10-04 12:05 · Ramming (orange): after the exit it aims at where the player is at that moment and charges in a straight line toward that point at twice the dive speed (140 pixels per second), without bombs; it does not correct its course.
+- 2026-10-04 12:05 · Shooter (cyan): it descends like the dive down to mid-screen (height 144), hovers for one second with its cannons toward the player and halfway through fires a fan-shaped burst, aimed at them, with its attack's bombs (one to three, 30 pixels per second of lateral speed apart); then it continues descending.
+- 2026-10-04 12:05 · The reds escorting a yellow always go down with it; the new attacks are only for the green, orange and cyan types, which never escort.
 
 ## Requirements
-- 2026-10-03 18:13 · From sources/KillerFlies.txt § 4: ataques aleatorios en picado con trayectoria suavemente irregular hacia el jugador, soltando bombas que conservan la inercia horizontal de la nave; máximo de bombas: azul 2, lila 3, roja y amarilla 4.
-- 2026-10-03 18:13 · From sources/KillerFlies.txt § 5: la amarilla ataca escoltada por dos rojas (o una si no quedan más) que van en paralelo debajo de ella como escudo.
-- 2026-10-03 18:13 · From sources/KillerFlies.txt § 6: una nave en picado que llega al borde de la pantalla reaparece por arriba y vuelve a su posición en la formación.
-- 2026-10-03 18:13 · From sources/KillerFlies.txt § 7: al salir, pequeña parábola ascendente durante la que la nave gira 180°, y luego se orienta (cañones) hacia la nave del jugador.
-- 2026-10-03 18:22 · draft: Implementar los ataques en picado según sources/KillerFlies.txt §§ 4 a 7, con las capturas sources/KF1.JPG (amarilla con escolta) y sources/KF2.JPG (lila con bombas) como referencia.
-- 2026-10-03 18:40 · 1.A (§ 6: borde inferior; sale por abajo, reaparece arriba y vuelve a su sitio)
-- 2026-10-03 18:40 · 2.A (empezar con uno o dos ataques a la vez y aumentar con cada oleada)
-- 2026-10-03 18:40 · 3.A (hacer antes Formación y Jugador, cada uno en su hilo, y retomar este después)
-- 2026-10-03 18:54 · Sí, la escolta las dos naves rojas debajo, si no hay, las más próximas
-- 2026-10-03 19:18 · Derived from partida: al salir la nave de recambio, los ataques esperan 2 segundos antes de empezar.
-- 2026-10-04 10:52 · Derived from power-ups: avisar cuando la amarilla y sus dos rojas de escolta son destruidas las tres fuera de la formación.
-- 2026-10-04 12:05 · Derived from enemigos/formacion: los ataques propios de los tipos nuevos: zigzag (verde), embestida sin bombas (naranja) y tirador con ráfaga apuntada (cian).
+- 2026-10-03 18:13 · From sources/KillerFlies.txt § 4: random dive attacks with a gently irregular trajectory toward the player, dropping bombs that keep the ship's horizontal inertia; maximum bombs: blue 2, purple 3, red and yellow 4.
+- 2026-10-03 18:13 · From sources/KillerFlies.txt § 5: the yellow attacks escorted by two reds (or one if no more are left) that go in parallel below it as a shield.
+- 2026-10-03 18:13 · From sources/KillerFlies.txt § 6: a diving ship that reaches the edge of the screen reappears at the top and returns to its position in the formation.
+- 2026-10-03 18:13 · From sources/KillerFlies.txt § 7: on leaving, a small upward parabola during which the ship rotates 180°, and then it orients itself (cannons) toward the player ship.
+- 2026-10-03 18:22 · draft: Implement the dive attacks according to sources/KillerFlies.txt §§ 4 to 7, with the screenshots sources/KF1.JPG (yellow with escort) and sources/KF2.JPG (purple with bombs) as reference.
+- 2026-10-03 18:40 · 1.A (§ 6: bottom edge; it exits at the bottom, reappears at the top and returns to its place)
+- 2026-10-03 18:40 · 2.A (start with one or two attacks at a time and increase with each wave)
+- 2026-10-03 18:40 · 3.A (do Formation and Player first, each in its own thread, and pick this one up afterwards)
+- 2026-10-03 18:54 · Yes, the escort the two red ships below, if there are none, the nearest ones
+- 2026-10-03 19:18 · Derived from partida: when the spare ship comes out, attacks wait 2 seconds before starting.
+- 2026-10-04 10:52 · Derived from power-ups: notify when the yellow and its two red escorts are all three destroyed outside the formation.
+- 2026-10-04 12:05 · Derived from enemigos/formacion: the new types' own attacks: zigzag (green), ramming without bombs (orange) and shooter with aimed burst (cyan).
