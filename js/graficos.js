@@ -193,6 +193,21 @@ KF.graficos = {
     '.WYW.',
     '..Y..'
   ],
+  // Llama del motor bajo la nave del jugador mientras se mueve: dos formas
+  // que se alternan para que parpadee; la fila de arriba toca la nave.
+  // O = naranja, Y = amarillo.
+  MAPAS_LLAMA: [
+    [
+      'OOO',
+      '.O.',
+      '.Y.'
+    ],
+    [
+      'OYO',
+      '.Y.',
+      '...'
+    ]
+  ],
   // Bomba que dispara el jugador con el power-up bomba: un rombo de 3×3.
   // O = naranja, Y = amarillo.
   MAPA_BOMBA_JUGADOR: [
@@ -379,6 +394,7 @@ KF.graficos.fondo = {
   g.SPRITE_JUGADOR = g.crearSprite(g.MAPA_JUGADOR, { R: '#f02020', W: '#e8f0f8', C: '#30c0d0' });
   g.SPRITE_DISPARO = g.crearSprite(g.MAPA_DISPARO, { Y: '#ffff40' });
   g.SPRITE_DESTELLO = g.crearSprite(g.MAPA_DESTELLO, { W: '#ffffff', Y: '#ffff40' });
+  g.SPRITES_LLAMA = g.MAPAS_LLAMA.map(function (m) { return g.crearSprite(m, { O: '#ff8020', Y: '#ffff40' }); });
   g.SPRITE_BOMBA = g.crearSprite(g.MAPA_BOMBA, { B: '#ffffff' });
   g.SPRITE_BOMBA_JUGADOR = g.crearSprite(g.MAPA_BOMBA_JUGADOR, { O: '#ff8020', Y: '#ffff40' });
   g.SPRITES_CAPSULA = [

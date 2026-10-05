@@ -28,6 +28,7 @@ El aspecto visual del juego: la pantalla, el fondo y los sprites pixel-art de to
 - 2026-10-04 12:05 · Naves nuevas: verde (cuerpo verde, ojos blancos, alas verde oscuro), naranja (cuerpo naranja, ojos oscuros, alas rojizas) y cian (cuerpo cian claro, ojos oscuros, alas rosa), con el mismo dibujo de 11 píxeles que la azul, la lila y la roja.
 - 2026-10-05 12:05 · Destello del cañón de la nave del jugador al disparar: estrella de 5×3 blanca con centro amarillo (KF.graficos.SPRITE_DESTELLO), para jugador/destello-disparo.
 - 2026-10-05 12:23 · Colores de los fragmentos de la explosión del jugador: los mismos rojo, amarillo, blanco y celeste de su explosión (KF.graficos.COLORES_FRAGMENTOS), para jugador/explosion-fragmentos.
+- 2026-10-05 12:43 · Llama del motor de la nave del jugador: dos formas de 3×3, naranja con punta amarilla, que se alternan para parpadear (KF.graficos.SPRITES_LLAMA), para jugador/estela-motor.
 
 ## Requirements
 - 2026-10-03 18:13 · Adjunto dos capturas como referencia visual. En la primera, una formación de nave amarilla y dos rojas desciende para atacar. En la segunda, una nave lila desciende hacia la nave del jugador mientras dos bombas (líneas blancas verticales algo gruesas) van cayendo.
@@ -42,3 +43,4 @@ El aspecto visual del juego: la pantalla, el fondo y los sprites pixel-art de to
 - 2026-10-04 10:52 · Derived from power-ups: dibujo de la cápsula que parpadea y de la explosión de la bomba.
 - 2026-10-04 12:05 · Derived from enemigos/formacion: los sprites de las naves verde, naranja y cian.
 - 2026-10-05 12:05 · Derived from jugador/destello-disparo: sprite del destello del cañón (SPRITE_DESTELLO).
+- 2026-10-05 12:43 · Derived from jugador/estela-motor: sprites de la llama del motor (SPRITES_LLAMA).
