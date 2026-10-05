@@ -385,6 +385,8 @@ KF.graficos.fondo = {
     g.crearSprite(g.MAPA_CAPSULA, { C: '#30c0ff', B: '#ffffff', L: '#ffff40' }),
     g.crearSprite(g.MAPA_CAPSULA, { C: '#ff40c0', B: '#ffffff', L: '#ffffff' })
   ];
+  // Colores de los fragmentos que lanza la explosión del jugador.
+  g.COLORES_FRAGMENTOS = [fuego.R, fuego.Y, fuego.B, fuego.C];
   g.SPRITES_EXPLOSION_JUGADOR = g.MAPAS_EXPLOSION_JUGADOR.map(function (m) { return g.crearSprite(m, fuego); });
   g.SPRITES_EXPLOSION_NAVE = g.MAPAS_EXPLOSION_NAVE.map(function (m) { return g.crearSprite(m, fuego); });
   g.fondo.crearEstrellas();

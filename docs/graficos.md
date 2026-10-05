@@ -27,6 +27,7 @@ El aspecto visual del juego: la pantalla, el fondo y los sprites pixel-art de to
 - 2026-10-04 10:52 · Power-ups: cápsula de 5×7 (dos sprites, azul con franja amarilla y rosa con franja blanca, para el parpadeo; KF.graficos.SPRITES_CAPSULA), bomba del jugador como un rombo naranja de 3×3 (SPRITE_BOMBA_JUGADOR) y la onda de su explosión, un círculo amarillo y naranja que se abre y se apaga (dibujarOnda).
 - 2026-10-04 12:05 · Naves nuevas: verde (cuerpo verde, ojos blancos, alas verde oscuro), naranja (cuerpo naranja, ojos oscuros, alas rojizas) y cian (cuerpo cian claro, ojos oscuros, alas rosa), con el mismo dibujo de 11 píxeles que la azul, la lila y la roja.
 - 2026-10-05 12:05 · Destello del cañón de la nave del jugador al disparar: estrella de 5×3 blanca con centro amarillo (KF.graficos.SPRITE_DESTELLO), para jugador/destello-disparo.
+- 2026-10-05 12:23 · Colores de los fragmentos de la explosión del jugador: los mismos rojo, amarillo, blanco y celeste de su explosión (KF.graficos.COLORES_FRAGMENTOS), para jugador/explosion-fragmentos.
 
 ## Requirements
 - 2026-10-03 18:13 · Adjunto dos capturas como referencia visual. En la primera, una formación de nave amarilla y dos rojas desciende para atacar. En la segunda, una nave lila desciende hacia la nave del jugador mientras dos bombas (líneas blancas verticales algo gruesas) van cayendo.
