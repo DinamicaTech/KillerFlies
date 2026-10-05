@@ -1,14 +1,12 @@
 ---
 title: Marcador
-status: draft
 depends_on: [enemigos, partida, architecture, jugador]
 threads:
   - Nuevo proyecto | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
   - Marcador | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiEmsD9WvmtQFinsch84vnYn
-  - Hall of fame | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi85PBYekPg2cZkUXJWUDppC
 ---
 ## Summary
-La información en pantalla: oleada actual y máxima arriba a la izquierda, puntos y récord arriba a la derecha, y las naves de recambio abajo a la derecha. Los récords se guardan en el navegador en cuanto se superan. Muestra los valores que le da Partida (oleada, naves de recambio, inicio de partida), con la fuente de Gráficos. Pendiente (borrador): pedir el nombre al entrar en los 10 mejores y mostrar el 'hall of fame' al final de la partida.
+La información en pantalla: oleada actual y máxima arriba a la izquierda, puntos y récord arriba a la derecha, y las naves de recambio abajo a la derecha. Los récords se guardan en el navegador en cuanto se superan. Muestra los valores que le da Partida (oleada, naves de recambio, inicio de partida), con la fuente de Gráficos. El 'hall of fame' (pedir el nombre al entrar en los 10 mejores y mostrar los mejores al final de la partida) está pendiente en el draft hijo `marcador/hall-of-fame`.
 
 ## Decisions
 - 2026-10-03 18:22 · Creado en la carga de requisitos inicial.
@@ -21,6 +19,7 @@ La información en pantalla: oleada actual y máxima arriba a la izquierda, punt
 - 2026-10-03 19:11 · Validado por el owner: el marcador queda implementado y el nodo pasa a estable.
 - 2026-10-03 19:18 · Formato: arriba a la izquierda "oleada/oleada máxima" (p. ej. "1/3") y arriba a la derecha "puntos/puntos máximos" (p. ej. "350/1230"), a 4 píxeles del borde, en blanco con la fuente pixel-art de 5×7 de Gráficos.
 - 2026-10-03 19:18 · Reparto con Partida: Partida dice al marcador la oleada en curso, las naves de recambio que quedan y cuándo empieza una partida (los puntos vuelven a cero); el marcador solo los muestra y actualiza los récords.
+- 2026-10-05 10:55 · El borrador del hall of fame pasa a su propio nodo hijo, `marcador/hall-of-fame`, y Marcador vuelve a estable: cada draft es un nodo propio (CVP rules versión 8).
 
 ## Requirements
 - 2026-10-03 18:13 · En la parte superior izquierda se mostrará el número de oleada + "/" + número de oleada máxima conseguida por ese jugador. En la parte superior derecha, se mostrarán los puntos conseguidos + "/" + puntos máximos conseguidos por ese jugador.
@@ -29,6 +28,3 @@ La información en pantalla: oleada actual y máxima arriba a la izquierda, punt
 - 2026-10-03 18:22 · draft: Implementar el marcador: oleada/oleada máxima arriba a la izquierda, puntos/puntos máximos arriba a la derecha, naves de recambio pequeñas abajo a la derecha, y guardar los máximos en el navegador.
 - 2026-10-03 19:10 · Derived from enemigos: sumar también los puntos de la nave que choca contra el jugador; cada nave destruida se avisa con KF.enemigos.alDestruir.
 - 2026-10-03 19:18 · Derived from partida: usar la fuente de Gráficos.
-- 2026-10-05 10:15 · Al final de la partida, si la puntuación está dentro de las últimas 10 mejores, pedir el nombre del jugador.
-- 2026-10-05 10:15 · Al final de la partida, mostrar el 'hall of fame' de las primeras 10 puntuaciones, con el nombre del jugador, nivel alcanzado y puntos
-- 2026-10-05 10:16 · draft: Al terminar la partida, si los puntos entran en los 10 mejores guardados en el navegador, pedir el nombre del jugador (con teclado y en el móvil) y guardarlo con los puntos y la oleada alcanzada; después mostrar el 'hall of fame' con las 10 mejores puntuaciones (nombre, oleada alcanzada y puntos) antes de volver a 'START GAME'.
