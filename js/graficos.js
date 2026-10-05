@@ -186,6 +186,13 @@ KF.graficos = {
     'Y',
     'Y'
   ],
+  // Destello en la punta del cañón al disparar: estrella blanca con centro
+  // amarillo, la fila de abajo toca el cañón. W = blanco, Y = amarillo.
+  MAPA_DESTELLO: [
+    'W.W.W',
+    '.WYW.',
+    '..Y..'
+  ],
   // Bomba que dispara el jugador con el power-up bomba: un rombo de 3×3.
   // O = naranja, Y = amarillo.
   MAPA_BOMBA_JUGADOR: [
@@ -371,6 +378,7 @@ KF.graficos.fondo = {
   var fuego = { R: '#f02828', Y: '#ffff40', B: '#ffffff', C: '#40d0e0' };
   g.SPRITE_JUGADOR = g.crearSprite(g.MAPA_JUGADOR, { R: '#f02020', W: '#e8f0f8', C: '#30c0d0' });
   g.SPRITE_DISPARO = g.crearSprite(g.MAPA_DISPARO, { Y: '#ffff40' });
+  g.SPRITE_DESTELLO = g.crearSprite(g.MAPA_DESTELLO, { W: '#ffffff', Y: '#ffff40' });
   g.SPRITE_BOMBA = g.crearSprite(g.MAPA_BOMBA, { B: '#ffffff' });
   g.SPRITE_BOMBA_JUGADOR = g.crearSprite(g.MAPA_BOMBA_JUGADOR, { O: '#ff8020', Y: '#ffff40' });
   g.SPRITES_CAPSULA = [
