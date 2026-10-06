@@ -1,13 +1,12 @@
 ---
 title: Sounds with more depth
-status: draft
 depends_on: [power-ups, partida, enemigos/formacion]
 threads:
   - Sounds with more depth | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiKtDX1VB4yqoMRuygVESB5t
   - Real sounds | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFf1TgQJLpT3XvZn4f9CLXB
 ---
 ## Summary
-The synthesized sounds are replaced by eight recorded ones given by the owner (assets/sonidos, played from js/sonido.js): shot, enemy explosion, yellow ship explosion, player explosion, attack sound while ships dive, power-up pickup, a tune at the start of each wave and background music that speeds up, with rising pitch, from 100% to 200% as the wave's ships are destroyed, and goes silent while the player ship is destroyed. Pending the owner's validation.
+The synthesized sounds are replaced by eight recorded ones given by the owner (assets/sonidos, played from js/sonido.js): shot, enemy explosion, yellow ship explosion, player explosion, attack sound while ships dive, power-up pickup, a tune at the start of each wave and background music that speeds up, with rising pitch, from 100% to 200% as the wave's ships are destroyed, and goes silent while the player ship is destroyed.
 
 ## Decisions
 - 2026-10-05 10:55 · Takes over the draft of sounds with more depth that was inside `sonido`: it becomes its own child node (CVP rules version 8).
@@ -18,6 +17,7 @@ The synthesized sounds are replaced by eight recorded ones given by the owner (a
 - 2026-10-06 15:45 · The files have their leading and trailing silence cut, are converted to MP3 (the format every browser plays, Safari included) and are packed into js/sonidos-datos.js, so the game still sounds when index.html is opened from disk (architecture). The audio context is created on page load so the sounds are decoded in advance; it starts playing with the first key or touch, as before.
 - 2026-10-06 15:50 · Background music: 00 (musica-fondo) loops while a game is being played, from the moment the wave-start tune ends; it is silent during that tune, on 'START GAME', on 'GAME OVER' and while the player ship is destroyed, from its explosion until the spare ship appears (the loop keeps running silently, so it comes back where it was and at the speed that matches the ships left). Its speed goes from 100% with the whole wave to 200% with one ship left, in proportion to the ships destroyed, and the pitch rises with the speed, like a tape played faster. Each new wave starts again at 100%.
 - 2026-10-06 15:50 · Volumes, keeping the previous order: player explosion 1, yellow explosion 0.85, enemy explosion 0.75, wave-start tune and power-up 0.8, shot 0.5, attack sound 0.35 and background music 0.225, 25% lower than at first (KF.sonido.VOLUMENES).
+- 2026-10-06 15:58 · Validated by the owner: the recorded sounds and the background music are implemented and the node becomes stable.
 
 ## Requirements
 - 2026-10-05 10:11 · Change the sounds to others with more depth
