@@ -20,7 +20,7 @@ KF.sonido = {
     'power-up': 0.8,
     'disparo': 0.5,
     'ataque': 0.35,
-    'musica-fondo': 0.3
+    'musica-fondo': 0.225
   },
   VELOCIDAD_MAXIMA: 2,     // la música de fondo con la última nave, al 200%
 
@@ -139,14 +139,16 @@ KF.sonido = {
 
   // La música de fondo va al 100% con la oleada entera y se acelera hasta el
   // 200% con la última nave (el tono sube con la velocidad, como una cinta).
+  // Se calla mientras la nave del jugador está destruida.
   actualizarMusica: function () {
     if (this.estadoPartida !== 'jugando') { this.pararMusica(); return; }
     if (!this.buffers['musica-fondo'] || this.ctx.currentTime < this.musicaDesde) return;
     var t = this.ctx.currentTime;
-    if (!this.musica) {
-      this.musica = this.bucle('musica-fondo');
-      this.musica.ganancia.gain.setTargetAtTime(this.VOLUMENES['musica-fondo'], t, 0.05);
-    }
+    if (!this.musica) this.musica = this.bucle('musica-fondo');
+    // Callada mientras la nave del jugador está destruida, hasta que sale la
+    // de recambio; el bucle sigue corriendo, así que vuelve por donde iba.
+    var volumen = KF.jugador.estado === 'viva' ? this.VOLUMENES['musica-fondo'] : 0;
+    this.musica.ganancia.gain.setTargetAtTime(volumen, t, 0.05);
     var naves = KF.formacion.naves, vivas = 0;
     for (var i = 0; i < naves.length; i++) if (naves[i].viva) vivas++;
     var total = this.navesOleada;
