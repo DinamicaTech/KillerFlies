@@ -34,5 +34,5 @@ The synthesized sounds are replaced by eight recorded ones given by the owner (a
 - 2026-10-06 15:26 · 08: Boss explosion (yellow ship)
 - 2026-10-06 15:32 · answer: sound at the start of each wave, with no file for it? → A (reuse 02 at the start of each wave)
 - 2026-10-06 15:32 · answer: when the background music speeds up, does the pitch rise too? → A (yes, like a tape played faster)
-- 2026-10-06 15:40 · Ok, baja un poco el volumen de la música de fondo (un 25%).
-- 2026-10-06 15:40 · Cuando se destruye la nave del jugador, deja de oirse hasta que vuelve a aparecer la nueva nave.
+- 2026-10-06 15:40 · Lower the background music volume a little (by 25%).
+- 2026-10-06 15:40 · When the player ship is destroyed, it stops being heard until the new ship appears.
