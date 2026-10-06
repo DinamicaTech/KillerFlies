@@ -21,3 +21,7 @@ The project is also a public demo of how Claude Visual Project works, so all its
 - 2026-10-03 18:13 · This is about reimplementing a classic arcade game: Galaxy.
 - 2026-10-03 18:13 · Full requirements in sources/KillerFlies.txt, with the screenshots sources/KF1.JPG and sources/KF2.JPG.
 - 2026-10-05 13:29 · I want to publish this project (static HTML) as a 'demo' of how CVP works. Can you translate all the md files into English to make it more accessible to all users?
+
+## Overview
+
+![screenshot-202610061658](overview/screenshot-202610061658.png)
