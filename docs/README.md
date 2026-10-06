@@ -25,3 +25,5 @@ The project is also a public demo of how Claude Visual Project works, so all its
 ## Overview
 
 ![screenshot-202610061658](overview/screenshot-202610061658.png)
+
+![screenshot-202610061701](overview/screenshot-202610061701.png)
