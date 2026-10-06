@@ -3,9 +3,10 @@ title: Power-ups
 depends_on: [jugador, enemigos, enemigos/formacion, enemigos/ataque, graficos, sonido, partida]
 threads:
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
+  - Real sounds | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFf1TgQJLpT3XvZn4f9CLXB
 ---
 ## Summary
-Random power-ups, in js/powerups.js: when a yellow and its two red escorts are destroyed outside the formation, a blinking capsule falls at half the speed of a bomb (the same for every power and worth no points). If the player ship picks it up, it gets a random power, all with the same probability: rapid shot, deep shot, bomb, annihilation (single use), slow fire (a power-down) or triple shot, or else an extra life (one more spare ship, up to 5). It lasts until the end of the wave, a new one replaces the previous one, and it is lost if the ship is destroyed. To test them, Shift+1…7 gives each power from the keyboard.
+Random power-ups, in js/powerups.js: when a yellow and its two red escorts are destroyed outside the formation, a blinking capsule falls at half the speed of a bomb (the same for every power and worth no points). If the player ship picks it up, it gets a random power, all with the same probability: rapid shot, deep shot, bomb, annihilation (single use), slow fire (a power-down) or triple shot, or else an extra life (one more spare ship, up to 5). It lasts until the end of the wave, a new one replaces the previous one, and it is lost if the ship is destroyed. To test them, Shift+1…7 gives each power from the keyboard. Each pickup, extra life included, is counted in KF.powerups.recogidas so Sound can play its sound.
 
 ## Decisions
 - 2026-10-04 10:48 · Created in the lab as an idea.
@@ -30,6 +31,7 @@ Random power-ups, in js/powerups.js: when a yellow and its two red escorts are d
 - 2026-10-04 11:30 · All powers come up with the same probability, now 1 in 7 with the extra life.
 - 2026-10-04 11:30 · Back door to test the powers, keyboard only: with the ship in play, Shift+1…7 gives the power with that number (1 rapid shot, 2 deep, 3 bomb, 4 annihilation, 5 slow fire, 6 triple, 7 extra life), as if a capsule had been picked up. Ctrl+1…6 is not used because Chrome reserves it for switching tabs.
 - 2026-10-04 11:33 · Validated by the owner: the power-ups are implemented and the node becomes stable.
+- 2026-10-06 15:45 · Every power received (capsule picked up, extra life included, or the Shift+1…7 back door) adds one to KF.powerups.recogidas, which Sound observes to play the power-up sound; power-ups does not call Sound.
 
 ## Requirements
 - 2026-10-04 10:46 · idea: When a yellow with its two red escorts is destroyed while diving, a random power-up falls as if it were a bomb (a blinking capsule, the same for all and with the same probability; it gives no points); if the player picks it up, they get that power until the end of the wave. Possible ones: rapid shot (up to three active shots instead of one), deep shot (the shot goes through and destroys every ship in its path), bomb (on hitting a ship it explodes and destroys the ships wholly or partly inside a circle five ship widths across), annihilation (on firing, all enemy ships are destroyed), slow fire (power-down: the shot travels at half speed) and triple shot (three parallel projectiles).
@@ -58,3 +60,4 @@ Random power-ups, in js/powerups.js: when a yellow and its two red escorts are d
 - 2026-10-04 11:29 · New Power Up: Extra life
 - 2026-10-04 11:30 · answer: does the extra life replace the active power? → Ok (it does not replace it)
 - 2026-10-04 11:30 · answer: cap on spare ships? → Maximum 5.
+- 2026-10-06 15:45 · Derived from sonido/sonidos-con-profundidad: notify each capsule pickup, extra life included.

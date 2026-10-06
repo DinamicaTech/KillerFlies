@@ -25,6 +25,7 @@ KF.powerups = {
   capsulas: [],            // {x, y, t}
   ondas: [],               // {x, y, t}: explosiones de la bomba
   naves: null,             // formación de la oleada en la que se obtuvo
+  recogidas: 0,            // poderes recibidos desde que empezó el juego (Sonido los observa)
 
   // Sin poder ni cápsulas: al empezar cada oleada y cada partida.
   reiniciar: function () {
@@ -36,6 +37,7 @@ KF.powerups = {
 
   // La nave recibe un poder, al recoger una cápsula o por la puerta trasera.
   otorgar: function (poder) {
+    this.recogidas++;
     if (poder === 'vida') KF.partida.sumarRecambio();
     else this.activo = poder;
   },
