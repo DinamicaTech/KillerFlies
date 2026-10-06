@@ -23,7 +23,8 @@ The game's sounds, recorded audio files played with Web Audio from js/sonido.js 
 - 2026-10-04 10:52 · [replaced by sonido/sonidos-con-profundidad 2026-10-06 15:45] The "pew" sounds each time the player ship shoots (KF.jugador.salvas), including with the power-ups' multiple shots and with the annihilation.
 - 2026-10-05 10:16 · [replaced by 2026-10-05 10:55] Pending draft: sounds with more depth, plus a sound on picking up a power-up and another at the start of each wave (see Requirements). The current sounds remain in use until it is done.
 - 2026-10-05 10:55 · The draft of sounds with more depth (plus a sound on picking up a power-up and another at the start of each wave) moves to its own child node, `sonido/sonidos-con-profundidad`, and Sound goes back to stable: each draft is its own node (CVP rules version 8). The current sounds remain in use until it is done.
-- 2026-10-06 15:45 · The synthesized sounds are replaced by recorded ones and two are added (power-up and wave start), plus background music; the detail is in the child node sonido/sonidos-con-profundidad, still a draft until the owner validates it.
+- 2026-10-06 15:45 · [replaced by 2026-10-06 15:58] The synthesized sounds are replaced by recorded ones and two are added (power-up and wave start), plus background music; the detail is in the child node sonido/sonidos-con-profundidad, still a draft until the owner validates it.
+- 2026-10-06 15:58 · The synthesized sounds are replaced by recorded ones and two are added (power-up and wave start), plus background music; the detail is in the child node sonido/sonidos-con-profundidad, validated by the owner and stable.
 
 ## Requirements
 - 2026-10-03 18:13 · There are sound effects: shots from the player ship; explosion noise when a ship is destroyed; buzz while an alien ship leaves the formation to make an attack.
