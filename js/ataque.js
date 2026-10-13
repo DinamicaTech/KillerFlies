@@ -57,6 +57,19 @@ KF.ataque = {
     }
   },
 
+  // Si la amarilla cae durante su ataque, sus rojas de escolta dejan de
+  // disparar en ese ataque, como en el arcade; siguen su picado.
+  desarmarEscolta: function (nave) {
+    for (var i = 0; i < this.atacantes.length; i++) {
+      var lider = this.atacantes[i];
+      if (lider.nave !== nave || lider.lider) continue;
+      for (var k = 0; k < this.atacantes.length; k++) {
+        if (this.atacantes[k].lider === lider) this.atacantes[k].bombas = 0;
+      }
+      return;
+    }
+  },
+
   // Máximo de ataques a la vez (la amarilla con su escolta cuenta como uno):
   // dos en la primera oleada y uno más en cada oleada siguiente, hasta seis.
   maximoAtaques: function () {
@@ -424,5 +437,8 @@ KF.ataque = {
 
 KF.ataque.SPRITE_BOMBA = KF.graficos.SPRITE_BOMBA;
 KF.ataque.reiniciar();
-KF.enemigos.alDestruir(function (nave) { KF.ataque.contarCaida(nave); });
+KF.enemigos.alDestruir(function (nave) {
+  KF.ataque.contarCaida(nave);
+  KF.ataque.desarmarEscolta(nave);
+});
 KF.registrar(KF.ataque);
