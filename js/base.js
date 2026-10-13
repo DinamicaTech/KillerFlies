@@ -1,4 +1,5 @@
-// Base del juego: pantalla, teclado, pantalla táctil y bucle de juego.
+// Base del juego: pantalla, teclado, pantalla táctil, inclinación del móvil y
+// bucle de juego.
 // Todo el juego vive en el objeto global KF. Cada parte del juego se registra
 // con KF.registrar({ actualizar(dt), dibujar(ctx) }) y el bucle la llama en
 // el orden de registro.
@@ -18,6 +19,55 @@ var KF = {
   // pantalla lógica) pendiente de aplicar y disparo pedido con una pulsación
   // corta. Los recoge y los pone a cero quien los usa (Jugador).
   tactil: { dx: 0, disparar: false },
+  // Inclinación del móvil hacia los lados, en grados respecto al centro
+  // (la posición en que se tenía al empezar la partida); 0 si el dispositivo
+  // no la da. La lee Jugador con KF.inclinacion.grados().
+  inclinacion: {
+    bruta: null,           // última lectura del sensor, o null
+    centro: null,          // lectura que cuenta como centro, o null
+    calibrarPendiente: true,
+    permiso: null,         // iPhone: null (sin pedir), 'pidiendo', 'granted' o 'denied'
+
+    grados: function () {
+      if (this.bruta === null || this.centro === null) return 0;
+      return this.bruta - this.centro;
+    },
+
+    // La posición actual pasa a ser el centro; si aún no hay lectura, lo será
+    // la primera que llegue. La llama Partida al empezar.
+    calibrar: function () {
+      this.centro = this.bruta;
+      this.calibrarPendiente = this.bruta === null;
+    },
+
+    // En iPhone hay que pedir permiso para leer el sensor, y solo se puede
+    // pedir al tocar la pantalla: se pide con la primera pulsación corta.
+    pedirPermiso: function () {
+      var evento = window.DeviceOrientationEvent;
+      if (this.permiso || !evento || typeof evento.requestPermission !== 'function') return;
+      var inc = this;
+      inc.permiso = 'pidiendo';
+      evento.requestPermission().then(function (estado) {
+        inc.permiso = estado;
+      }, function () {
+        inc.permiso = null;   // no se ha podido pedir: se intenta en el próximo toque
+      });
+    },
+
+    iniciar: function () {
+      var inc = this;
+      window.addEventListener('deviceorientation', function (e) {
+        if (e.gamma === null || e.beta === null) return;
+        // Inclinación hacia la derecha de la pantalla tal como se ve, sea cual
+        // sea el giro del móvil.
+        var giro = screen.orientation ? screen.orientation.angle : (window.orientation || 0);
+        giro = ((giro % 360) + 360) % 360;
+        var g = giro === 90 ? e.beta : giro === 180 ? -e.gamma : giro === 270 ? -e.beta : e.gamma;
+        inc.bruta = g;
+        if (inc.calibrarPendiente) inc.calibrar();
+      });
+    }
+  },
   // Funciones a llamar con cada pulsación corta (KF.alPulsarCorto).
   pulsacionesCortas: [],
   escala: 1,
@@ -70,6 +120,7 @@ var KF = {
     });
 
     this.iniciarTactil();
+    this.inclinacion.iniciar();
 
     var anterior = null;
     var paso = function (ahora) {
@@ -116,6 +167,7 @@ var KF = {
         var movimiento = Math.max(Math.abs(t.clientX - d.x0), Math.abs(t.clientY - d.y0));
         if (!cancelado && segundos < KF.PULSACION_CORTA_SEGUNDOS && movimiento < KF.PULSACION_CORTA_MOVIMIENTO) {
           KF.tactil.disparar = true;
+          KF.inclinacion.pedirPermiso();
           KF.ultimoToque = KF.aLogico(t.clientX, t.clientY);
           for (var j = 0; j < KF.pulsacionesCortas.length; j++) KF.pulsacionesCortas[j]();
         }

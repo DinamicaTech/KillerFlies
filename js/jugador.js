@@ -1,5 +1,6 @@
 // La nave del jugador: se mueve en horizontal por la parte inferior con las
-// flechas o deslizando el dedo, y dispara con la barra espaciadora o con una
+// flechas, deslizando el dedo o inclinando el móvil (las flechas y el dedo
+// mandan sobre la inclinación), y dispara con la barra espaciadora o con una
 // pulsación corta en la pantalla táctil. Solo hay un disparo en pantalla:
 // no se puede volver a disparar hasta que da en un blanco o sale por arriba.
 // El power-up activo de la nave (poder) cambia el disparo: hasta tres a la
@@ -13,7 +14,9 @@
 // choca con ella no la hace explotar (la nave alienígena que choca se destruye
 // igualmente y la bomba desaparece).
 // No se mueve a velocidad fija: acelera hasta su velocidad máxima y frena
-// hasta pararse de forma suave, con las flechas y al deslizar el dedo.
+// hasta pararse de forma suave, con las flechas, al deslizar el dedo y al
+// inclinar el móvil. Con las flechas va como mucho a 90 píxeles por segundo y
+// en el móvil (dedo o inclinación) a 120, porque allí es más difícil jugar.
 // Al explotar lanza fragmentos que se dispersan y se apagan en un segundo;
 // terminan su recorrido aunque la nave vuelva a aparecer o acabe la partida.
 // En la partida a dos (js/red.js) hay dos naves: KF.jugador es siempre la de
@@ -44,7 +47,10 @@ KF.Nave = function (numero) {
 
 KF.Nave.prototype = {
   Y: KF.ALTO - 24,         // altura del centro de la nave
-  VELOCIDAD: 90,           // velocidad máxima, en píxeles por segundo
+  VELOCIDAD: 90,           // velocidad máxima con las flechas, en píxeles por segundo
+  VELOCIDAD_MOVIL: 120,    // velocidad máxima con el dedo o inclinando el móvil
+  INCLINACION_MINIMA: 3,   // grados: hasta aquí la nave no se mueve
+  INCLINACION_MAXIMA: 30,  // grados: desde aquí va a la velocidad máxima
   ACELERACION: 450,        // píxeles por segundo cada segundo (de parada a máxima en 0,2 s)
   FRENADO: 600,            // píxeles por segundo cada segundo (de máxima a parada en 0,15 s)
   VELOCIDAD_DISPARO: 300,  // píxeles por segundo
@@ -166,8 +172,17 @@ KF.Nave.prototype = {
       // de su velocidad máxima, y frena a tiempo para pararse justo allí.
       this.objetivo = limitar((this.objetivo === null ? this.x : this.objetivo) + dx);
       var falta = this.objetivo - this.x;
-      var rapidez = Math.min(this.VELOCIDAD, Math.sqrt(2 * this.FRENADO * Math.abs(falta)));
+      var rapidez = Math.min(this.VELOCIDAD_MOVIL, Math.sqrt(2 * this.FRENADO * Math.abs(falta)));
       deseada = falta > 0 ? rapidez : -rapidez;
+    } else {
+      // Sin flechas ni dedo, manda la inclinación del móvil: más rápido cuanto
+      // más inclinado, a partir de INCLINACION_MINIMA.
+      var g = KF.inclinacion.grados();
+      var exceso = Math.abs(g) - this.INCLINACION_MINIMA;
+      if (exceso > 0) {
+        var parte = Math.min(1, exceso / (this.INCLINACION_MAXIMA - this.INCLINACION_MINIMA));
+        deseada = (g > 0 ? 1 : -1) * this.VELOCIDAD_MOVIL * parte;
+      }
     }
     this.vx = this.acercarVelocidad(this.vx, deseada, dt);
     var antes = this.x;
