@@ -1,8 +1,10 @@
 // Power-ups: al destruir fuera de la formación una amarilla y sus dos rojas
 // de escolta, cae una cápsula que parpadea, igual para todos los poderes. Si
-// la nave del jugador la recoge, obtiene un poder al azar (todos con la misma
+// la nave de un jugador la recoge, obtiene un poder al azar (todos con la misma
 // probabilidad) que dura hasta acabar la oleada; el nuevo sustituye al
 // anterior y se pierde si destruyen la nave. Uno de ellos es un power-down.
+// El poder es de la nave que recoge la cápsula (KF.Nave.poder): en la partida
+// a dos, cada jugador tiene el suyo.
 // La vida extra no es un poder que dure: suma una nave de recambio al momento
 // y deja el poder que hubiera.
 // El disparo de cada poder lo hace la nave del jugador (js/jugador.js).
@@ -21,51 +23,52 @@ KF.powerups = {
   PARPADEO: 0.15,          // segundos de cada color de la cápsula
   FACTOR_CAIDA: 0.5,       // la cápsula cae a la mitad de la velocidad de las bombas
 
-  activo: null,            // poder en curso, o null
-  capsulas: [],            // {x, y, t}
-  ondas: [],               // {x, y, t}: explosiones de la bomba
+  capsulas: [],            // {id, x, y, t}
+  ondas: [],               // {id, x, y, t}: explosiones de la bomba
   naves: null,             // formación de la oleada en la que se obtuvo
   recogidas: 0,            // poderes recibidos desde que empezó el juego (Sonido los observa)
 
   // Sin poder ni cápsulas: al empezar cada oleada y cada partida.
   reiniciar: function () {
-    this.activo = null;
+    for (var i = 0; i < KF.jugadores.length; i++) KF.jugadores[i].poder = null;
     this.capsulas = [];
     this.ondas = [];
     this.naves = KF.formacion.naves;
   },
 
-  // La nave recibe un poder, al recoger una cápsula o por la puerta trasera.
-  otorgar: function (poder) {
+  // La nave del jugador recibe un poder, al recoger una cápsula o por la
+  // puerta trasera.
+  otorgar: function (poder, jugador) {
     this.recogidas++;
-    if (poder === 'vida') KF.partida.sumarRecambio();
-    else this.activo = poder;
+    if (poder === 'vida') KF.partida.sumarRecambio(jugador);
+    else jugador.poder = poder;
   },
 
   soltar: function (x, y) {
-    this.capsulas.push({ x: x, y: y, t: 0 });
+    this.capsulas.push({ id: KF.nuevoId(), x: x, y: y, t: 0 });
   },
 
-  // Destruye todas las naves alienígenas vivas, en formación y en picado.
-  aniquilar: function () {
-    this.activo = null;
+  // Destruye todas las naves alienígenas vivas, en formación y en picado; los
+  // puntos son para la nave del jugador que la ha usado.
+  aniquilar: function (autor) {
+    autor.poder = null;
     var f = KF.formacion, naves = f.naves;
     var atacantes = KF.ataque.atacantes.slice();
     for (var i = 0; i < atacantes.length; i++) {
       var a = atacantes[i];
-      if (a.nave.viva) KF.enemigos.destruir(a.nave, a.x, a.y, 'disparo');
+      if (a.nave.viva) KF.enemigos.destruir(a.nave, a.x, a.y, 'disparo', autor);
     }
     for (i = 0; i < naves.length; i++) {
       var n = naves[i];
       if (!n.viva || !n.enFormacion) continue;
       var p = f.posicionHueco(n);
-      KF.enemigos.destruir(n, p.x, p.y, 'disparo');
+      KF.enemigos.destruir(n, p.x, p.y, 'disparo', autor);
     }
   },
 
   // Explosión de la bomba en (x, y): destruye las naves que estén total o
   // parcialmente dentro del círculo.
-  explotarBomba: function (x, y) {
+  explotarBomba: function (x, y, autor) {
     var f = KF.formacion, r = this.RADIO_BOMBA;
     var dentro = function (cx, cy) {
       var dx = Math.max(Math.abs(x - cx) - f.ANCHO_NAVE / 2, 0);
@@ -75,35 +78,38 @@ KF.powerups = {
     var atacantes = KF.ataque.atacantes.slice();
     for (var i = 0; i < atacantes.length; i++) {
       var a = atacantes[i];
-      if (a.nave.viva && dentro(a.x, a.y)) KF.enemigos.destruir(a.nave, a.x, a.y, 'disparo');
+      if (a.nave.viva && dentro(a.x, a.y)) KF.enemigos.destruir(a.nave, a.x, a.y, 'disparo', autor);
     }
     for (i = 0; i < f.naves.length; i++) {
       var n = f.naves[i];
       if (!n.viva || !n.enFormacion) continue;
       var p = f.posicionHueco(n);
-      if (dentro(p.x, p.y)) KF.enemigos.destruir(n, p.x, p.y, 'disparo');
+      if (dentro(p.x, p.y)) KF.enemigos.destruir(n, p.x, p.y, 'disparo', autor);
     }
-    this.ondas.push({ x: x, y: y, t: 0 });
+    this.ondas.push({ id: KF.nuevoId(), x: x, y: y, t: 0 });
   },
 
   actualizar: function (dt) {
+    // En el invitado de una partida a dos, cápsulas y ondas llegan del anfitrión.
+    if (KF.red.invitado) return;
     // Oleada o partida nueva: el poder se acaba.
     if (this.naves !== KF.formacion.naves) this.reiniciar();
-    var j = KF.jugador;
-    if (j.estado !== 'viva') this.activo = null;
 
     // Las cápsulas caen a la mitad de velocidad que las bombas y se recogen
-    // al tocar la nave.
+    // al tocar una nave; el poder es para esa nave.
     var vy = KF.ataque.VELOCIDAD_BOMBA * KF.ataque.factorVelocidad * this.FACTOR_CAIDA;
-    var c = j.caja(), s = this.SPRITES_CAPSULA[0];
+    var s = this.SPRITES_CAPSULA[0];
     var self = this;
     this.capsulas = this.capsulas.filter(function (k) {
       k.t += dt;
       k.y += vy * dt;
-      if (c && k.x - s.width / 2 < c.x + c.ancho && k.x + s.width / 2 > c.x &&
-          k.y - s.height / 2 < c.y + c.alto && k.y + s.height / 2 > c.y) {
-        self.otorgar(self.PODERES[Math.floor(Math.random() * self.PODERES.length)]);
-        return false;
+      for (var j = 0; j < KF.jugadores.length; j++) {
+        var c = KF.jugadores[j].caja();
+        if (c && k.x - s.width / 2 < c.x + c.ancho && k.x + s.width / 2 > c.x &&
+            k.y - s.height / 2 < c.y + c.alto && k.y + s.height / 2 > c.y) {
+          self.otorgar(self.PODERES[Math.floor(Math.random() * self.PODERES.length)], KF.jugadores[j]);
+          return false;
+        }
       }
       return k.y < KF.ALTO + 8;
     });
@@ -134,7 +140,7 @@ KF.ataque.alDestruirEscolta(function (x, y) { KF.powerups.soltar(x, y); });
 // da el poder de ese número (en el orden de PODERES) con la nave en juego.
 window.addEventListener('keydown', function (e) {
   var m = /^Digit([1-7])$/.exec(e.code);
-  if (!m || !e.shiftKey || KF.jugador.estado !== 'viva') return;
-  KF.powerups.otorgar(KF.powerups.PODERES[m[1] - 1]);
+  if (!m || !e.shiftKey || KF.jugador.estado !== 'viva' || KF.red.invitado) return;
+  KF.powerups.otorgar(KF.powerups.PODERES[m[1] - 1], KF.jugador);
 });
 KF.registrar(KF.powerups);

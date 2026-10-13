@@ -29,6 +29,7 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-05 12:05 · Muzzle flash of the player ship's cannon when shooting: 5×3 white star with a yellow centre (KF.graficos.SPRITE_DESTELLO), for jugador/destello-disparo.
 - 2026-10-05 12:23 · Colours of the player explosion fragments: the same red, yellow, white and light blue as its explosion (KF.graficos.COLORES_FRAGMENTOS), for jugador/explosion-fragmentos.
 - 2026-10-05 12:43 · Engine flame of the player ship: two 3×3 shapes, orange with a yellow tip, that alternate to flicker (KF.graficos.SPRITES_LLAMA), for jugador/estela-motor.
+- 2026-10-13 07:12 · Two players: SPRITES_JUGADOR has the J1 ship (red nose, light-blue interior) and the J2 ship (green nose, amber interior); COLORES_JUGADOR gives each player's colour for the scoreboard texts.
 
 ## Requirements
 - 2026-10-03 18:13 · I attach two screenshots as visual reference. In the first one, a formation of a yellow ship and two red ones descends to attack. In the second one, a purple ship descends towards the player ship while two bombs (somewhat thick vertical white lines) are falling.
@@ -44,3 +45,4 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-04 12:05 · Derived from enemigos/formacion: the sprites of the green, orange and cyan ships.
 - 2026-10-05 12:05 · Derived from jugador/destello-disparo: sprite of the cannon's muzzle flash (SPRITE_DESTELLO).
 - 2026-10-05 12:43 · Derived from jugador/estela-motor: sprites of the engine flame (SPRITES_LLAMA).
+- 2026-10-13 07:12 · Derived from multijugador: draw the second player's ship in another colour.

@@ -1,44 +1,50 @@
 // El marcador: oleada/oleada máxima arriba a la izquierda, puntos/puntos
 // máximos arriba a la derecha y las naves de recambio abajo a la derecha.
-// Los máximos se guardan en el navegador (localStorage) en cuanto se superan.
-// Partida decide la oleada en curso, las naves de recambio y cuándo empiezan
-// los puntos de cero; el marcador solo los muestra.
+// En la partida a dos, los puntos de cada jugador van arriba a la derecha en
+// el color de su nave (J1 encima de J2) y sus naves de recambio abajo, las de
+// J1 a la izquierda y las de J2 a la derecha.
+// Los máximos se guardan en el navegador (localStorage) en cuanto se superan,
+// aparte los de la partida a dos, que cuentan los puntos del jugador de este
+// dispositivo. Partida decide la oleada y las naves de recambio; los puntos
+// son de cada nave (KF.Nave.puntos) y el marcador solo los muestra.
 KF.marcador = {
   MARGEN: 4,            // píxeles desde el borde de la pantalla
   COLOR: '#ffffff',
   CLAVE_OLEADA: 'killerflies.oleadaMaxima',
   CLAVE_PUNTOS: 'killerflies.puntosMaximos',
+  CLAVE_OLEADA_DOS: 'killerflies.dos.oleadaMaxima',
+  CLAVE_PUNTOS_DOS: 'killerflies.dos.puntosMaximos',
 
+  dos: false,           // los máximos son los de la partida a dos
   oleada: 1,
   oleadaMaxima: 1,
-  puntos: 0,
   puntosMaximos: 0,
-  recambio: 2,          // naves de recambio que quedan (sin contar la que juega)
 
-  // Suma los puntos de una nave destruida.
-  sumarPuntos: function (n) {
-    this.puntos += n;
-    if (this.puntos > this.puntosMaximos) {
-      this.puntosMaximos = this.puntos;
-      this.guardar(this.CLAVE_PUNTOS, this.puntosMaximos);
-    }
+  // Récords de la partida a uno o a dos; lo llama Partida al empezar.
+  cambiarModo: function (dos) {
+    this.dos = dos;
+    this.oleadaMaxima = Math.max(1, this.leer(this.claveOleada()));
+    this.puntosMaximos = this.leer(this.clavePuntos());
   },
 
-  // Al empezar cada partida.
-  reiniciarPuntos: function () {
-    this.puntos = 0;
-  },
+  claveOleada: function () { return this.dos ? this.CLAVE_OLEADA_DOS : this.CLAVE_OLEADA; },
+  clavePuntos: function () { return this.dos ? this.CLAVE_PUNTOS_DOS : this.CLAVE_PUNTOS; },
 
   ponerOleada: function (n) {
     this.oleada = n;
     if (this.oleada > this.oleadaMaxima) {
       this.oleadaMaxima = this.oleada;
-      this.guardar(this.CLAVE_OLEADA, this.oleadaMaxima);
+      this.guardar(this.claveOleada(), this.oleadaMaxima);
     }
   },
 
-  ponerRecambio: function (n) {
-    this.recambio = n;
+  // Los puntos del jugador de este dispositivo pueden batir el récord.
+  actualizar: function () {
+    var puntos = KF.jugador.puntos;
+    if (puntos > this.puntosMaximos) {
+      this.puntosMaximos = puntos;
+      this.guardar(this.clavePuntos(), this.puntosMaximos);
+    }
   },
 
   // El almacenamiento puede no estar disponible (navegación privada, ficheros
@@ -63,34 +69,52 @@ KF.marcador = {
     return KF.graficos.anchoTexto(texto);
   },
 
-  escribir: function (ctx, texto, x, y) {
-    KF.graficos.escribir(ctx, this.LETRAS, texto, x, y);
+  escribir: function (ctx, texto, x, y, letras) {
+    KF.graficos.escribir(ctx, letras || this.LETRAS, texto, x, y);
+  },
+
+  // Naves de recambio de un jugador pegadas al borde inferior, desde la
+  // derecha hacia la izquierda o (desde la izquierda) hacia la derecha.
+  dibujarRecambio: function (ctx, jugador, desdeIzquierda) {
+    var s = jugador.SPRITE, m = this.MARGEN;
+    for (var i = 0; i < jugador.recambio; i++) {
+      var dx = m + s.width / 2 + i * (s.width + 2);
+      var x = desdeIzquierda ? dx : KF.ANCHO - dx;
+      KF.graficos.dibujar(ctx, s, x, KF.ALTO - 1 - s.height / 2);
+    }
   },
 
   dibujar: function (ctx) {
     var m = this.MARGEN;
     this.escribir(ctx, this.oleada + '/' + this.oleadaMaxima, m, m);
-    var puntos = this.puntos + '/' + this.puntosMaximos;
-    this.escribir(ctx, puntos, KF.ANCHO - m - this.anchoTexto(puntos), m);
-
-    // Naves de recambio, de derecha a izquierda, pegadas al borde inferior.
-    var s = KF.jugador.SPRITE;
-    for (var i = 0; i < this.recambio; i++) {
-      var x = KF.ANCHO - m - s.width / 2 - i * (s.width + 2);
-      KF.graficos.dibujar(ctx, s, x, KF.ALTO - 1 - s.height / 2);
+    if (!KF.companero) {
+      var puntos = KF.jugador.puntos + '/' + this.puntosMaximos;
+      this.escribir(ctx, puntos, KF.ANCHO - m - this.anchoTexto(puntos), m);
+      this.dibujarRecambio(ctx, KF.jugador, false);
+      return;
     }
+    // A dos: J1 y J2 por su número, sea cual sea el de este dispositivo.
+    var porNumero = [];
+    for (var i = 0; i < KF.jugadores.length; i++) porNumero[KF.jugadores[i].numero - 1] = KF.jugadores[i];
+    for (i = 0; i < 2; i++) {
+      var texto = 'J' + (i + 1) + ' ' + porNumero[i].puntos;
+      this.escribir(ctx, texto, KF.ANCHO - m - this.anchoTexto(texto), m + i * 9, this.LETRAS_JUGADOR[i]);
+    }
+    this.dibujarRecambio(ctx, porNumero[0], true);
+    this.dibujarRecambio(ctx, porNumero[1], false);
   }
 };
 
 (function () {
   var mk = KF.marcador;
   mk.LETRAS = KF.graficos.crearFuente(mk.COLOR);
-  mk.oleadaMaxima = Math.max(1, mk.leer(mk.CLAVE_OLEADA));
-  mk.puntosMaximos = mk.leer(mk.CLAVE_PUNTOS);
+  mk.LETRAS_JUGADOR = KF.graficos.COLORES_JUGADOR.map(function (c) { return KF.graficos.crearFuente(c); });
+  mk.cambiarModo(false);
 
-  // Cada nave destruida, por disparo o por choque con el jugador, da sus puntos.
-  KF.enemigos.alDestruir(function (nave) {
-    mk.sumarPuntos(KF.TIPOS_NAVE[nave.tipo].puntos);
+  // Cada nave destruida, por disparo o por choque, da sus puntos al jugador
+  // que la ha destruido.
+  KF.enemigos.alDestruir(function (nave, motivo, autor) {
+    if (autor) autor.puntos += KF.TIPOS_NAVE[nave.tipo].puntos;
   });
 })();
 

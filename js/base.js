@@ -21,6 +21,14 @@ var KF = {
   // Funciones a llamar con cada pulsación corta (KF.alPulsarCorto).
   pulsacionesCortas: [],
   escala: 1,
+  // Última pulsación corta, en píxeles de la pantalla lógica (menú de inicio).
+  ultimoToque: null,
+  // Partida a dos (js/red.js): este dispositivo es el anfitrión, que mueve el
+  // juego, o el invitado, que lo dibuja tal como se lo envía el anfitrión.
+  red: { anfitrion: false, invitado: false },
+  // Con la partida en pausa (el otro jugador se ha desconectado) solo se
+  // actualizan los sistemas marcados con enPausa.
+  pausado: false,
 
   // Pulsación corta: tocar y soltar en poco tiempo casi sin mover el dedo.
   PULSACION_CORTA_SEGUNDOS: 0.25,
@@ -108,6 +116,7 @@ var KF = {
         var movimiento = Math.max(Math.abs(t.clientX - d.x0), Math.abs(t.clientY - d.y0));
         if (!cancelado && segundos < KF.PULSACION_CORTA_SEGUNDOS && movimiento < KF.PULSACION_CORTA_MOVIMIENTO) {
           KF.tactil.disparar = true;
+          KF.ultimoToque = KF.aLogico(t.clientX, t.clientY);
           for (var j = 0; j < KF.pulsacionesCortas.length; j++) KF.pulsacionesCortas[j]();
         }
       }
@@ -116,10 +125,17 @@ var KF = {
     document.addEventListener('touchcancel', function (e) { soltar(e, true); }, opciones);
   },
 
+  // Punto de la ventana (clientX, clientY) en píxeles de la pantalla lógica.
+  aLogico: function (x, y) {
+    var r = this.ctx.canvas.getBoundingClientRect();
+    return { x: (x - r.left) / r.width * this.ANCHO, y: (y - r.top) / r.height * this.ALTO };
+  },
+
   paso: function (dt) {
     var i;
     for (i = 0; i < this.sistemas.length; i++) {
-      if (this.sistemas[i].actualizar) this.sistemas[i].actualizar(dt);
+      var s = this.sistemas[i];
+      if (s.actualizar && (!this.pausado || s.enPausa)) s.actualizar(dt);
     }
     this.ctx.setTransform(this.RESOLUCION, 0, 0, this.RESOLUCION, 0, 0);
     this.ctx.fillStyle = '#000';

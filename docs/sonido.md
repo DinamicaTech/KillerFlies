@@ -25,6 +25,7 @@ The game's sounds, recorded audio files played with Web Audio from js/sonido.js 
 - 2026-10-05 10:55 · The draft of sounds with more depth (plus a sound on picking up a power-up and another at the start of each wave) moves to its own child node, `sonido/sonidos-con-profundidad`, and Sound goes back to stable: each draft is its own node (CVP rules version 8). The current sounds remain in use until it is done.
 - 2026-10-06 15:45 · [replaced by 2026-10-06 15:58] The synthesized sounds are replaced by recorded ones and two are added (power-up and wave start), plus background music; the detail is in the child node sonido/sonidos-con-profundidad, still a draft until the owner validates it.
 - 2026-10-06 15:58 · The synthesized sounds are replaced by recorded ones and two are added (power-up and wave start), plus background music; the detail is in the child node sonido/sonidos-con-profundidad, validated by the owner and stable.
+- 2026-10-13 07:12 · Two players: shots, explosions and the background music take every player ship into account (music is silent only when no ship is in play). On the guest of a two-player game the sounds come from the changes the host's snapshots bring, so both devices hear the same.
 
 ## Requirements
 - 2026-10-03 18:13 · There are sound effects: shots from the player ship; explosion noise when a ship is destroyed; buzz while an alien ship leaves the formation to make an attack.
@@ -32,3 +33,4 @@ The game's sounds, recorded audio files played with Web Audio from js/sonido.js 
 - 2026-10-03 19:07 · B (buzz during the whole dive)
 - 2026-10-03 19:10 · The volume of the attacking ships 50% lower, it dominates too much
 - 2026-10-04 10:16 · Derived from architecture: sound is also enabled with the first touch.
+- 2026-10-13 07:12 · Derived from multijugador: sound the same on both devices of a two-player game.

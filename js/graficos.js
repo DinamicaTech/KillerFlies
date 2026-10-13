@@ -652,9 +652,18 @@ KF.graficos.fondo = {
       : g.crearSpriteHD(11, 9, (function (p) { return function (ctx) { g.dibujarNave(ctx, p); }; })(g.PALETAS_NAVE[tipo]));
   }
   var fuego = { R: '#f02828', Y: '#ffff40', B: '#ffffff', C: '#40d0e0' };
-  g.SPRITE_JUGADOR = g.crearSpriteHD(13, 13, function (ctx) {
-    g.dibujarJugador(ctx, { R: '#f02020', W: '#e8f0f8', C: '#30c0d0' });
-  });
+  // La nave del jugador 1, y la del jugador 2 de la partida a dos con morro
+  // verde e interior ámbar; sus textos del marcador van en el color del morro.
+  g.SPRITES_JUGADOR = [
+    g.crearSpriteHD(13, 13, function (ctx) {
+      g.dibujarJugador(ctx, { R: '#f02020', W: '#e8f0f8', C: '#30c0d0' });
+    }),
+    g.crearSpriteHD(13, 13, function (ctx) {
+      g.dibujarJugador(ctx, { R: '#20c040', W: '#f8f0d8', C: '#ffb020' });
+    })
+  ];
+  g.SPRITE_JUGADOR = g.SPRITES_JUGADOR[0];
+  g.COLORES_JUGADOR = ['#ff5050', '#40e060'];
   g.SPRITE_DISPARO = g.crearSprite(g.MAPA_DISPARO, { Y: '#ffff40' });
   g.SPRITE_DESTELLO = g.crearSprite(g.MAPA_DESTELLO, { W: '#ffffff', Y: '#ffff40' });
   g.SPRITES_LLAMA = g.MAPAS_LLAMA.map(function (m) { return g.crearSprite(m, { O: '#ff8020', Y: '#ffff40' }); });

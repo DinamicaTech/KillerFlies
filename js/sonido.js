@@ -34,7 +34,7 @@ KF.sonido = {
   navesOleada: 1,          // naves de la oleada al empezar, para la velocidad de la música
   ultimasSalvas: 0,        // para notar cada disparo nuevo
   ultimasRecogidas: 0,     // para notar cada power-up recogido
-  estadoJugador: 'viva',
+  estadosJugador: [],      // estado de cada nave de jugador en el paso anterior
   estadoPartida: 'inicio',
   oleada: 1,
 
@@ -139,7 +139,7 @@ KF.sonido = {
 
   // La música de fondo va al 100% con la oleada entera y se acelera hasta el
   // 200% con la última nave (el tono sube con la velocidad, como una cinta).
-  // Se calla mientras la nave del jugador está destruida.
+  // Se calla mientras no hay ninguna nave de jugador en juego.
   actualizarMusica: function () {
     if (this.estadoPartida !== 'jugando') { this.pararMusica(); return; }
     if (!this.buffers['musica-fondo'] || this.ctx.currentTime < this.musicaDesde) return;
@@ -147,7 +147,7 @@ KF.sonido = {
     if (!this.musica) this.musica = this.bucle('musica-fondo');
     // Callada mientras la nave del jugador está destruida, hasta que sale la
     // de recambio; el bucle sigue corriendo, así que vuelve por donde iba.
-    var volumen = KF.jugador.estado === 'viva' ? this.VOLUMENES['musica-fondo'] : 0;
+    var volumen = KF.navesVivas().length ? this.VOLUMENES['musica-fondo'] : 0;
     this.musica.ganancia.gain.setTargetAtTime(volumen, t, 0.05);
     var naves = KF.formacion.naves, vivas = 0;
     for (var i = 0; i < naves.length; i++) if (naves[i].viva) vivas++;
@@ -157,14 +157,18 @@ KF.sonido = {
   },
 
   actualizar: function () {
-    var j = KF.jugador, p = KF.partida;
-    var disparoNuevo = j.salvas !== this.ultimasSalvas;
-    var jugadorExplota = j.estado === 'explotando' && this.estadoJugador !== 'explotando';
+    var p = KF.partida, salvas = 0, jugadorExplota = false;
+    for (var i = 0; i < KF.jugadores.length; i++) {
+      var j = KF.jugadores[i];
+      salvas += j.salvas;
+      if (j.estado === 'explotando' && this.estadosJugador[i] !== 'explotando') jugadorExplota = true;
+      this.estadosJugador[i] = j.estado;
+    }
+    var disparoNuevo = salvas !== this.ultimasSalvas;
     var powerUp = KF.powerups.recogidas !== this.ultimasRecogidas;
     var oleadaNueva = p.estado === 'jugando' &&
       (this.estadoPartida !== 'jugando' || p.oleada !== this.oleada);
-    this.ultimasSalvas = j.salvas;
-    this.estadoJugador = j.estado;
+    this.ultimasSalvas = salvas;
     this.ultimasRecogidas = KF.powerups.recogidas;
     this.estadoPartida = p.estado;
     this.oleada = p.oleada;

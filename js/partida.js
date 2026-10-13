@@ -1,8 +1,10 @@
-// El ciclo de la partida: pantalla 'START GAME' que espera cualquier tecla
-// (o una pulsación corta en la pantalla táctil),
-// oleadas sucesivas un 5% más rápidas cada una (bloque, picados y bombas),
-// tres naves del jugador (una en juego y dos de recambio) y 'GAME OVER' al
-// perder la última, que se queda hasta que se pulsa una tecla.
+// El ciclo de la partida: pantalla 'START GAME' con su menú (1 jugador, crear
+// una partida a dos o unirse a una), oleadas sucesivas un 5% más rápidas cada
+// una (bloque, picados y bombas), tres naves por jugador (una en juego y dos
+// de recambio) y 'GAME OVER' al perder la última, que se queda hasta que se
+// pulsa una tecla. En la partida a dos (js/red.js) el anfitrión mueve el
+// juego y el invitado recibe su estado; cada jugador tiene sus naves y sus
+// puntos, y la partida acaba cuando a ninguno le quedan naves.
 KF.partida = {
   NAVES_RECAMBIO: 2,       // naves de recambio al empezar la partida
   MAXIMO_RECAMBIO: 5,      // tope de naves de recambio (power-up vida extra)
@@ -14,28 +16,39 @@ KF.partida = {
   ESCALA_TEXTO: 2,         // los mensajes, al doble del tamaño de la fuente
   COLOR_INICIO: '#ffff40',
   COLOR_FIN: '#f02828',
+  COLOR_OPCION: '#808080',
+  // Opciones del menú de inicio, debajo de 'START GAME'.
+  OPCIONES: ['1 JUGADOR', 'CREAR PARTIDA', 'UNIRSE'],
+  SEPARACION_OPCIONES: 16, // píxeles entre una opción y la siguiente
 
-  estado: 'inicio',        // 'inicio' | 'jugando' | 'fin'
+  estado: 'inicio',        // 'inicio' | 'jugando' | 'fin'; mientras se prepara
+                           // una partida a dos, js/red.js muestra la sala
   oleada: 1,
-  recambio: 0,             // naves de recambio que quedan
   esperaOleada: 0,         // segundos desde que se destruyó la última nave
   tiempoFin: 0,            // segundos desde 'GAME OVER'
+  opcion: 0,               // opción elegida en el menú de inicio
 
   // Pantalla de inicio: la formación de la primera oleada se mueve detrás
-  // del texto, sin ataques porque la nave del jugador no está.
+  // del texto, sin ataques porque no hay naves de jugador.
   irAInicio: function () {
     this.estado = 'inicio';
-    KF.jugador.retirar();
+    for (var i = 0; i < KF.jugadores.length; i++) KF.jugadores[i].retirar();
+    KF.marcador.cambiarModo(!!KF.companero);
     this.ponerOleada(1);
   },
 
+  // Empieza la partida, a uno o (con KF.companero) a dos: cada jugador con
+  // sus puntos a cero, sus naves de recambio y su nave en juego.
   empezar: function () {
     this.estado = 'jugando';
-    this.recambio = this.NAVES_RECAMBIO;
-    KF.marcador.reiniciarPuntos();
-    KF.marcador.ponerRecambio(this.recambio);
+    KF.marcador.cambiarModo(!!KF.companero);
     this.ponerOleada(1);
-    KF.jugador.aparecer();
+    for (var i = 0; i < KF.jugadores.length; i++) {
+      var j = KF.jugadores[i];
+      j.puntos = 0;
+      j.recambio = this.NAVES_RECAMBIO;
+      j.aparecer();
+    }
   },
 
   // Formación nueva, la que toca a la oleada n, con su velocidad; Ataque deja
@@ -50,11 +63,9 @@ KF.partida = {
     KF.marcador.ponerOleada(n);
   },
 
-  // Una nave de recambio más (power-up vida extra), hasta el tope.
-  sumarRecambio: function () {
-    if (this.recambio >= this.MAXIMO_RECAMBIO) return;
-    this.recambio++;
-    KF.marcador.ponerRecambio(this.recambio);
+  // Una nave de recambio más para ese jugador (power-up vida extra), hasta el tope.
+  sumarRecambio: function (jugador) {
+    if (jugador.recambio < this.MAXIMO_RECAMBIO) jugador.recambio++;
   },
 
   quedanNaves: function () {
@@ -67,50 +78,92 @@ KF.partida = {
 
   actualizar: function (dt) {
     if (this.estado === 'fin') this.tiempoFin += dt;
-    if (this.estado !== 'jugando') return;
-    var j = KF.jugador;
+    // En el invitado, el estado de la partida llega del anfitrión.
+    if (this.estado !== 'jugando' || KF.red.invitado) return;
 
-    // Nave perdida: tras la explosión, si quedan de recambio sale una cuando
-    // las naves en picado han vuelto a la formación y no quedan bombas.
-    if (j.estado === 'explotando' && j.tiempoExplosion >= this.ESPERA_RECAMBIO) {
-      if (this.recambio === 0) {
-        this.estado = 'fin';
-        this.tiempoFin = 0;
+    // Nave perdida: tras la explosión, si al jugador le quedan de recambio
+    // sale otra. Si no hay otra nave en juego, espera a que las naves en
+    // picado vuelvan a la formación y no queden bombas; a dos, con el
+    // compañero jugando, sale en cuanto pasa la espera.
+    for (var i = 0; i < KF.jugadores.length; i++) {
+      var j = KF.jugadores[i];
+      if (j.estado !== 'explotando' || j.tiempoExplosion < this.ESPERA_RECAMBIO) continue;
+      if (j.recambio === 0) {
         j.retirar();
-        return;
+        continue;
       }
-      if (!KF.ataque.atacantes.length && !KF.ataque.bombas.length) {
-        this.recambio--;
-        KF.marcador.ponerRecambio(this.recambio);
+      var acompanado = KF.navesVivas().length > 0;
+      if (acompanado || (!KF.ataque.atacantes.length && !KF.ataque.bombas.length)) {
+        j.recambio--;
         j.aparecer();
-        KF.ataque.tregua();
+        if (!acompanado) KF.ataque.tregua();
       }
     }
 
-    // Oleada destruida: la siguiente llega poco después, con la nave en juego.
-    if (j.estado === 'viva' && !this.quedanNaves()) {
+    // Sin naves de ningún jugador (ni explotando), se acaba la partida.
+    var enJuego = KF.jugadores.some(function (n) { return n.estado !== 'ausente'; });
+    if (!enJuego) {
+      this.estado = 'fin';
+      this.tiempoFin = 0;
+      return;
+    }
+
+    // Oleada destruida: la siguiente llega poco después, con alguna nave en juego.
+    if (KF.navesVivas().length && !this.quedanNaves()) {
       this.esperaOleada += dt;
       if (this.esperaOleada >= this.ESPERA_OLEADA) this.ponerOleada(this.oleada + 1);
     }
   },
 
-  // Cualquier tecla o pulsación corta empieza la partida en la pantalla de inicio y vuelve a
-  // ella desde 'GAME OVER'.
-  pulsar: function () {
-    if (this.estado === 'inicio') this.empezar();
-    else if (this.estado === 'fin' && this.tiempoFin >= this.ESPERA_FIN) this.irAInicio();
+  // La opción elegida del menú de inicio.
+  elegir: function () {
+    var opcion = this.OPCIONES[this.opcion];
+    if (opcion === 'CREAR PARTIDA') KF.red.crear();
+    else if (opcion === 'UNIRSE') KF.red.pedirCodigo();
+    else this.empezar();
   },
 
-  escribirCentrado: function (ctx, letras, texto) {
-    var g = KF.graficos, e = this.ESCALA_TEXTO;
-    var x = (KF.ANCHO - g.anchoTexto(texto, e)) / 2;
-    var y = (KF.ALTO - g.FUENTE_ALTO * e) / 2;
-    g.escribir(ctx, letras, texto, x, y, e);
+  // Cualquier tecla o pulsación corta elige la opción del menú de inicio y
+  // vuelve a él desde 'GAME OVER' (a dos, cerrando la conexión).
+  pulsar: function () {
+    if (this.estado === 'inicio' && !KF.red.activa()) this.elegir();
+    else if (this.estado === 'fin' && this.tiempoFin >= this.ESPERA_FIN) {
+      KF.red.cerrar();
+      this.irAInicio();
+    }
+  },
+
+  // Altura (borde superior) de la opción i del menú de inicio.
+  alturaOpcion: function (i) {
+    return KF.ALTO / 2 + 20 + i * this.SEPARACION_OPCIONES;
+  },
+
+  // Opción del menú en el punto (x, y) de la pantalla lógica, o -1.
+  opcionEn: function (p) {
+    for (var i = 0; i < this.OPCIONES.length; i++) {
+      var y = this.alturaOpcion(i);
+      if (p.y >= y - 5 && p.y < y + KF.graficos.FUENTE_ALTO + 5) return i;
+    }
+    return -1;
+  },
+
+  escribirCentrado: function (ctx, letras, texto, y, escala) {
+    var g = KF.graficos;
+    var x = (KF.ANCHO - g.anchoTexto(texto, escala)) / 2;
+    g.escribir(ctx, letras, texto, x, y, escala);
   },
 
   dibujar: function (ctx) {
-    if (this.estado === 'inicio') this.escribirCentrado(ctx, this.LETRAS_INICIO, 'START GAME');
-    else if (this.estado === 'fin') this.escribirCentrado(ctx, this.LETRAS_FIN, 'GAME OVER');
+    var e = this.ESCALA_TEXTO, medio = (KF.ALTO - KF.graficos.FUENTE_ALTO * e) / 2;
+    if (this.estado === 'inicio' && !KF.red.activa()) {
+      this.escribirCentrado(ctx, this.LETRAS_INICIO, 'START GAME', medio, e);
+      for (var i = 0; i < this.OPCIONES.length; i++) {
+        var letras = i === this.opcion ? this.LETRAS_INICIO : this.LETRAS_OPCION;
+        this.escribirCentrado(ctx, letras, this.OPCIONES[i], this.alturaOpcion(i), 1);
+      }
+    } else if (this.estado === 'fin') {
+      this.escribirCentrado(ctx, this.LETRAS_FIN, 'GAME OVER', medio, e);
+    }
   }
 };
 
@@ -118,14 +171,35 @@ KF.partida = {
   var p = KF.partida;
   p.LETRAS_INICIO = KF.graficos.crearFuente(p.COLOR_INICIO);
   p.LETRAS_FIN = KF.graficos.crearFuente(p.COLOR_FIN);
+  p.LETRAS_OPCION = KF.graficos.crearFuente(p.COLOR_OPCION);
   window.addEventListener('keydown', function (e) {
-    if (!e.repeat) p.pulsar();
+    if (e.repeat) return;
+    // Con la partida a dos en marcha (sala, conexión, pausa), las teclas son
+    // para ella, salvo en 'GAME OVER'.
+    if (p.estado !== 'fin' && KF.red.activa()) { KF.red.tecla(); return; }
+    // En el menú de inicio, las flechas arriba y abajo cambian de opción.
+    if (p.estado === 'inicio' && !KF.red.activa() && (e.code === 'ArrowUp' || e.code === 'ArrowDown')) {
+      var n = p.OPCIONES.length;
+      p.opcion = (p.opcion + (e.code === 'ArrowUp' ? n - 1 : 1)) % n;
+      return;
+    }
+    p.pulsar();
   });
-  // La pulsación corta que empieza la partida no dispara.
+  // La pulsación corta que empieza la partida no dispara. En el menú, tocar
+  // una opción la elige; tocar en otro sitio elige la marcada.
   KF.alPulsarCorto(function () {
     var antes = p.estado;
+    if (antes !== 'fin' && KF.red.activa()) {
+      if (antes !== 'jugando') KF.tactil.disparar = false;
+      KF.red.toque(KF.ultimoToque);
+      return;
+    }
+    if (antes === 'inicio' && !KF.red.activa() && KF.ultimoToque) {
+      var i = p.opcionEn(KF.ultimoToque);
+      if (i >= 0) p.opcion = i;
+    }
     p.pulsar();
-    if (p.estado !== antes) KF.tactil.disparar = false;
+    if (p.estado !== antes || antes === 'inicio') KF.tactil.disparar = false;
   });
   p.irAInicio();
 })();

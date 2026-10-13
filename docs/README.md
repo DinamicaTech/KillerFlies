@@ -9,7 +9,7 @@ threads:
 A remake of the classic arcade game Galaxian: the player's ship moves along the bottom of the screen and shoots down waves of alien ships that dive at it while dropping bombs.
 The formation moves from side to side and launches attacks; each destroyed wave gives way to a faster one, with a different formation and mix of ships: the four arcade types are joined by three with attacks of their own (zigzag, ramming and sniper).
 Destroying a diving yellow ship together with its escort drops a random power-up. The player has three ships; the scoreboard shows the wave and the points next to their high scores. It is played in the browser with the keyboard or, on a phone, with the touch screen.
-The project is also a public demo of how Claude Visual Project works, so all its docs are written in English.
+The project is also a public demo of how Claude Visual Project works, so all its docs are written in English. Two players can also play together online, each on their own device, joining with a room code or a QR.
 
 ## Decisions
 - 2026-10-03 18:16 · Project created with Claude Visual Project.
