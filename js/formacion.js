@@ -86,6 +86,7 @@ KF.formacion = {
         var tipo = this.LETRAS[filas[f][c]];
         if (!tipo) continue;
         this.naves.push({
+          i: this.naves.length, // posición en la lista (partida a dos)
           tipo: tipo,
           fila: f,
           columna: c,
@@ -113,15 +114,16 @@ KF.formacion = {
   ALTO_NAVE: 8,
 
   // Si el rectángulo {x, y, ancho, alto} toca una nave viva en formación, la
-  // destruye y la devuelve; si no, devuelve null. Lo usa el disparo del jugador.
-  tocar: function (r) {
+  // destruye y la devuelve; si no, devuelve null. Lo usa el disparo de la nave
+  // del jugador autor.
+  tocar: function (r, autor) {
     for (var i = 0; i < this.naves.length; i++) {
       var n = this.naves[i];
       if (!n.viva || !n.enFormacion) continue;
       var p = this.posicionHueco(n);
       if (r.x < p.x + this.ANCHO_NAVE / 2 && r.x + r.ancho > p.x - this.ANCHO_NAVE / 2 &&
           r.y < p.y + this.ALTO_NAVE / 2 && r.y + r.alto > p.y - this.ALTO_NAVE / 2) {
-        KF.enemigos.destruir(n, p.x, p.y, 'disparo');
+        KF.enemigos.destruir(n, p.x, p.y, 'disparo', autor);
         return n;
       }
     }
@@ -129,6 +131,8 @@ KF.formacion = {
   },
 
   actualizar: function (dt) {
+    // En el invitado de una partida a dos, la formación llega del anfitrión.
+    if (KF.red.invitado) return;
     // El bloque da la vuelta cuando el hueco más extremo de las naves que
     // quedan vivas toca el borde: al destruir columnas recorre más espacio.
     var min = Infinity, max = -Infinity;

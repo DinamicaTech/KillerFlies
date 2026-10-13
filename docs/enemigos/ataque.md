@@ -31,6 +31,7 @@ The attacks: a ship (or a yellow with its escort of reds) leaves the formation w
 - 2026-10-04 12:05 · Ramming (orange): after the exit it aims at where the player is at that moment and charges in a straight line toward that point at twice the dive speed (140 pixels per second), without bombs; it does not correct its course.
 - 2026-10-04 12:05 · Shooter (cyan): it descends like the dive down to mid-screen (height 144), hovers for one second with its cannons toward the player and halfway through fires a fan-shaped burst, aimed at them, with its attack's bombs (one to three, 30 pixels per second of lateral speed apart); then it continues descending.
 - 2026-10-04 12:05 · The reds escorting a yellow always go down with it; the new attacks are only for the green, orange and cyan types, which never escort.
+- 2026-10-13 07:12 · Two players: attacks start while any player ship is alive; each diving ship (and the shooter, the ram and the zigzag) goes for the living player ship closest to it horizontally, and bombs and collisions hit either ship. On the guest of a two-player game attacks are not simulated: they arrive from the host.
 
 ## Requirements
 - 2026-10-03 18:13 · From sources/KillerFlies.txt § 4: random dive attacks with a gently irregular trajectory toward the player, dropping bombs that keep the ship's horizontal inertia; maximum bombs: blue 2, purple 3, red and yellow 4.
@@ -45,3 +46,4 @@ The attacks: a ship (or a yellow with its escort of reds) leaves the formation w
 - 2026-10-03 19:18 · Derived from partida: when the spare ship comes out, attacks wait 2 seconds before starting.
 - 2026-10-04 10:52 · Derived from power-ups: notify when the yellow and its two red escorts are all three destroyed outside the formation.
 - 2026-10-04 12:05 · Derived from enemigos/formacion: the new types' own attacks: zigzag (green), ramming without bombs (orange) and shooter with aimed burst (cyan).
+- 2026-10-13 07:12 · Derived from multijugador: aim the attacks at the closest living player ship and let bombs and collisions hit either ship.

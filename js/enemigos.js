@@ -26,16 +26,18 @@ KF.enemigos = {
   explosiones: [],     // {x, y, tiempo}
   oyentes: [],
 
-  // fn(nave, motivo) se llama con cada nave destruida; motivo es 'disparo' o
-  // 'choque'. Los puntos de la nave están en KF.TIPOS_NAVE[nave.tipo].puntos.
+  // fn(nave, motivo, autor) se llama con cada nave destruida; motivo es
+  // 'disparo' o 'choque' y autor la nave del jugador que la ha destruido (en
+  // el invitado de una partida a dos, null). Los puntos de la nave están en
+  // KF.TIPOS_NAVE[nave.tipo].puntos.
   alDestruir: function (fn) {
     this.oyentes.push(fn);
   },
 
-  destruir: function (nave, x, y, motivo) {
+  destruir: function (nave, x, y, motivo, autor) {
     nave.viva = false;
     this.explosiones.push({ x: x, y: y, tiempo: 0 });
-    for (var i = 0; i < this.oyentes.length; i++) this.oyentes[i](nave, motivo);
+    for (var i = 0; i < this.oyentes.length; i++) this.oyentes[i](nave, motivo, autor || null);
   },
 
   actualizar: function (dt) {

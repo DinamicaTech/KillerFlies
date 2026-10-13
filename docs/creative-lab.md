@@ -12,3 +12,4 @@ It leaves the lab when the owner decides: it becomes a draft or is carried out, 
 - 2026-10-04 10:48 · New idea under debate: power-ups (random power-ups when destroying a yellow one with its escort while diving).
 - 2026-10-04 10:52 · The power-ups idea leaves the lab: carried out, it is now the top-level node power-ups.
 - 2026-10-04 12:06 · New idea under debate: multijugador (multiplayer game option).
+- 2026-10-13 07:12 · The multijugador idea leaves the lab: executed, it is now the top-level node multijugador.

@@ -81,15 +81,16 @@ KF.ataque = {
   },
 
   // Si el rectángulo {x, y, ancho, alto} toca una nave en picado viva, la
-  // destruye y la devuelve; si no, devuelve null. Lo usa el disparo del jugador.
-  tocar: function (r) {
+  // destruye y la devuelve; si no, devuelve null. Lo usa el disparo de la nave
+  // del jugador autor.
+  tocar: function (r, autor) {
     var f = KF.formacion;
     for (var i = 0; i < this.atacantes.length; i++) {
       var a = this.atacantes[i];
       if (!a.nave.viva) continue;
       if (r.x < a.x + f.ANCHO_NAVE / 2 && r.x + r.ancho > a.x - f.ANCHO_NAVE / 2 &&
           r.y < a.y + f.ALTO_NAVE / 2 && r.y + r.alto > a.y - f.ALTO_NAVE / 2) {
-        KF.enemigos.destruir(a.nave, a.x, a.y, 'disparo');
+        KF.enemigos.destruir(a.nave, a.x, a.y, 'disparo', autor);
         return a.nave;
       }
     }
@@ -180,15 +181,26 @@ KF.ataque = {
     return a;
   },
 
+  // La nave del jugador viva más cercana en horizontal a (x), o null: a dos,
+  // cada atacante va a por la que tenga más cerca.
+  blanco: function (x) {
+    var vivas = KF.navesVivas(), mejor = null;
+    for (var i = 0; i < vivas.length; i++) {
+      if (!mejor || Math.abs(vivas[i].x - x) < Math.abs(mejor.x - x)) mejor = vivas[i];
+    }
+    return mejor;
+  },
+
   actualizar: function (dt) {
+    // En el invitado de una partida a dos, los ataques llegan del anfitrión.
+    if (KF.red.invitado) return;
     // Una formación nueva (otra oleada) deja atrás los ataques de la anterior.
     if (this.naves !== KF.formacion.naves) this.reiniciar();
 
-    var j = KF.jugador;
     this.espera -= dt;
     if (this.espera <= 0) {
       this.espera = this.pausa();
-      if (j.estado === 'viva' && this.ataquesEnCurso() < this.maximoAtaques()) {
+      if (KF.navesVivas().length && this.ataquesEnCurso() < this.maximoAtaques()) {
         var nave = this.elegirNave();
         if (nave) this.lanzar(nave);
       }
@@ -244,7 +256,8 @@ KF.ataque = {
         this.flotar(a, dt);
       } else if (a.estilo === 'zigzag') {
         // Zigzag cerrado de lado a lado con una ligera deriva hacia el jugador.
-        var meta = KF.jugador.estado === 'viva' ? KF.jugador.x : a.x;
+        var b = this.blanco(a.x);
+        var meta = b ? b.x : a.x;
         var lateral = this.ZIGZAG * Math.sin(a.oscilacion + a.t * this.FRECUENCIA_ZIGZAG) +
           Math.max(-20, Math.min(20, (meta - a.x) * 0.4));
         a.vx = lateral;
@@ -253,7 +266,8 @@ KF.ataque = {
         a.angulo = Math.atan2(a.vx, -this.VELOCIDAD_BAJADA);
       } else {
         // Hacia el jugador, con una oscilación suave que la hace irregular.
-        var objetivo = KF.jugador.estado === 'viva' ? KF.jugador.x : a.x;
+        var blanco = this.blanco(a.x);
+        var objetivo = blanco ? blanco.x : a.x;
         var deseada = 0;
         if (a.y < KF.jugador.Y - 30) {
           deseada = Math.max(-this.VELOCIDAD_LATERAL, Math.min(this.VELOCIDAD_LATERAL, (objetivo - a.x) * 1.2));
@@ -266,7 +280,7 @@ KF.ataque = {
         a.y += this.VELOCIDAD_BAJADA * v * dt;
         // Cañones hacia el jugador mientras está por encima de él.
         if (a.y < KF.jugador.Y - 16) {
-          this.girarHacia(a, Math.atan2(KF.jugador.x - a.x, -(KF.jugador.Y - a.y)), dt);
+          this.girarHacia(a, Math.atan2(objetivo - a.x, -(KF.jugador.Y - a.y)), dt);
         }
       }
       if (a.estilo !== 'tirador') this.soltarBombas(a, dt);
@@ -298,8 +312,8 @@ KF.ataque = {
   embestir: function (a, dt) {
     var v = this.factorVelocidad * this.FACTOR_EMBESTIDA * this.VELOCIDAD_BAJADA;
     if (!a.rumbo) {
-      var j = KF.jugador;
-      var dx = j.estado === 'viva' ? j.x - a.x : 0;
+      var j = KF.jugador, b = this.blanco(a.x);
+      var dx = b ? b.x - a.x : 0;
       var dy = Math.max(40, j.Y - a.y);
       var d = Math.sqrt(dx * dx + dy * dy);
       a.rumbo = { x: dx / d, y: dy / d };
@@ -314,7 +328,7 @@ KF.ataque = {
   // dispara a la mitad de la parada una ráfaga en abanico apuntada a él y
   // luego sigue bajando en línea recta.
   flotar: function (a, dt) {
-    var j = KF.jugador;
+    var j = this.blanco(a.x) || KF.jugador;
     var antes = a.parada;
     a.parada += dt;
     a.vx = 0;
@@ -325,7 +339,7 @@ KF.ataque = {
       var centro = (j.x - a.x) / Math.max(20, j.Y - a.y) * vy;
       var n = a.bombas;
       for (var i = 0; i < n; i++) {
-        this.bombas.push({ x: a.x, y: a.y + 5, vx: centro + (i - (n - 1) / 2) * this.ABANICO });
+        this.bombas.push({ id: KF.nuevoId(), x: a.x, y: a.y + 5, vx: centro + (i - (n - 1) / 2) * this.ABANICO });
       }
       a.bombas = 0;
     }
@@ -353,7 +367,7 @@ KF.ataque = {
     a.bombas--;
     a.esperaBomba = this.SEPARACION_BOMBAS;
     // La bomba conserva la inercia horizontal de la nave.
-    this.bombas.push({ x: a.x, y: a.y + 5, vx: a.vx * this.factorVelocidad });
+    this.bombas.push({ id: KF.nuevoId(), x: a.x, y: a.y + 5, vx: a.vx * this.factorVelocidad });
   },
 
   moverBombas: function (dt) {
@@ -365,10 +379,14 @@ KF.ataque = {
     this.bombas = this.bombas.filter(function (b) { return b.y < KF.ALTO + 8; });
   },
 
-  // Una nave en picado o una bomba que toca al jugador lo hace explotar. La
-  // nave alienígena que choca también se destruye, como en el arcade.
+  // Una nave en picado o una bomba que toca la nave de un jugador la hace
+  // explotar. La nave alienígena que choca también se destruye, como en el arcade.
   comprobarChoques: function () {
-    var c = KF.jugador.caja();
+    for (var k = 0; k < KF.jugadores.length; k++) this.comprobarChoquesCon(KF.jugadores[k]);
+  },
+
+  comprobarChoquesCon: function (jugador) {
+    var c = jugador.caja();
     if (!c) return;
     var f = KF.formacion, h = this.SPRITE_BOMBA;
     var toca = function (x, y, ancho, alto) {
@@ -378,15 +396,15 @@ KF.ataque = {
       var b = this.bombas[i];
       if (toca(b.x - h.width / 2, b.y - h.height / 2, h.width, h.height)) {
         this.bombas.splice(i, 1);
-        KF.jugador.explotar();
+        jugador.explotar();
         return;
       }
     }
     for (i = 0; i < this.atacantes.length; i++) {
       var a = this.atacantes[i];
       if (a.nave.viva && toca(a.x - f.ANCHO_NAVE / 2, a.y - f.ALTO_NAVE / 2, f.ANCHO_NAVE, f.ALTO_NAVE)) {
-        KF.enemigos.destruir(a.nave, a.x, a.y, 'choque');
-        KF.jugador.explotar();
+        KF.enemigos.destruir(a.nave, a.x, a.y, 'choque', jugador);
+        jugador.explotar();
         return;
       }
     }

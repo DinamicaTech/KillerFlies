@@ -2,7 +2,7 @@
 // flechas o deslizando el dedo, y dispara con la barra espaciadora o con una
 // pulsación corta en la pantalla táctil. Solo hay un disparo en pantalla:
 // no se puede volver a disparar hasta que da en un blanco o sale por arriba.
-// El power-up activo (KF.powerups.activo) cambia el disparo: hasta tres a la
+// El power-up activo de la nave (poder) cambia el disparo: hasta tres a la
 // vez, que atraviese las naves, una bomba, la aniquilación, la mitad de
 // velocidad o tres proyectiles paralelos que cuentan como un solo disparo.
 // Explota si la alcanza una nave alienígena o una bomba (KF.jugador.explotar).
@@ -16,7 +16,33 @@
 // hasta pararse de forma suave, con las flechas y al deslizar el dedo.
 // Al explotar lanza fragmentos que se dispersan y se apagan en un segundo;
 // terminan su recorrido aunque la nave vuelva a aparecer o acabe la partida.
-KF.jugador = {
+// En la partida a dos (js/red.js) hay dos naves: KF.jugador es siempre la de
+// este dispositivo y KF.companero la del otro jugador; KF.jugadores las lista.
+// Cada nave tiene su número (1 o 2), su color, su poder, sus naves de
+// recambio y sus puntos.
+KF.Nave = function (numero) {
+  this.numero = numero;
+  this.x = KF.ANCHO / 2;
+  this.vx = 0;
+  this.estado = 'ausente';
+  this.tiempoExplosion = 0;
+  this.destello = 0;
+  this.escudo = 0;
+  this.tiempoLlama = 0;
+  this.fragmentos = [];
+  this.disparos = [];
+  this.salvas = 0;
+  this.objetivo = null;
+  this.pulsacion = false;
+  this.poder = null;       // power-up activo de esta nave, o null
+  this.recambio = 0;       // naves de recambio que le quedan
+  this.puntos = 0;
+  this.remoto = false;     // la mueve el otro dispositivo (js/red.js)
+  this.peticiones = 0;     // invitado: disparos pedidos al anfitrión
+  this.SPRITE = KF.graficos.SPRITES_JUGADOR[numero - 1];
+};
+
+KF.Nave.prototype = {
   Y: KF.ALTO - 24,         // altura del centro de la nave
   VELOCIDAD: 90,           // velocidad máxima, en píxeles por segundo
   ACELERACION: 450,        // píxeles por segundo cada segundo (de parada a máxima en 0,2 s)
@@ -28,25 +54,21 @@ KF.jugador = {
   DURACION_DESTELLO: 0.06, // segundos que dura el destello del cañón al disparar
   DURACION_ESCUDO: 2,      // segundos de invulnerabilidad al aparecer
   PARPADEO: 0.1,
-  CAMBIO_LLAMA: 0.05,      // segundos de cada forma de la llama del motor           // segundos visible o invisible al parpadear
+  CAMBIO_LLAMA: 0.05,      // segundos de cada forma de la llama del motor
   FRAGMENTOS: 16,          // fragmentos que lanza la explosión
   VELOCIDAD_FRAGMENTO: [30, 90], // píxeles por segundo al salir (mínima y máxima)
   FRENADO_FRAGMENTO: 0.5,  // fracción de la velocidad que pierden en cada segundo
   DURACION_FRAGMENTO: 1,   // segundos hasta que se apagan del todo
 
-  x: KF.ANCHO / 2,
-  vx: 0,                   // velocidad horizontal actual (negativa hacia la izquierda)
-  estado: 'ausente',       // 'ausente' | 'viva' | 'explotando'
-  tiempoExplosion: 0,      // segundos desde que explotó
-  destello: 0,             // segundos que le quedan al destello del cañón
-  escudo: 0,               // segundos que le quedan de invulnerabilidad
-  tiempoLlama: 0,          // segundos acumulados para alternar la llama
-  fragmentos: [],          // {x, y, vx, vy, tam, color, vida} de la explosión
-  disparos: [],            // {x, y, bomba} del extremo superior de cada proyectil
-  salvas: 0,               // cuántas veces ha disparado (para Sonido)
   SEPARACION_TRIPLE: 6,    // píxeles entre los proyectiles del disparo triple
-  objetivo: null,          // x a la que va la nave al deslizar el dedo, o null
-  pulsacion: false,        // se ha pulsado el espacio (sin contar la repetición)
+  SEPARACION_DOS: 30,      // a dos, cada nave aparece a esta distancia del centro
+  // Estado de cada nave: x, vx (velocidad horizontal, negativa hacia la
+  // izquierda), estado ('ausente' | 'viva' | 'explotando'), tiempoExplosion,
+  // destello y escudo (segundos que les quedan), tiempoLlama, fragmentos
+  // {x, y, vx, vy, tam, color, vida}, disparos {id, x, y, bomba} (extremo
+  // superior de cada proyectil), salvas (veces que ha disparado, para Sonido),
+  // objetivo (x a la que va al deslizar el dedo, o null) y pulsacion (se ha
+  // pulsado el espacio, sin contar la repetición).
 
   // Rectángulo de choque de la nave, o null si no se la puede alcanzar.
   caja: function () {
@@ -60,6 +82,7 @@ KF.jugador = {
     this.estado = 'explotando';
     this.vx = 0;
     this.tiempoExplosion = 0;
+    this.poder = null;
     this.lanzarFragmentos();
   },
 
@@ -92,10 +115,11 @@ KF.jugador = {
     });
   },
 
-  // La nave aparece en el centro; la llama Partida.
+  // La nave aparece en el centro (a dos, cada una a un lado); la llama Partida.
   aparecer: function () {
     this.estado = 'viva';
     this.x = KF.ANCHO / 2;
+    if (KF.companero) this.x += (this.numero === 1 ? -1 : 1) * this.SEPARACION_DOS;
     this.objetivo = null;
     this.vx = 0;
     this.escudo = this.DURACION_ESCUDO;
@@ -106,16 +130,20 @@ KF.jugador = {
     this.estado = 'ausente';
     this.vx = 0;
     this.escudo = 0;
+    this.poder = null;
   },
 
   actualizar: function (dt) {
-    this.moverDisparo(dt);
+    // El invitado no decide los impactos: sus disparos llegan del anfitrión.
+    if (!KF.red.invitado) this.moverDisparo(dt);
     this.moverFragmentos(dt);
     this.destello = Math.max(0, this.destello - dt);
     this.escudo = Math.max(0, this.escudo - dt);
     this.tiempoLlama += dt;
 
     if (this.estado === 'explotando') this.tiempoExplosion += dt;
+    // La nave del otro jugador la mueve su dispositivo (js/red.js).
+    if (this.remoto) return;
     // Lo pedido por la pantalla táctil se recoge siempre, aunque la nave no
     // esté, para que no se acumule.
     var tactil = KF.tactil;
@@ -159,8 +187,11 @@ KF.jugador = {
 
     // Con el disparo acelerado, cada pulsación lanza un solo disparo:
     // mantener pulsado el espacio no dispara más.
-    var pulsado = KF.powerups.activo === 'acelerado' ? pulsacion : t.Space;
-    if (pulsado || tocado) this.disparar();
+    var pulsado = this.poder === 'acelerado' ? pulsacion : t.Space;
+    if (!pulsado && !tocado) return;
+    // El invitado pide el disparo al anfitrión, que es quien lo lanza.
+    if (KF.red.invitado) this.peticiones++;
+    else this.disparar();
   },
 
   // Lleva la velocidad v hacia la deseada: frena si tiene que ir más despacio
@@ -181,42 +212,42 @@ KF.jugador = {
 
   // Lanza un disparo si se puede, según el power-up activo.
   disparar: function () {
-    var poder = KF.powerups.activo;
+    var poder = this.poder;
     var maximo = poder === 'acelerado' ? 3 : 1;
     if (this.disparos.length >= maximo) return;
     this.salvas++;
     if (poder === 'aniquilacion') {
-      KF.powerups.aniquilar();
+      KF.powerups.aniquilar(this);
       return;
     }
     this.destello = this.DURACION_DESTELLO;
     var x = Math.round(this.x), y = this.Y - this.ALTO / 2 - this.SPRITE_DISPARO.height;
     if (poder === 'triple') {
-      for (var i = -1; i <= 1; i++) this.disparos.push({ x: x + i * this.SEPARACION_TRIPLE, y: y, bomba: false });
+      for (var i = -1; i <= 1; i++) this.disparos.push({ id: KF.nuevoId(), x: x + i * this.SEPARACION_TRIPLE, y: y, bomba: false });
     } else {
-      this.disparos.push({ x: x, y: y, bomba: poder === 'bomba' });
+      this.disparos.push({ id: KF.nuevoId(), x: x, y: y, bomba: poder === 'bomba' });
     }
   },
 
   // Los disparos siguen su camino aunque la nave explote. El disparo profundo
   // no se detiene al dar en una nave; la bomba explota al darle.
   moverDisparo: function (dt) {
-    var poder = KF.powerups.activo;
+    var poder = this.poder, autor = this;
     var v = this.VELOCIDAD_DISPARO * (poder === 'lento' ? 0.5 : 1);
     var h = this.SPRITE_DISPARO.height;
     this.disparos = this.disparos.filter(function (d) {
       d.y -= v * dt;
       if (d.y + h < 0) return false;
       var r = d.bomba ? { x: d.x - 1, y: d.y, ancho: 3, alto: 3 } : { x: d.x, y: d.y, ancho: 1, alto: h };
-      var nave = KF.formacion.tocar(r) || KF.ataque.tocar(r);
+      var nave = KF.formacion.tocar(r, autor) || KF.ataque.tocar(r, autor);
       if (!nave) return true;
       if (d.bomba) {
-        KF.powerups.explotarBomba(d.x, d.y + 1);
+        KF.powerups.explotarBomba(d.x, d.y + 1, autor);
         return false;
       }
       if (poder !== 'profundo') return false;
       // Atraviesa: también caen las demás naves que toque en este instante.
-      while (KF.formacion.tocar(r) || KF.ataque.tocar(r)) {}
+      while (KF.formacion.tocar(r, autor) || KF.ataque.tocar(r, autor)) {}
       return true;
     });
   },
@@ -256,15 +287,41 @@ KF.jugador = {
   }
 };
 
-KF.jugador.SPRITE = KF.graficos.SPRITE_JUGADOR;
-KF.jugador.SPRITE_DISPARO = KF.graficos.SPRITE_DISPARO;
-KF.jugador.SPRITE_DESTELLO = KF.graficos.SPRITE_DESTELLO;
-KF.jugador.SPRITES_LLAMA = KF.graficos.SPRITES_LLAMA;
-KF.jugador.SPRITE_BOMBA = KF.graficos.SPRITE_BOMBA_JUGADOR;
-KF.jugador.SPRITES_EXPLOSION = KF.graficos.SPRITES_EXPLOSION_JUGADOR;
+(function () {
+  var P = KF.Nave.prototype, g = KF.graficos;
+  P.SPRITE_DISPARO = g.SPRITE_DISPARO;
+  P.SPRITE_DESTELLO = g.SPRITE_DESTELLO;
+  P.SPRITES_LLAMA = g.SPRITES_LLAMA;
+  P.SPRITE_BOMBA = g.SPRITE_BOMBA_JUGADOR;
+  P.SPRITES_EXPLOSION = g.SPRITES_EXPLOSION_JUGADOR;
+})();
+
+// Identificador único de cada disparo, bomba, cápsula u onda, para que el
+// invitado de una partida a dos sepa qué es qué entre una foto y la siguiente.
+KF.ultimoId = 0;
+KF.nuevoId = function () { return ++KF.ultimoId; };
+
+// Nave de este dispositivo; en la partida a dos, js/red.js añade la del otro
+// jugador (KF.companero) y, en el invitado, esta es la número 2.
+KF.jugador = new KF.Nave(1);
+KF.companero = null;
+KF.jugadores = [KF.jugador];
+
+// Todas las naves en juego que se pueden alcanzar ahora mismo.
+KF.navesVivas = function () {
+  return KF.jugadores.filter(function (j) { return j.estado === 'viva'; });
+};
 
 window.addEventListener('keydown', function (e) {
   if (e.code === 'Space' && !e.repeat) KF.jugador.pulsacion = true;
 });
 
-KF.registrar(KF.jugador);
+// Las naves se actualizan y se dibujan juntas, en orden.
+KF.registrar({
+  actualizar: function (dt) {
+    for (var i = 0; i < KF.jugadores.length; i++) KF.jugadores[i].actualizar(dt);
+  },
+  dibujar: function (ctx) {
+    for (var i = 0; i < KF.jugadores.length; i++) KF.jugadores[i].dibujar(ctx);
+  }
+});

@@ -20,6 +20,7 @@ The alien ships: seven types, each with its points and its maximum bombs per att
 - 2026-10-03 19:08 · Destruction: every alien ship dies in a single place, KF.enemigos.destruir (js/enemigos.js), both from the player's shot (in formation or diving) and when colliding with the player. It leaves on the spot an explosion of 0.1 seconds per phase with the drawing from graficos (four phases) and notifies whoever subscribes with KF.enemigos.alDestruir(fn(nave, motivo)), with motivo 'disparo' or 'choque'.
 - 2026-10-04 12:05 · Ship types: blue (10 points, 2 bombs), purple (20, 3), red (30, 4) and yellow (50, 4) attack by diving; green (40, 2) in zigzag, orange (60, 0) by ramming and cyan (80, 3) as a shooter (the attacks are defined by enemigos/ataque).
 - 2026-10-04 12:05 · Type table in js/enemigos.js (KF.TIPOS_NAVE): points, maximum bombs, attack style and sprite of each type. The sprite, already coloured, is provided by graficos (KF.graficos.SPRITES_NAVE in js/graficos.js).
+- 2026-10-13 07:12 · Destroyed by whom: KF.enemigos.destruir(nave, x, y, motivo, autor) and the alDestruir listeners receive autor, the player ship that destroyed it (null on the guest of a two-player game), so the points go to that player.
 
 ## Requirements
 - 2026-10-03 18:13 · There are four types of alien ships (blue, purple, red and yellow) that give 10, 20, 30 and 50 points respectively when destroyed.
@@ -28,3 +29,4 @@ The alien ships: seven types, each with its points and its maximum bombs per att
 - 2026-10-03 19:03 · (To the question "if an alien ship collides with you, does it give points?") Yes
 - 2026-10-03 19:08 · Derived from graficos: each ship type takes its already coloured sprite from js/graficos.js.
 - 2026-10-04 12:05 · Derived from enemigos/formacion: three new ship types, green, orange and cyan, with their points (40, 60 and 80), their bombs (2, 0 and 3) and their attack style.
+- 2026-10-13 07:12 · Derived from multijugador: say which player ship destroyed each alien ship.
