@@ -32,6 +32,7 @@ Online two-player game, each player on their own device, in js/red.js: the start
 - 2026-10-13 07:12 · Disconnection: with no message from the other player for 2 seconds (or the connection closed) during a game, both pause with 'ESPERANDO A J1/J2' and a countdown; the guest keeps calling the room every 2 seconds and the game resumes as soon as messages arrive again. After 30 seconds the host carries on alone (J2 is out) and the guest shows 'CONEXION PERDIDA' and returns to the menu. After 'GAME OVER' there is nothing to wait for: a key or tap on either device closes the connection and returns to the menu.
 - 2026-10-13 07:12 · Tested in two browsers with a local PeerJS server: one-player game unchanged, room with QR, joining by link and by code, both devices see the same game, J2 moves and scores, pause and resume after a cut, host alone after 30 seconds, 'SALA NO ENCONTRADA' and 'GAME OVER' back to the menu. Not tested on real phones or with PeerJS's public server (not reachable from the test environment).
 - 2026-10-13 07:27 · Validated by the owner on real devices ("Tested, it seems to work perfectly"): the node becomes stable.
+- 2026-10-13 14:28 · The guest also calibrates the centre of its phone's tilt when its game starts (on seeing the host's game go to 'jugando'); each device moves its own ship with its own tilt (jugador/accelerometer-control).
 
 ## Requirements
 - 2026-10-04 12:00 · idea: Multiplayer game option in Killer Flies.
@@ -62,3 +63,4 @@ Online two-player game, each player on their own device, in js/red.js: the start
 - 2026-10-13 06:58 · answer: high scores → A, local to each browser, separate for two-player games.
 - 2026-10-13 06:58 · answer: cross-play mobile and computer → A, allowed.
 - 2026-10-13 06:58 · answer: cost → A, free plans only.
+- 2026-10-13 14:25 · Derived from jugador/accelerometer-control: the guest's phone takes its position as the centre of the tilt when its game starts.

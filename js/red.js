@@ -382,6 +382,8 @@ KF.red = {
   aplicarCambios: function (f) {
     var p = KF.partida;
     if (f.o !== p.oleada || (f.e === 'jugando' && p.estado !== 'jugando')) p.ponerOleada(f.o);
+    // Al empezar la partida, la posición del móvil del invitado es su centro.
+    if (f.e === 'jugando' && p.estado !== 'jugando') KF.inclinacion.calibrar();
     if (f.e === 'fin' && p.estado !== 'fin') p.tiempoFin = 0;
     p.estado = f.e;
 

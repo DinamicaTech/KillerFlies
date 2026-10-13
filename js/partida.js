@@ -41,6 +41,7 @@ KF.partida = {
   // sus puntos a cero, sus naves de recambio y su nave en juego.
   empezar: function () {
     this.estado = 'jugando';
+    KF.inclinacion.calibrar();
     KF.marcador.cambiarModo(!!KF.companero);
     this.ponerOleada(1);
     for (var i = 0; i < KF.jugadores.length; i++) {
