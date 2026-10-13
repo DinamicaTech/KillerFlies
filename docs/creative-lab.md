@@ -13,3 +13,4 @@ It leaves the lab when the owner decides: it becomes a draft or is carried out, 
 - 2026-10-04 10:52 · The power-ups idea leaves the lab: carried out, it is now the top-level node power-ups.
 - 2026-10-04 12:06 · New idea under debate: multijugador (multiplayer game option).
 - 2026-10-13 07:12 · The multijugador idea leaves the lab: executed, it is now the top-level node multijugador.
+- 2026-10-13 14:15 · New idea under debate: creative-lab/accelerometer-control (move the ship by tilting the phone).
