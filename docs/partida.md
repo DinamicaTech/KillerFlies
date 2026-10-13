@@ -9,7 +9,7 @@ threads:
   - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
 ---
 ## Summary
-The game cycle, in js/partida.js: a 'START GAME' screen with the formation moving behind it and a menu ('1 JUGADOR', 'CREAR PARTIDA', 'UNIRSE'; any key or a short tap starts a one-player game, as before); successive waves, each 5% faster than the previous one in everything (block, dives and bombs); three player ships (one in play and two spares, which the extra life power-up can raise up to five) and 'GAME OVER' on losing the last one, which stays until a key is pressed or a short tap is made and then returns to 'START GAME'. It tells the scoreboard the wave; each player ship carries its spare ships and points. In a two-player game (multijugador) each player has their own ships and the game ends when neither has any.
+The game cycle, in js/partida.js: a 'START GAME' screen with the formation moving behind it and a menu ('1 JUGADOR', 'CREAR PARTIDA', 'UNIRSE'; any key or a short tap starts a one-player game, as before); successive waves, each 5% faster than the previous one in everything (block, dives and bombs); three player ships (one in play and two spares, which the extra life power-up can raise up to five) and 'GAME OVER' on losing the last one, which stays until a key is pressed or a short tap is made and then returns to 'START GAME'. It tells the scoreboard the wave; each player ship carries its spare ships and points. In a two-player game (multijugador) each player has their own ships and the game ends when neither has any. A game can be paused while playing (partida/pausa).
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -28,6 +28,7 @@ The game cycle, in js/partida.js: a 'START GAME' screen with the formation movin
 - 2026-10-13 07:12 · Start: the formation of the first wave moves behind the text without attacking, because there are no player ships. Under 'START GAME' there is a menu: '1 JUGADOR' (selected), 'CREAR PARTIDA' and 'UNIRSE' (multijugador). Up and down arrows change the option and any other key chooses it; a short tap on an option chooses it and a tap elsewhere chooses the selected one. The game starts with points at zero, wave 1 and two spare ships for each player, and each player ship in the centre (in a two-player game, one on each side). The short tap that starts the game does not shoot.
 - 2026-10-13 07:12 · Lost ships: each player keeps their own spare ships. At least two seconds after a ship explodes, if its player has spares left, the next one comes out: alone, once the diving ships have returned to the formation and no bombs are left, and then attacks wait two seconds; with the other player's ship in play, straight away. A player with no spares is out, and the game ends ('GAME OVER') when no player has a ship in play. The next wave comes with any player ship in play. On the guest of a two-player game the game cycle arrives from the host; from 'GAME OVER' a key or tap on either device closes the connection and returns to 'START GAME'.
 - 2026-10-13 14:28 · On starting a game, Game takes the current position of the phone as the centre of the tilt (KF.inclinacion.calibrar, jugador/accelerometer-control).
+- 2026-10-13 17:16 · Pause: while playing, the game can be paused with P or the II button and pauses by itself when the page is hidden; it is handled by the child node partida/pausa (js/pausa.js), which ends the pause when the game is no longer being played.
 
 ## Requirements
 - 2026-10-03 18:13 · When all the enemy ships have been destroyed, a new wave will start with a movement speed increased by 5%.
@@ -43,3 +44,4 @@ The game cycle, in js/partida.js: a 'START GAME' screen with the formation movin
 - 2026-10-04 12:05 · Derived from enemigos/formacion: tell the formation which wave is starting, so it sets its own.
 - 2026-10-13 07:12 · Derived from multijugador: offer the two-player game in the start menu and play it with two players, each with their spare ships, until neither has ships.
 - 2026-10-13 14:25 · Derived from jugador/accelerometer-control: when the game starts, the position of the phone counts as the centre of the tilt.
+- 2026-10-13 17:16 · Derived from partida/pausa: let the game be paused only while playing.

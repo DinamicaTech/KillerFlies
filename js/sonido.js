@@ -60,7 +60,16 @@ KF.sonido = {
 
   iniciarAudio: function () {
     this.activado = true;
-    if (this.ctx && this.ctx.state === 'suspended' && !document.hidden) this.ctx.resume();
+    this.ajustarSilencio();
+  },
+
+  // El audio se para con la pestaña oculta o la partida en pausa (js/pausa.js)
+  // y vuelve al quitarse las dos cosas.
+  ajustarSilencio: function () {
+    if (!this.ctx || !this.activado) return;
+    var callar = document.hidden || (KF.pausa && KF.pausa.activa);
+    if (callar && this.ctx.state === 'running') this.ctx.suspend();
+    else if (!callar && this.ctx.state === 'suspended') this.ctx.resume();
   },
 
   // Tramo con sonido de un buffer, sin el silencio que el MP3 añade al
@@ -189,12 +198,9 @@ KF.sonido = {
   window.addEventListener('keydown', function () { s.iniciarAudio(); });
   document.addEventListener('touchend', function () { s.iniciarAudio(); });
   // Con la pestaña oculta el juego se detiene: el sonido también.
-  document.addEventListener('visibilitychange', function () {
-    if (!s.ctx || !s.activado) return;
-    if (document.hidden) s.ctx.suspend(); else s.ctx.resume();
-  });
+  document.addEventListener('visibilitychange', function () { s.ajustarSilencio(); });
   KF.enemigos.alDestruir(function (nave) {
-    if (!s.ctx || !s.activado || document.hidden) return;
+    if (!s.ctx || !s.activado || document.hidden || KF.pausa.activa) return;
     s.tocar(nave.tipo === 'amarilla' ? 'explosion-amarilla' : 'explosion-enemigo');
   });
 })();

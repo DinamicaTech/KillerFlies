@@ -77,8 +77,13 @@ var KF = {
   // juego, o el invitado, que lo dibuja tal como se lo envía el anfitrión.
   red: { anfitrion: false, invitado: false },
   // Con la partida en pausa (el otro jugador se ha desconectado) solo se
-  // actualizan los sistemas marcados con enPausa.
+  // actualizan los sistemas marcados con enPausa; lo mismo con la pausa del
+  // jugador (js/pausa.js). Lo dice KF.detenido().
   pausado: false,
+
+  detenido: function () {
+    return this.pausado || (this.pausa && this.pausa.activa);
+  },
 
   // Pulsación corta: tocar y soltar en poco tiempo casi sin mover el dedo.
   PULSACION_CORTA_SEGUNDOS: 0.25,
@@ -184,10 +189,10 @@ var KF = {
   },
 
   paso: function (dt) {
-    var i;
+    var i, parado = this.detenido();
     for (i = 0; i < this.sistemas.length; i++) {
       var s = this.sistemas[i];
-      if (s.actualizar && (!this.pausado || s.enPausa)) s.actualizar(dt);
+      if (s.actualizar && (!parado || s.enPausa)) s.actualizar(dt);
     }
     this.ctx.setTransform(this.RESOLUCION, 0, 0, this.RESOLUCION, 0, 0);
     this.ctx.fillStyle = '#000';

@@ -224,6 +224,7 @@ KF.red = {
   recibir: function (m) {
     this.desdeUltimo = 0;
     if (this.fase === 'pausa') this.reanudar();
+    if ((this.anfitrion && m.f === 'n') || (this.invitado && m.f === 'e')) KF.pausa.recibir(m.z, m.zv, this.invitado);
     if (this.anfitrion && m.f === 'n') this.entradas.meter(m);
     else if (this.invitado && m.f === 'e') this.meterFoto(m);
   },
@@ -254,12 +255,23 @@ KF.red = {
 
     this.esperaEnvio -= dt;
     if (this.esperaEnvio > 0) return;
+    this.enviarYa();
+  },
+
+  // Envía ya el mensaje de este dispositivo: la foto del anfitrión o la nave
+  // del invitado, con el estado de la pausa (js/pausa.js).
+  enviarYa: function () {
+    if (this.fase !== 'jugando' && this.fase !== 'pausa') return;
     this.esperaEnvio = 1 / this.ENVIOS;
-    if (this.anfitrion) this.enviar(this.foto());
+    var m;
+    if (this.anfitrion) m = this.foto();
     else {
       var j = KF.jugador;
-      this.enviar({ f: 'n', t: performance.now(), x: KF.redondear(j.x), vx: KF.redondear(j.vx), d: j.peticiones });
+      m = { f: 'n', t: performance.now(), x: KF.redondear(j.x), vx: KF.redondear(j.vx), d: j.peticiones };
     }
+    m.z = KF.pausa.quien;
+    m.zv = KF.pausa.version;
+    this.enviar(m);
   },
 
   // Anfitrión: la nave del invitado va donde él la ha movido, y dispara
@@ -558,6 +570,13 @@ KF.Muestras.prototype = {
   r.LETRAS_SECUNDARIO = KF.graficos.crearFuente(r.COLOR_SECUNDARIO);
   r.LETRAS_ERROR = KF.graficos.crearFuente('#f02828');
 
+
+  // Con la pestaña oculta el bucle del juego se detiene (y la partida se
+  // pausa): se sigue enviando un mensaje por segundo para que el otro no dé
+  // la conexión por perdida.
+  setInterval(function () {
+    if (document.hidden) r.enviarYa();
+  }, 1000);
 
   // Enlace del QR: entra directamente en la sala.
   var m = /[?&]sala=([A-Za-z]{4})/.exec(location.search);
