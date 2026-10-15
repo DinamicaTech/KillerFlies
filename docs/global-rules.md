@@ -11,7 +11,7 @@ The rules followed by every thread that works on a node of this project. The pro
 - 2026-10-05 14:19 · Working docs are written in English, no longer in Spanish, because the project is published as a demo of CVP; the owner can keep chatting in Spanish.
 
 ## CVP rules
-<!-- cvp-rules 8 begin · Written by Claude Visual Project ("Update rules" in the page). Do not edit: an update replaces everything up to the end marker. Add your own rules under ## Project rules. -->
+<!-- cvp-rules 9 begin · Written by Claude Visual Project ("Update rules" in the page). Do not edit: an update replaces everything up to the end marker. Add your own rules under ## Project rules. -->
 These rules apply to every thread that works on a node of this project. The prompt that starts the thread names the node it starts from (for a new sub-task, the new node it proposes), the files to read and the task. Paths are relative to the docs folder unless they say otherwise.
 
 **Reading.** Read the node file in full. For its ancestors and dependencies, read only the Summary and Decisions blocks; open them in full only if needed. Ignore every decision marked "[replaced by ...]": a later decision overrides it.
@@ -46,6 +46,17 @@ Once confirmed, the change is atomic: do all of it in this thread and one branch
 5. Show the proposed tree, two or three levels deep: each node with its Summary, the R sentences it receives, the ones that become `draft:` lines and its local questions. Remake it with the owner's clarifications until the owner's OK; this is the breakdown, and only then write the md files. Nodes that only give structure get their Summary and no status; nodes with pending tasks get `status: draft`, the owner's sentences word for word with the date and time of the block, and their `draft:` line. A pending task for a node that already exists and is not a draft goes into a new draft child of it (see Drafts).
 6. Write each local question in the Requirements of its draft node as a line "question: <question>, with its options and your recommendation" (see Drafts). The owner's answers are requirements too: copy them as Updating the docs says, and when one overrides a decision in force, mark that decision as replaced. Finally delete `.requirements-load.md`.
 7. Requirements that come in files are kept unchanged in the repository, in the folder `sources/` at the repository root (outside the docs folder), with their original names. A node receives its R sentences word for word when they are short (about ten lines in all); when they are longer, its Requirements get, for each part, one dated line with a summary and the exact reference instead: "From sources/<file> § <section or page>: <summary>". Whoever works on that node reads the referenced part of the source.
+
+**Working practices.**
+- **Impact first.** Before agreeing to a request, estimate its impact on the project: the nodes, screens and code it would change, and what it could break indirectly. If it is significant (it rewrites existing parts or touches much of the project), say so in the breakdown with its cost and risk, question it, and propose a lighter alternative if there is one. Questioning a request is better than changing a large part of the project for it.
+- **Regression tests.** In a project with code, every sensitive change adds or updates automated tests that cover it, and the tests run on every pull request and on a schedule, so that a change that breaks another feature is caught.
+- **Ask before destroying.** Ask the owner before deleting files or data, changing a data format, or breaking compatibility with what already uses the project.
+- **No secrets in the repository.** Never write keys, tokens, passwords or personal data in code, docs, commits or pull requests.
+- **Dependencies.** Do not add a library or an external service without saying why and getting the owner's OK.
+- **Acceptance criteria.** Every task and every draft states how to tell that it is done, and the thread checks it before finishing.
+- **Definition of done.** A task is done only when its tests pass, the docs are updated as "Updating the docs" says, and the owner has been told what to validate.
+- **Fields fit their content.** In a user interface, the visual size of each field (inputs, boxes, columns, buttons) fits its content: neither much wider than what it holds nor too narrow to show it.
+- **Hand-over.** If a thread stops before finishing, or grows long, it writes in its node what it did and what is left, so that another thread can go on without reading the conversation.
 
 **Thread link.** If you can tell the link to this thread, add it to the `threads` list in the front matter of the node you work on, as a line `  - <short title> | <link>`.
 <!-- cvp-rules end -->
