@@ -3,7 +3,7 @@
 // reanuda, sin disparar. Se pausa sola al ocultarse la pestaña (cambio de
 // pestaña, ventana minimizada o móvil bloqueado) y nunca se reanuda sola.
 // Mientras dura, todo se congela (KF.detenido), el sonido se calla y se ve
-// 'PAUSA' en el centro. Al reanudar, la posición del móvil vuelve a ser el
+// 'PAUSED' en el centro. Al reanudar, la posición del móvil vuelve a ser el
 // centro de la inclinación.
 // En la partida a dos la pausa es de los dos: cada mensaje de js/red.js
 // lleva quién ha pausado (z) y un número de versión (zv) que crece con cada
@@ -95,10 +95,10 @@ KF.pausa = {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(0, 0, KF.ANCHO, KF.ALTO);
     var p = KF.partida, e = this.ESCALA_TEXTO, medio = (KF.ALTO - KF.graficos.FUENTE_ALTO * e) / 2;
-    var texto = KF.red.activa() ? 'PAUSA J' + this.quien : 'PAUSA';
+    var texto = KF.red.activa() ? 'PAUSED P' + this.quien : 'PAUSED';
     p.escribirCentrado(ctx, this.LETRAS, texto, medio, e);
     if (this.puedeReanudar()) {
-      p.escribirCentrado(ctx, this.LETRAS_AYUDA, this.tactil ? 'P O TOCA PARA SEGUIR' : 'P PARA SEGUIR', medio + 24, 1);
+      p.escribirCentrado(ctx, this.LETRAS_AYUDA, this.tactil ? 'P OR TAP TO RESUME' : 'P TO RESUME', medio + 24, 1);
     }
   }
 };
@@ -127,5 +127,5 @@ KF.pausa = {
   });
 })();
 
-// Después de Red, para que 'PAUSA' quede encima de todo.
+// Después de Red, para que 'PAUSED' quede encima de todo.
 KF.registrar(KF.pausa);

@@ -1,8 +1,8 @@
 // El marcador: oleada/oleada máxima arriba a la izquierda, puntos/puntos
 // máximos arriba a la derecha y las naves de recambio abajo a la derecha.
 // En la partida a dos, los puntos de cada jugador van arriba a la derecha en
-// el color de su nave (J1 encima de J2) y sus naves de recambio abajo, las de
-// J1 a la izquierda y las de J2 a la derecha.
+// el color de su nave (P1 encima de P2) y sus naves de recambio abajo, las de
+// P1 a la izquierda y las de P2 a la derecha.
 // Los máximos se guardan en el navegador (localStorage) en cuanto se superan,
 // aparte los de la partida a dos, que cuentan los puntos del jugador de este
 // dispositivo. Partida decide la oleada y las naves de recambio; los puntos
@@ -93,11 +93,11 @@ KF.marcador = {
       this.dibujarRecambio(ctx, KF.jugador, false);
       return;
     }
-    // A dos: J1 y J2 por su número, sea cual sea el de este dispositivo.
+    // A dos: P1 y P2 por su número, sea cual sea el de este dispositivo.
     var porNumero = [];
     for (var i = 0; i < KF.jugadores.length; i++) porNumero[KF.jugadores[i].numero - 1] = KF.jugadores[i];
     for (i = 0; i < 2; i++) {
-      var texto = 'J' + (i + 1) + ' ' + porNumero[i].puntos;
+      var texto = 'P' + (i + 1) + ' ' + porNumero[i].puntos;
       this.escribir(ctx, texto, KF.ANCHO - m - this.anchoTexto(texto), m + i * 9, this.LETRAS_JUGADOR[i]);
     }
     this.dibujarRecambio(ctx, porNumero[0], true);
