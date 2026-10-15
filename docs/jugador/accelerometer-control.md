@@ -1,6 +1,5 @@
 ---
 title: Accelerometer control
-status: draft
 depends_on: [architecture, partida, multijugador]
 threads:
   - Accelerometer control | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi9zLchRuiqrBNaJM9zRS8pR
@@ -15,8 +14,9 @@ On a phone, the player's ship also moves by tilting the device sideways: up to 3
 - 2026-10-13 14:22 · Tilt and finger coexist without choosing a mode (option A): while an arrow is pressed or a finger slides, the tilt is ignored.
 - 2026-10-13 14:22 · Leaves the lab: executed, it is now the node jugador/accelerometer-control.
 - 2026-10-13 14:25 · Top speed: 120 pixels per second only for the phone controls (finger and tilt); the arrows stay at 90 pixels per second, because on a PC the game is easier (jugador/inercia).
-- 2026-10-13 14:28 · Tilt movement: with no arrow pressed and no finger target, the desired speed is 0 up to 3° of tilt from the centre and grows in proportion up to 120 pixels per second at 30° (and beyond), toward the side the phone is tilted; the inertia of jugador/inercia takes the ship to that speed. The tilt is the sideways one as the screen is seen, whatever way the phone is turned. Code in js/jugador.js (VELOCIDAD_MOVIL, INCLINACION_MINIMA, INCLINACION_MAXIMA); the sensor is read in js/base.js (KF.inclinacion). Pending the owner's test on a phone.
+- 2026-10-13 14:28 · Tilt movement: with no arrow pressed and no finger target, the desired speed is 0 up to 3° of tilt from the centre and grows in proportion up to 120 pixels per second at 30° (and beyond), toward the side the phone is tilted; the inertia of jugador/inercia takes the ship to that speed. The tilt is the sideways one as the screen is seen, whatever way the phone is turned. Code in js/jugador.js (VELOCIDAD_MOVIL, INCLINACION_MINIMA, INCLINACION_MAXIMA); the sensor is read in js/base.js (KF.inclinacion).
 - 2026-10-13 17:16 · On resuming a paused game, the current position of the phone becomes the centre of the tilt again (partida/pausa calls KF.inclinacion.calibrar), because after unlocking the phone the player may hold it differently.
+- 2026-10-15 07:15 · Validated by the owner on a phone: tilt control is implemented and the node becomes stable.
 
 ## Requirements
 - 2026-10-13 14:10 · idea: Control the player's ship by tilting the phone (accelerometer) instead of sliding a finger.
