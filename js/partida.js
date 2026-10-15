@@ -42,7 +42,8 @@ KF.partida = {
   },
 
   // Empieza la partida, a uno o (con KF.companero) a dos: cada jugador con
-  // sus puntos a cero, sus naves de recambio y su nave en juego.
+  // sus puntos a cero, sus naves de recambio y su nave en juego. También
+  // desde la pausa (RESTART, js/pausa.js), dejando atrás la partida a medias.
   empezar: function () {
     this.estado = 'jugando';
     KF.inclinacion.calibrar();
@@ -50,6 +51,8 @@ KF.partida = {
     this.ponerOleada(1);
     for (var i = 0; i < KF.jugadores.length; i++) {
       var j = KF.jugadores[i];
+      j.retirar();
+      j.disparos = [];
       j.puntos = 0;
       j.recambio = this.NAVES_RECAMBIO;
       j.aparecer();

@@ -59,7 +59,7 @@ KF.red = {
   // Número de la partida a dos (crece con cada 'PLAY AGAIN'), para no mezclar
   // fotos de la partida anterior con las de la nueva.
   partidaNumero: 0,
-  pideOtra: false,         // invitado: ha elegido 'PLAY AGAIN' y espera la partida nueva
+  pideOtra: false,         // invitado: ha elegido 'PLAY AGAIN' (o RESTART en la pausa) y espera la partida nueva
 
   // Hay una partida a dos en marcha o preparándose; en el menú, con los dos
   // conectados, no: el menú funciona como siempre.
@@ -267,8 +267,19 @@ KF.red = {
     }
   },
 
-  // Anfitrión: otra partida con el mismo invitado, desde el menú o desde
-  // 'GAME OVER' si el invitado la pide antes de que este jugador salga.
+  // Pausa de este jugador: RESTART. El anfitrión empieza otra partida; el
+  // invitado se la pide en cada mensaje hasta que ve llegar la nueva.
+  reiniciar: function () {
+    if (this.anfitrion) this.otraPartida();
+    else {
+      this.pideOtra = true;
+      this.enviarYa();
+    }
+  },
+
+  // Anfitrión: otra partida con el mismo invitado, desde el menú, desde
+  // 'GAME OVER' si el invitado la pide antes de que este jugador salga, o
+  // desde la pausa (RESTART), que se acaba en los dos dispositivos.
   otraPartida: function () {
     this.anfitrion = true;
     this.rol = 0;
@@ -277,6 +288,7 @@ KF.red = {
     this.entradas = new KF.Muestras();
     this.partidaNumero++;
     KF.pausado = false;
+    if (KF.pausa.activa) KF.pausa.poner(false, 0, KF.pausa.version + 1);
     KF.partida.empezar();
     this.enviarYa();
   },
@@ -300,6 +312,11 @@ KF.red = {
       return;
     }
     if (this.fase === 'pausa') this.reanudar();
+    // El invitado, que ha pausado, elige RESTART.
+    if (this.anfitrion && m.f === 'n' && m.o && KF.pausa.activa && KF.pausa.quien === 2) {
+      this.otraPartida();
+      return;
+    }
     if ((this.anfitrion && m.f === 'n') || (this.invitado && m.f === 'e')) KF.pausa.recibir(m.z, m.zv, this.invitado);
     if (this.anfitrion && m.f === 'n') this.entradas.meter(m);
     else if (this.invitado && m.f === 'e') this.meterFoto(m);
@@ -356,7 +373,7 @@ KF.red = {
     if (this.anfitrion) m = this.foto();
     else {
       var j = KF.jugador;
-      m = { f: 'n', t: performance.now(), x: KF.redondear(j.x), vx: KF.redondear(j.vx), d: j.peticiones };
+      m = { f: 'n', t: performance.now(), x: KF.redondear(j.x), vx: KF.redondear(j.vx), d: j.peticiones, o: this.pideOtra ? 1 : 0 };
     }
     m.z = KF.pausa.quien;
     m.zv = KF.pausa.version;
@@ -419,6 +436,7 @@ KF.red = {
       // Foto de una partida anterior, o la primera de otra nueva.
       if (m.g < this.partidaNumero) return;
       this.partidaNumero = m.g;
+      this.pideOtra = false;
       this.fotos = [];
       this.fotoAplicada = null;
     }
