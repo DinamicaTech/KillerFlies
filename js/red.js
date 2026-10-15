@@ -3,7 +3,7 @@
 // - Crear partida: este dispositivo es el anfitrión (J1). Abre una sala con un
 //   código de 4 letras en el servidor gratuito de PeerJS, que solo sirve para
 //   presentar los dos dispositivos, y la muestra con un QR del enlace del
-//   juego con ?sala=CÓDIGO.
+//   juego con ?room=CÓDIGO.
 // - Unirse: el invitado (J2) escribe el código o abre el enlace del QR.
 // El anfitrión mueve todo el juego y envía 30 veces por segundo una foto de
 // su estado; el invitado la dibuja interpolando entre las dos últimas fotos
@@ -14,6 +14,10 @@
 // Si se deja de recibir al otro jugador, la partida se pausa y se espera a
 // que vuelva; pasados ESPERA_VUELTA segundos el anfitrión sigue solo y el
 // invitado vuelve al menú.
+// Tras 'GAME OVER' la conexión sigue abierta: cada jugador vuelve al menú de
+// inicio, que ofrece 'PLAY AGAIN' mientras los dos sigan conectados, y con
+// que uno la elija empieza otra partida en los dos dispositivos. Elegir otra
+// opción, o perder la conexión estando en el menú, deja la partida a dos.
 // Para probar en local se puede usar otro servidor de PeerJS con
 // ?servidor=host:puerto en la dirección.
 KF.red = {
@@ -25,13 +29,15 @@ KF.red = {
   ESPERA_VUELTA: 30,       // segundos de pausa antes de darlo por perdido
   REINTENTO: 2,            // segundos entre intentos del invitado de volver a conectar
   ESPERA_UNIRSE: 10,       // segundos para conectar con la sala antes de darla por inexistente
+  SIN_NOTICIAS_MENU: 10,   // segundos sin mensajes del otro en el menú para dejar la partida a dos
   COLOR: '#ffff40',
   COLOR_SECUNDARIO: '#808080',
   ESTADOS_NAVE: ['ausente', 'viva', 'explotando'],
 
   anfitrion: false,
   invitado: false,
-  fase: null,              // null | 'sala' | 'uniendo' | 'jugando' | 'pausa' | 'solo' | 'error'
+  fase: null,              // null | 'sala' | 'uniendo' | 'jugando' | 'pausa' | 'solo' | 'menu' | 'error'
+  rol: 0,                  // en el menú, 1 si este dispositivo era el anfitrión y 2 si el invitado
   mensaje: '',             // texto del error
   codigo: '',
   peer: null,
@@ -50,9 +56,15 @@ KF.red = {
   fotoAplicada: null,
   entradas: null,
   peticiones: 0,
+  // Número de la partida a dos (crece con cada 'PLAY AGAIN'), para no mezclar
+  // fotos de la partida anterior con las de la nueva.
+  partidaNumero: 0,
+  pideOtra: false,         // invitado: ha elegido 'PLAY AGAIN' y espera la partida nueva
 
+  // Hay una partida a dos en marcha o preparándose; en el menú, con los dos
+  // conectados, no: el menú funciona como siempre.
   activa: function () {
-    return this.fase !== null && this.fase !== 'solo';
+    return this.fase !== null && this.fase !== 'solo' && this.fase !== 'menu';
   },
 
   opciones: function () {
@@ -70,7 +82,7 @@ KF.red = {
     for (var i = 0; i < 4; i++) {
       this.codigo += this.LETRAS_CODIGO[Math.floor(Math.random() * this.LETRAS_CODIGO.length)];
     }
-    this.qr = this.crearQR(location.origin + location.pathname + '?sala=' + this.codigo);
+    this.qr = this.crearQR(location.origin + location.pathname + '?room=' + this.codigo);
     var peer = this.peer = new Peer(this.PREFIJO + this.codigo, this.opciones());
     peer.on('connection', function (con) { r.aceptar(con); });
     peer.on('disconnected', function () { if (r.peer === peer && !peer.destroyed) peer.reconnect(); });
@@ -78,7 +90,7 @@ KF.red = {
       if (r.peer !== peer) return;
       // Código ya en uso: otro.
       if (e.type === 'unavailable-id' && r.fase === 'sala') r.crear();
-      else if (r.fase === 'sala') r.fallar('SIN CONEXION');
+      else if (r.fase === 'sala') r.fallar('NO CONNECTION');
     });
   },
 
@@ -97,6 +109,7 @@ KF.red = {
         KF.companero = new KF.Nave(2);
         KF.companero.remoto = true;
         KF.jugadores = [KF.jugador, KF.companero];
+        r.partidaNumero = 1;
         KF.partida.empezar();
       }
       r.reanudar();
@@ -107,7 +120,7 @@ KF.red = {
 
   // Pide el código de la sala y se une a ella.
   pedirCodigo: function () {
-    var codigo = window.prompt('Código de la sala');
+    var codigo = window.prompt('Room code');
     codigo = (codigo || '').toUpperCase().replace(/[^A-Z]/g, '');
     if (codigo.length === 4) this.unirse(codigo);
   },
@@ -125,7 +138,7 @@ KF.red = {
     peer.on('disconnected', function () { if (r.peer === peer && !peer.destroyed) peer.reconnect(); });
     peer.on('error', function (e) {
       if (r.peer !== peer) return;
-      if (r.fase === 'uniendo') r.fallar(e.type === 'peer-unavailable' ? 'SALA NO ENCONTRADA' : 'SIN CONEXION');
+      if (r.fase === 'uniendo') r.fallar(e.type === 'peer-unavailable' ? 'ROOM NOT FOUND' : 'NO CONNECTION');
     });
   },
 
@@ -141,6 +154,8 @@ KF.red = {
         r.fotos = [];
         r.fotoAplicada = null;
         r.desfase = null;
+        r.partidaNumero = 0;
+        r.pideOtra = false;
         // La nave de este dispositivo es la J2; la J1 la mueve el anfitrión.
         KF.companero = new KF.Nave(1);
         KF.companero.remoto = true;
@@ -161,10 +176,11 @@ KF.red = {
 
   // Se ha perdido la conexión: pausa, salvo si la partida ya ha acabado.
   perder: function () {
+    if (this.fase === 'menu') { this.soltar(); return; }
     if (this.fase !== 'jugando') return;
     if (KF.partida.estado !== 'jugando') {
-      // Tras 'GAME OVER' no hay nada que esperar.
-      if (this.invitado) this.fase = 'solo';
+      // Tras 'GAME OVER' no hay nada que esperar ni otra partida que jugar.
+      this.fase = 'solo';
       return;
     }
     this.fase = 'pausa';
@@ -184,7 +200,7 @@ KF.red = {
       KF.pausado = false;
     } else {
       this.desconectar();
-      this.fallar('CONEXION PERDIDA');
+      this.fallar('CONNECTION LOST');
     }
   },
 
@@ -206,8 +222,10 @@ KF.red = {
   // Deja la partida a dos y vuelve a una sola nave, la J1 de este dispositivo.
   cerrar: function () {
     this.desconectar();
-    var eraInvitado = this.invitado;
+    var eraInvitado = this.invitado || (this.fase === 'menu' && this.rol === 2);
     this.fase = null;
+    this.rol = 0;
+    this.pideOtra = false;
     this.anfitrion = this.invitado = false;
     KF.pausado = false;
     if (KF.companero || eraInvitado) {
@@ -221,8 +239,66 @@ KF.red = {
     if (this.conexion && this.conexion.open) this.conexion.send(m);
   },
 
+  // Tras 'GAME OVER', este jugador vuelve al menú de inicio sin cortar la
+  // conexión. Mientras está en el menú no es ni anfitrión ni invitado, para
+  // que la formación se mueva detrás del menú como en la partida a uno.
+  alMenu: function () {
+    this.fase = 'menu';
+    this.rol = this.anfitrion ? 1 : 2;
+    this.anfitrion = this.invitado = false;
+    this.pideOtra = false;
+    this.desdeUltimo = 0;
+  },
+
+  // El otro jugador se ha ido estando en el menú: desaparece 'PLAY AGAIN'.
+  soltar: function () {
+    this.cerrar();
+    KF.marcador.cambiarModo(false);
+    KF.partida.opcion = Math.max(0, KF.partida.opcion - 1);
+  },
+
+  // 'PLAY AGAIN' elegida en el menú: el anfitrión empieza la partida; el
+  // invitado se la pide en cada mensaje hasta que ve llegar la nueva.
+  elegirOtra: function () {
+    if (this.rol === 1) this.otraPartida();
+    else {
+      this.pideOtra = true;
+      this.enviarYa();
+    }
+  },
+
+  // Anfitrión: otra partida con el mismo invitado, desde el menú o desde
+  // 'GAME OVER' si el invitado la pide antes de que este jugador salga.
+  otraPartida: function () {
+    this.anfitrion = true;
+    this.rol = 0;
+    this.fase = 'jugando';
+    this.desdeUltimo = 0;
+    this.entradas = new KF.Muestras();
+    this.partidaNumero++;
+    KF.pausado = false;
+    KF.partida.empezar();
+    this.enviarYa();
+  },
+
   recibir: function (m) {
     this.desdeUltimo = 0;
+    if (this.fase === 'menu') {
+      if (this.rol === 1 && m.o) this.otraPartida();
+      else if (this.rol === 2 && m.f === 'e' && m.g > this.partidaNumero) {
+        // El anfitrión ha empezado otra partida.
+        this.invitado = true;
+        this.rol = 0;
+        this.fase = 'jugando';
+        this.pideOtra = false;
+        this.meterFoto(m);
+      }
+      return;
+    }
+    if (this.anfitrion && m.f === 'm') {
+      if (m.o && KF.partida.estado === 'fin') this.otraPartida();
+      return;
+    }
     if (this.fase === 'pausa') this.reanudar();
     if ((this.anfitrion && m.f === 'n') || (this.invitado && m.f === 'e')) KF.pausa.recibir(m.z, m.zv, this.invitado);
     if (this.anfitrion && m.f === 'n') this.entradas.meter(m);
@@ -230,9 +306,16 @@ KF.red = {
   },
 
   actualizar: function (dt) {
+    if (this.fase === 'menu') {
+      this.desdeUltimo += dt;
+      if (this.desdeUltimo >= this.SIN_NOTICIAS_MENU) { this.soltar(); return; }
+      this.esperaEnvio -= dt;
+      if (this.esperaEnvio <= 0) this.enviarYa();
+      return;
+    }
     if (this.fase === 'uniendo') {
       this.tiempoUniendo += dt;
-      if (this.tiempoUniendo >= this.ESPERA_UNIRSE) this.fallar('SALA NO ENCONTRADA');
+      if (this.tiempoUniendo >= this.ESPERA_UNIRSE) this.fallar('ROOM NOT FOUND');
     }
     if (this.fase === 'jugando' || this.fase === 'pausa') {
       this.desdeUltimo += dt;
@@ -259,8 +342,14 @@ KF.red = {
   },
 
   // Envía ya el mensaje de este dispositivo: la foto del anfitrión o la nave
-  // del invitado, con el estado de la pausa (js/pausa.js).
+  // del invitado, con el estado de la pausa (js/pausa.js); en el menú, solo
+  // que sigue ahí y si pide otra partida.
   enviarYa: function () {
+    if (this.fase === 'menu') {
+      this.esperaEnvio = 1 / this.ENVIOS;
+      this.enviar({ f: 'm', o: this.pideOtra ? 1 : 0 });
+      return;
+    }
     if (this.fase !== 'jugando' && this.fase !== 'pausa') return;
     this.esperaEnvio = 1 / this.ENVIOS;
     var m;
@@ -303,6 +392,7 @@ KF.red = {
     };
     return {
       f: 'e',
+      g: this.partidaNumero,
       t: performance.now(),
       e: p.estado,
       o: p.oleada,
@@ -325,6 +415,13 @@ KF.red = {
 
   // Invitado: guarda la foto en orden; los mensajes pueden llegar desordenados.
   meterFoto: function (m) {
+    if (m.g !== this.partidaNumero) {
+      // Foto de una partida anterior, o la primera de otra nueva.
+      if (m.g < this.partidaNumero) return;
+      this.partidaNumero = m.g;
+      this.fotos = [];
+      this.fotoAplicada = null;
+    }
     var fotos = this.fotos;
     var muestra = m.t - performance.now();
     // Desfase entre los relojes: el de la foto que antes ha llegado manda, y
@@ -461,40 +558,40 @@ KF.red = {
     g.escribir(ctx, letras, texto, (KF.ANCHO - g.anchoTexto(texto, escala)) / 2, y, escala);
   },
 
-  ALTURA_CANCELAR: 262,    // altura de la opción 'CANCELAR' / 'SALIR'
+  ALTURA_CANCELAR: 262,    // altura de la opción 'CANCEL' / 'EXIT'
 
   dibujar: function (ctx) {
     var f = this.fase;
-    if (!f || f === 'jugando' || f === 'solo') return;
+    if (!f || f === 'jugando' || f === 'solo' || f === 'menu') return;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.fillRect(0, 0, KF.ANCHO, KF.ALTO);
     if (f === 'sala') {
-      this.escribir(ctx, this.LETRAS, 'SALA', 40, 2);
+      this.escribir(ctx, this.LETRAS, 'ROOM', 40, 2);
       this.escribir(ctx, this.LETRAS, this.codigo, 62, 4);
       if (this.qr) {
         var lado = this.qr.width * 2, x = Math.round((KF.ANCHO - lado) / 2);
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(this.qr, x, 108, lado, lado);
       }
-      var texto = this.peer && this.peer.open ? 'ESPERANDO A J2' : 'CREANDO SALA';
+      var texto = this.peer && this.peer.open ? 'WAITING FOR P2' : 'CREATING ROOM';
       this.escribir(ctx, this.LETRAS_SECUNDARIO, texto, 236, 1);
-      this.escribir(ctx, this.LETRAS_SECUNDARIO, 'CANCELAR', this.ALTURA_CANCELAR, 1);
+      this.escribir(ctx, this.LETRAS_SECUNDARIO, 'CANCEL', this.ALTURA_CANCELAR, 1);
     } else if (f === 'uniendo') {
-      this.escribir(ctx, this.LETRAS, 'CONECTANDO', 110, 2);
+      this.escribir(ctx, this.LETRAS, 'CONNECTING', 110, 2);
       this.escribir(ctx, this.LETRAS, this.codigo, 140, 2);
-      this.escribir(ctx, this.LETRAS_SECUNDARIO, 'CANCELAR', this.ALTURA_CANCELAR, 1);
+      this.escribir(ctx, this.LETRAS_SECUNDARIO, 'CANCEL', this.ALTURA_CANCELAR, 1);
     } else if (f === 'pausa') {
-      this.escribir(ctx, this.LETRAS, 'ESPERANDO A J' + (this.anfitrion ? 2 : 1), 120, 1.5);
+      this.escribir(ctx, this.LETRAS, 'WAITING FOR P' + (this.anfitrion ? 2 : 1), 120, 1.5);
       var quedan = Math.ceil(this.ESPERA_VUELTA - this.tiempoPausa);
       this.escribir(ctx, this.LETRAS, String(Math.max(0, quedan)), 140, 2);
     } else if (f === 'error') {
       this.escribir(ctx, this.LETRAS_ERROR, this.mensaje, 120, 1.5);
-      this.escribir(ctx, this.LETRAS_SECUNDARIO, 'SALIR', this.ALTURA_CANCELAR, 1);
+      this.escribir(ctx, this.LETRAS_SECUNDARIO, 'EXIT', this.ALTURA_CANCELAR, 1);
     }
   },
 
   // En la sala, al unirse o tras un error, cualquier tecla (o tocar
-  // 'CANCELAR' / 'SALIR') vuelve al menú. Partida pasa aquí las teclas y los
+  // 'CANCEL' / 'EXIT') vuelve al menú. Partida pasa aquí las teclas y los
   // toques mientras la partida a dos está en marcha.
   tecla: function () {
     if (this.fase === 'sala' || this.fase === 'uniendo' || this.fase === 'error') this.salir();
@@ -579,10 +676,10 @@ KF.Muestras.prototype = {
   }, 1000);
 
   // Enlace del QR: entra directamente en la sala.
-  var m = /[?&]sala=([A-Za-z]{4})/.exec(location.search);
+  var m = /[?&]room=([A-Za-z]{4})/.exec(location.search);
   if (m) {
     if (window.history && history.replaceState) {
-      history.replaceState(null, '', location.pathname + location.search.replace(/([?&])sala=[A-Za-z]{4}&?/, '$1').replace(/[?&]$/, ''));
+      history.replaceState(null, '', location.pathname + location.search.replace(/([?&])room=[A-Za-z]{4}&?/, '$1').replace(/[?&]$/, ''));
     }
     r.unirse(m[1].toUpperCase());
   }

@@ -4,7 +4,8 @@
 // de recambio) y 'GAME OVER' al perder la última, que se queda hasta que se
 // pulsa una tecla. En la partida a dos (js/red.js) el anfitrión mueve el
 // juego y el invitado recibe su estado; cada jugador tiene sus naves y sus
-// puntos, y la partida acaba cuando a ninguno le quedan naves.
+// puntos, y la partida acaba cuando a ninguno le quedan naves. Tras ella, el
+// menú ofrece además 'PLAY AGAIN' mientras los dos sigan conectados.
 KF.partida = {
   NAVES_RECAMBIO: 2,       // naves de recambio al empezar la partida
   MAXIMO_RECAMBIO: 5,      // tope de naves de recambio (power-up vida extra)
@@ -17,8 +18,10 @@ KF.partida = {
   COLOR_INICIO: '#ffff40',
   COLOR_FIN: '#f02828',
   COLOR_OPCION: '#808080',
-  // Opciones del menú de inicio, debajo de 'START GAME'.
-  OPCIONES: ['1 JUGADOR', 'CREAR PARTIDA', 'UNIRSE'],
+  // Opciones del menú de inicio, debajo de 'START GAME'; tras una partida a
+  // dos, con los dos aún conectados, 'PLAY AGAIN' va la primera.
+  OPCIONES: ['1 PLAYER', 'CREATE GAME', 'JOIN GAME'],
+  OTRA_PARTIDA: 'PLAY AGAIN',
   SEPARACION_OPCIONES: 16, // píxeles entre una opción y la siguiente
 
   estado: 'inicio',        // 'inicio' | 'jugando' | 'fin'; mientras se prepara
@@ -32,6 +35,7 @@ KF.partida = {
   // del texto, sin ataques porque no hay naves de jugador.
   irAInicio: function () {
     this.estado = 'inicio';
+    this.opcion = 0;
     for (var i = 0; i < KF.jugadores.length; i++) KF.jugadores[i].retirar();
     KF.marcador.cambiarModo(!!KF.companero);
     this.ponerOleada(1);
@@ -116,20 +120,31 @@ KF.partida = {
     }
   },
 
-  // La opción elegida del menú de inicio.
+  // Opciones del menú de inicio ahora mismo.
+  opciones: function () {
+    return KF.red.fase === 'menu' ? [this.OTRA_PARTIDA].concat(this.OPCIONES) : this.OPCIONES;
+  },
+
+  // La opción elegida del menú de inicio. Cualquiera salvo 'PLAY AGAIN' deja
+  // la conexión con el otro jugador, si la había.
   elegir: function () {
-    var opcion = this.OPCIONES[this.opcion];
-    if (opcion === 'CREAR PARTIDA') KF.red.crear();
-    else if (opcion === 'UNIRSE') KF.red.pedirCodigo();
-    else this.empezar();
+    var opcion = this.opciones()[this.opcion];
+    if (opcion === this.OTRA_PARTIDA) KF.red.elegirOtra();
+    else if (opcion === 'CREATE GAME') KF.red.crear();
+    else if (opcion === 'JOIN GAME') KF.red.pedirCodigo();
+    else {
+      KF.red.cerrar();
+      this.empezar();
+    }
   },
 
   // Cualquier tecla o pulsación corta elige la opción del menú de inicio y
-  // vuelve a él desde 'GAME OVER' (a dos, cerrando la conexión).
+  // vuelve a él desde 'GAME OVER' (a dos, sin cortar la conexión si sigue).
   pulsar: function () {
     if (this.estado === 'inicio' && !KF.red.activa()) this.elegir();
     else if (this.estado === 'fin' && this.tiempoFin >= this.ESPERA_FIN) {
-      KF.red.cerrar();
+      if (KF.red.fase === 'jugando') KF.red.alMenu();
+      else KF.red.cerrar();
       this.irAInicio();
     }
   },
@@ -141,7 +156,7 @@ KF.partida = {
 
   // Opción del menú en el punto (x, y) de la pantalla lógica, o -1.
   opcionEn: function (p) {
-    for (var i = 0; i < this.OPCIONES.length; i++) {
+    for (var i = 0; i < this.opciones().length; i++) {
       var y = this.alturaOpcion(i);
       if (p.y >= y - 5 && p.y < y + KF.graficos.FUENTE_ALTO + 5) return i;
     }
@@ -158,9 +173,10 @@ KF.partida = {
     var e = this.ESCALA_TEXTO, medio = (KF.ALTO - KF.graficos.FUENTE_ALTO * e) / 2;
     if (this.estado === 'inicio' && !KF.red.activa()) {
       this.escribirCentrado(ctx, this.LETRAS_INICIO, 'START GAME', medio, e);
-      for (var i = 0; i < this.OPCIONES.length; i++) {
+      var opciones = this.opciones();
+      for (var i = 0; i < opciones.length; i++) {
         var letras = i === this.opcion ? this.LETRAS_INICIO : this.LETRAS_OPCION;
-        this.escribirCentrado(ctx, letras, this.OPCIONES[i], this.alturaOpcion(i), 1);
+        this.escribirCentrado(ctx, letras, opciones[i], this.alturaOpcion(i), 1);
       }
     } else if (this.estado === 'fin') {
       this.escribirCentrado(ctx, this.LETRAS_FIN, 'GAME OVER', medio, e);
@@ -180,7 +196,7 @@ KF.partida = {
     if (p.estado !== 'fin' && KF.red.activa()) { KF.red.tecla(); return; }
     // En el menú de inicio, las flechas arriba y abajo cambian de opción.
     if (p.estado === 'inicio' && !KF.red.activa() && (e.code === 'ArrowUp' || e.code === 'ArrowDown')) {
-      var n = p.OPCIONES.length;
+      var n = p.opciones().length;
       p.opcion = (p.opcion + (e.code === 'ArrowUp' ? n - 1 : 1)) % n;
       return;
     }
