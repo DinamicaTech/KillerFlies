@@ -68,6 +68,7 @@ KF.Nave.prototype = {
 
   SEPARACION_TRIPLE: 6,    // píxeles entre los proyectiles del disparo triple
   SEPARACION_DOS: 30,      // a dos, cada nave aparece a esta distancia del centro
+  OPACIDAD_FANTASMA: 0.4,  // a dos, la nave del otro jugador se ve así de transparente
   // Estado de cada nave: x, vx (velocidad horizontal, negativa hacia la
   // izquierda), estado ('ausente' | 'viva' | 'explotando'), tiempoExplosion,
   // destello y escudo (segundos que les quedan), tiempoLlama, fragmentos
@@ -277,6 +278,9 @@ KF.Nave.prototype = {
     // Con el escudo, la nave se ve y se deja de ver a intervalos (parpadeo).
     var oculta = this.escudo > 0 && Math.floor(this.escudo / this.PARPADEO) % 2 === 1;
     if (this.estado === 'viva' && !oculta) {
+      // A dos, la nave del otro jugador se ve como un fantasma para no
+      // confundirla con la propia; sus disparos y su explosión, no.
+      if (this.remoto) ctx.globalAlpha = this.OPACIDAD_FANTASMA;
       g.dibujar(ctx, this.SPRITE, this.x, this.Y);
       // El destello va justo encima de la punta del cañón y sigue a la nave.
       if (this.destello > 0) g.dibujar(ctx, this.SPRITE_DESTELLO, this.x, this.Y - 8);
@@ -285,6 +289,7 @@ KF.Nave.prototype = {
         var forma = Math.floor(this.tiempoLlama / this.CAMBIO_LLAMA) % this.SPRITES_LLAMA.length;
         g.dibujar(ctx, this.SPRITES_LLAMA[forma], this.x, this.Y + 8);
       }
+      ctx.globalAlpha = 1;
     } else if (this.estado === 'explotando') {
       var fase = Math.floor(this.tiempoExplosion / this.DURACION_FASE);
       if (fase < this.SPRITES_EXPLOSION.length) {

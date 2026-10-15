@@ -3,9 +3,10 @@ title: Multiplayer
 depends_on: [partida, jugador, marcador, architecture, enemigos, enemigos/formacion, enemigos/ataque, power-ups, sonido, graficos]
 threads:
   - Multiplayer | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiCdzad965rbX54ikJ7MVK26
+  - Ghost ship | https://claude.ai/code/project/chan_01GmFabmbZMkMrshz1aTJxzL?thread=cmsg_01GmFabmbZMkMrshz1aTJxzL3X1eqR22ACpAcrbpoc2GB6
 ---
 ## Summary
-Online two-player game, each player on their own device, in js/red.js: the start menu offers '1 JUGADOR', 'CREAR PARTIDA' and 'UNIRSE'. Creating a game opens a room with a 4-letter code and shows it with a QR of the game link (?sala=CODE); the other player scans the QR or types the code under 'UNIRSE'. The two browsers connect directly (WebRTC with PeerJS, vendored in js/lib; PeerJS's free server only introduces them). The host (J1) runs the whole game and sends a snapshot 30 times per second; the guest (J2) draws it interpolated 80 ms behind and moves its own ship at once, sending its position and the shots it asks for. Cooperative: each player has 3 ships, their own points (J1 and J2 in their ship's colour) and their own power-up; the game ends when neither has ships. If a player stops being heard the game pauses for up to 30 seconds; then the host carries on alone and the guest returns to the menu. Either player can pause the game for both (partida/pausa); only the one who paused resumes it.
+Online two-player game, each player on their own device, in js/red.js: the start menu offers '1 JUGADOR', 'CREAR PARTIDA' and 'UNIRSE'. Creating a game opens a room with a 4-letter code and shows it with a QR of the game link (?sala=CODE); the other player scans the QR or types the code under 'UNIRSE'. The two browsers connect directly (WebRTC with PeerJS, vendored in js/lib; PeerJS's free server only introduces them). The host (J1) runs the whole game and sends a snapshot 30 times per second; the guest (J2) draws it interpolated 80 ms behind and moves its own ship at once, sending its position and the shots it asks for. Cooperative: each player has 3 ships, their own points (J1 and J2 in their ship's colour) and their own power-up; on each device the other player's ship is drawn as a semi-transparent ghost so each player can tell their own ship apart; the game ends when neither has ships. If a player stops being heard the game pauses for up to 30 seconds; then the host carries on alone and the guest returns to the menu. Either player can pause the game for both (partida/pausa); only the one who paused resumes it.
 
 ## Decisions
 - 2026-10-04 12:06 · Created in the lab as an idea.
@@ -34,6 +35,7 @@ Online two-player game, each player on their own device, in js/red.js: the start
 - 2026-10-13 07:27 · Validated by the owner on real devices ("Tested, it seems to work perfectly"): the node becomes stable.
 - 2026-10-13 14:28 · The guest also calibrates the centre of its phone's tilt when its game starts (on seeing the host's game go to 'jugando'); each device moves its own ship with its own tilt (jugador/accelerometer-control).
 - 2026-10-13 17:16 · Pause (partida/pausa): a player's pause pauses both devices, with 'PAUSA J1' or 'PAUSA J2', and only that player can resume. Each message (the host's snapshot and the guest's ship) also carries who paused (z) and a version number (zv); the newest version wins, the host's on a tie. A hidden page keeps sending one message per second so the other device does not take the connection as lost. The disconnection rule does not change.
+- 2026-10-15 06:55 · Ghost ship: on each device the other player's ship (the one moved from the other device) is drawn at 40% opacity, together with its engine flame and muzzle flash; your own ship looks as before. The other player's shots, explosion and fragments, the J1/J2 colours and the scoreboard do not change.
 
 ## Requirements
 - 2026-10-04 12:00 · idea: Multiplayer game option in Killer Flies.
@@ -66,3 +68,4 @@ Online two-player game, each player on their own device, in js/red.js: the start
 - 2026-10-13 06:58 · answer: cost → A, free plans only.
 - 2026-10-13 14:25 · Derived from jugador/accelerometer-control: the guest's phone takes its position as the centre of the tilt when its game starts.
 - 2026-10-13 17:16 · Derived from partida/pausa: pause both devices when either player pauses, and only let the player who paused resume.
+- 2026-10-15 06:51 · With two players it is confusing to see which is your ship. Could you make the non-local player's ship look like a ghost ship?
