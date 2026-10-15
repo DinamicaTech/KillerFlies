@@ -255,7 +255,7 @@ KF.Nave.prototype = {
       d.y -= v * dt;
       if (d.y + h < 0) return false;
       var r = d.bomba ? { x: d.x - 1, y: d.y, ancho: 3, alto: 3 } : { x: d.x, y: d.y, ancho: 1, alto: h };
-      var nave = KF.formacion.tocar(r, autor) || KF.ataque.tocar(r, autor);
+      var nave = KF.formacion.tocar(r, autor) || KF.ataque.tocar(r, autor) || KF.desafio.tocar(r, autor);
       if (!nave) return true;
       if (d.bomba) {
         KF.powerups.explotarBomba(d.x, d.y + 1, autor);
@@ -263,7 +263,7 @@ KF.Nave.prototype = {
       }
       if (poder !== 'profundo') return false;
       // Atraviesa: también caen las demás naves que toque en este instante.
-      while (KF.formacion.tocar(r, autor) || KF.ataque.tocar(r, autor)) {}
+      while (KF.formacion.tocar(r, autor) || KF.ataque.tocar(r, autor) || KF.desafio.tocar(r, autor)) {}
       return true;
     });
   },

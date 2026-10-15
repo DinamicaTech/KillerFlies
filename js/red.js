@@ -422,6 +422,7 @@ KF.red = {
       c: lista(KF.powerups.capsulas, true),
       w: lista(KF.powerups.ondas, true),
       r: KF.powerups.recogidas,
+      d: KF.desafio.foto(),
       j: KF.jugadores.map(function (j) {
         return [R(j.x), R(j.vx), est.indexOf(j.estado), R(j.escudo), KF.powerups.PODERES.indexOf(j.poder),
           j.recambio, j.puntos, j.salvas,
@@ -493,6 +494,8 @@ KF.red = {
     KF.ataque.bombas = KF.interpolarLista(a.b, b.b, k).map(function (o) { return { id: o[0], x: o[1], y: o[2], vx: 0 }; });
     KF.powerups.capsulas = KF.interpolarLista(a.c, b.c, k).map(function (o) { return { id: o[0], x: o[1], y: o[2], t: o[3] }; });
     KF.powerups.ondas = KF.interpolarLista(a.w, b.w, k).map(function (o) { return { id: o[0], x: o[1], y: o[2], t: o[3] }; });
+    // El desafío: sus naves se colocan solas a partir de su tiempo.
+    if (b.d) KF.desafio.t = a.d && a.d[1] <= b.d[1] ? M(a.d[1], b.d[1], k) : b.d[1];
     for (i = 0; i < KF.jugadores.length; i++) {
       var j = KF.jugadores[i], ja = a.j[i], jb = b.j[i];
       if (!ja || !jb) continue;
@@ -527,6 +530,7 @@ KF.red = {
       n.enFormacion = c === '1';
     }
     KF.powerups.recogidas = f.r;
+    KF.desafio.aplicarCambios(f.d);
 
     for (i = 0; i < KF.jugadores.length; i++) {
       var j = KF.jugadores[i], d = f.j[i];

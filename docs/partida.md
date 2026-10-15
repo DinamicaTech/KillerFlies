@@ -9,7 +9,7 @@ threads:
   - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
 ---
 ## Summary
-The game cycle, in js/partida.js: a 'START GAME' screen with the formation moving behind it and a menu ('1 PLAYER', 'CREATE GAME', 'JOIN GAME', and first 'PLAY AGAIN' after a two-player game while both players are still connected; any key or a short tap starts the selected option, '1 PLAYER' by default); successive waves, each 5% faster than the previous one in everything (block, dives and bombs); three player ships (one in play and two spares, which the extra life power-up can raise up to five) and 'GAME OVER' on losing the last one, which stays until a key is pressed or a short tap is made and then returns to 'START GAME'. It tells the scoreboard the wave; each player ship carries its spare ships and points. In a two-player game (multijugador) each player has their own ships and the game ends when neither has any. A game can be paused while playing, and restarted from the pause at wave 1 (partida/pausa).
+The game cycle, in js/partida.js: a 'START GAME' screen with the formation moving behind it and a menu ('1 PLAYER', 'CREATE GAME', 'JOIN GAME', and first 'PLAY AGAIN' after a two-player game while both players are still connected; any key or a short tap starts the selected option, '1 PLAYER' by default); successive waves with a challenge wave between one and the next (partida/oleada-desafio), each wave 5% faster than the previous one in everything (block, dives and bombs); three player ships (one in play and two spares, which the extra life power-up can raise up to five) and 'GAME OVER' on losing the last one, which stays until a key is pressed or a short tap is made and then returns to 'START GAME'. It tells the scoreboard the wave; each player ship carries its spare ships and points. In a two-player game (multijugador) each player has their own ships and the game ends when neither has any. A game can be paused while playing, and restarted from the pause at wave 1 (partida/pausa).
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -33,6 +33,7 @@ The game cycle, in js/partida.js: a 'START GAME' screen with the formation movin
 - 2026-10-15 07:40 · Lost ships: each player keeps their own spare ships. At least two seconds after a ship explodes, if its player has spares left, the next one comes out: alone, once the diving ships have returned to the formation and no bombs are left, and then attacks wait two seconds; with the other player's ship in play, straight away. A player with no spares is out, and the game ends ('GAME OVER') when no player has a ship in play. The next wave comes with any player ship in play. On the guest of a two-player game the game cycle arrives from the host; from 'GAME OVER' a key or tap returns that device to 'START GAME', keeping the connection with the other player so that 'PLAY AGAIN' can start another game (multijugador).
 
 - 2026-10-15 08:05 · Restart from the pause (partida/pausa): 'RESTART' calls KF.partida.empezar during a game, so starting a game also removes what was left of the previous one (each player ship's power-up and shots); the formation, attacks, bombs and capsules start again with the new wave 1.
+- 2026-10-15 08:55 · After clearing each wave comes the challenge wave (partida/oleada-desafio); the next wave starts when it ends.
 
 ## Requirements
 - 2026-10-03 18:13 · When all the enemy ships have been destroyed, a new wave will start with a movement speed increased by 5%.
@@ -51,3 +52,4 @@ The game cycle, in js/partida.js: a 'START GAME' screen with the formation movin
 - 2026-10-13 17:16 · Derived from partida/pausa: let the game be paused only while playing.
 - 2026-10-15 07:40 · Derived from multijugador: offer PLAY AGAIN in the start menu while the two players are still connected, and show the menu texts in English.
 - 2026-10-15 07:54 · Derived from partida/pausa: start a new game at wave 1 from the pause menu.
+- 2026-10-15 08:55 · Derived from partida/oleada-desafio: after clearing each wave, play the challenge wave before the next one (partida/oleada-desafio).

@@ -162,6 +162,8 @@ KF.sonido = {
     for (var i = 0; i < naves.length; i++) if (naves[i].viva) vivas++;
     var total = this.navesOleada;
     var avance = total > 1 ? (total - Math.max(vivas, 1)) / (total - 1) : 1;
+    // En la oleada desafío, a la velocidad de partida.
+    if (KF.desafio.activo) avance = 0;
     this.musica.fuente.playbackRate.setTargetAtTime(1 + (this.VELOCIDAD_MAXIMA - 1) * avance, t, 0.1);
   },
 
