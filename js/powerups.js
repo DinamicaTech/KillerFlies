@@ -48,12 +48,13 @@ KF.powerups = {
     this.capsulas.push({ id: KF.nuevoId(), x: x, y: y, t: 0 });
   },
 
-  // Destruye todas las naves alienígenas vivas, en formación y en picado; los
+  // Destruye todas las naves alienígenas vivas, en formación, en picado y del
+  // desafío; los
   // puntos son para la nave del jugador que la ha usado.
   aniquilar: function (autor) {
     autor.poder = null;
     var f = KF.formacion, naves = f.naves;
-    var atacantes = KF.ataque.atacantes.slice();
+    var atacantes = KF.ataque.atacantes.concat(KF.desafio.enPantalla());
     for (var i = 0; i < atacantes.length; i++) {
       var a = atacantes[i];
       if (a.nave.viva) KF.enemigos.destruir(a.nave, a.x, a.y, 'disparo', autor);
@@ -75,7 +76,7 @@ KF.powerups = {
       var dy = Math.max(Math.abs(y - cy) - f.ALTO_NAVE / 2, 0);
       return dx * dx + dy * dy <= r * r;
     };
-    var atacantes = KF.ataque.atacantes.slice();
+    var atacantes = KF.ataque.atacantes.concat(KF.desafio.enPantalla());
     for (var i = 0; i < atacantes.length; i++) {
       var a = atacantes[i];
       if (a.nave.viva && dentro(a.x, a.y)) KF.enemigos.destruir(a.nave, a.x, a.y, 'disparo', autor);

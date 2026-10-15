@@ -8,7 +8,7 @@ threads:
 The project's space for ideas: improvements and new developments are debated here before deciding whether to do them.
 Each idea is a child node of the lab (`status: idea`), the step before a draft; while it is being debated it is not routed to its functional node.
 It leaves the lab when the owner decides: it becomes a draft or is carried out, and it moves to its functional place. A discarded idea stays in the lab with a decision that says so.
-Ideas under debate: oleada-desafio, jefe, combos, vida-extra-por-puntos, dificultad, vibracion, app-instalable and ajustes-sonido.
+Ideas under debate: jefe, combos, vida-extra-por-puntos, dificultad, vibracion, app-instalable and ajustes-sonido.
 
 ## Decisions
 - 2026-10-03 18:16 · Created with the project.
@@ -20,7 +20,8 @@ Ideas under debate: oleada-desafio, jefe, combos, vida-extra-por-puntos, dificul
 - 2026-10-13 14:22 · The accelerometer-control idea leaves the lab: executed, it is now the node jugador/accelerometer-control.
 - 2026-10-13 17:06 · Nine new ideas under debate, proposed by Claude when the owner asked for improvements: pausa (pause), oleada-desafio (challenge wave), jefe (mothership boss), combos, vida-extra-por-puntos (extra life from points), dificultad (difficulty levels), vibracion (phone vibration), app-instalable (installable app) and ajustes-sonido (sound settings).
 - 2026-10-13 17:16 · The pausa idea leaves the lab: executed, it is now the node partida/pausa.
-- 2026-10-15 08:29 · The oleada-desafio idea is reshaped in debate: after every wave, an extra life if all the ships are destroyed, ending as soon as one leaves the screen.
+- 2026-10-15 08:29 · The oleada-desafio idea was reshaped in debate: after every wave, an extra life if all the ships are destroyed, ending as soon as one leaves the screen.
+- 2026-10-15 08:55 · The oleada-desafio idea leaves the lab: executed, it is now the node partida/oleada-desafio.
 
 ## Requirements
 - 2026-10-13 17:04 · idea: Qué otras mejoras crees que podemos incorporar a este juego ?

@@ -1,6 +1,7 @@
 // El ciclo de la partida: pantalla 'START GAME' con su menú (1 jugador, crear
 // una partida a dos o unirse a una), oleadas sucesivas un 5% más rápidas cada
-// una (bloque, picados y bombas), tres naves por jugador (una en juego y dos
+// una (bloque, picados y bombas) con una oleada desafío entre una y otra
+// (js/desafio.js), tres naves por jugador (una en juego y dos
 // de recambio) y 'GAME OVER' al perder la última, que se queda hasta que se
 // pulsa una tecla. En la partida a dos (js/red.js) el anfitrión mueve el
 // juego y el invitado recibe su estado; cada jugador tiene sus naves y sus
@@ -69,6 +70,7 @@ KF.partida = {
     KF.ataque.oleada = n;
     KF.ataque.factorVelocidad = factor;
     KF.marcador.ponerOleada(n);
+    KF.desafio.quitar();
   },
 
   // Una nave de recambio más para ese jugador (power-up vida extra), hasta el tope.
@@ -116,10 +118,17 @@ KF.partida = {
       return;
     }
 
-    // Oleada destruida: la siguiente llega poco después, con alguna nave en juego.
+    // Mientras dura la oleada desafío (js/desafio.js) no llega otra oleada.
+    if (KF.desafio.activo) return;
+
+    // Oleada destruida: poco después, con alguna nave en juego, llega la
+    // oleada desafío y, tras ella, la oleada siguiente.
     if (KF.navesVivas().length && !this.quedanNaves()) {
       this.esperaOleada += dt;
-      if (this.esperaOleada >= this.ESPERA_OLEADA) this.ponerOleada(this.oleada + 1);
+      if (this.esperaOleada >= this.ESPERA_OLEADA) {
+        if (!KF.desafio.hecho) KF.desafio.empezar();
+        else this.ponerOleada(this.oleada + 1);
+      }
     }
   },
 

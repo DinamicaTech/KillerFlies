@@ -86,7 +86,8 @@ KF.marcador = {
 
   dibujar: function (ctx) {
     var m = this.MARGEN;
-    this.escribir(ctx, this.oleada + '/' + this.oleadaMaxima, m, m);
+    // Durante la oleada desafío, su nombre en lugar del número de oleada.
+    this.escribir(ctx, KF.desafio.activo ? 'CHALLENGE' : this.oleada + '/' + this.oleadaMaxima, m, m);
     if (!KF.companero) {
       var puntos = KF.jugador.puntos + '/' + this.puntosMaximos;
       this.escribir(ctx, puntos, KF.ANCHO - m - this.anchoTexto(puntos), m);

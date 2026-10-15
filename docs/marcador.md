@@ -6,7 +6,7 @@ threads:
   - Scoreboard | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiEmsD9WvmtQFinsch84vnYn
 ---
 ## Summary
-The on-screen information: current and best wave at the top left, points and high score at the top right, and the spare ships at the bottom right; in a two-player game, the points of P1 and P2 in their ship's colour at the top right and each player's spare ships at the bottom (P1 left, P2 right). High scores are saved in the browser as soon as they are beaten. It shows the values Game gives it (wave, spare ships, game start), with the font from Graphics. The 'hall of fame' (asking for the name on entering the top 10 and showing the best at the end of the game) is pending in the child draft `marcador/hall-of-fame`.
+The on-screen information: current and best wave at the top left ('CHALLENGE' during the challenge wave, partida/oleada-desafio), points and high score at the top right, and the spare ships at the bottom right; in a two-player game, the points of P1 and P2 in their ship's colour at the top right and each player's spare ships at the bottom (P1 left, P2 right). High scores are saved in the browser as soon as they are beaten. It shows the values Game gives it (wave, spare ships, game start), with the font from Graphics. The 'hall of fame' (asking for the name on entering the top 10 and showing the best at the end of the game) is pending in the child draft `marcador/hall-of-fame`.
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -24,6 +24,7 @@ The on-screen information: current and best wave at the top left, points and hig
 - 2026-10-13 07:12 · Split with Game: Game tells the scoreboard the current wave and when a game starts (one or two players, for the high scores); each player ship carries its spare ships and points, and the scoreboard only shows them and updates the high scores.
 - 2026-10-13 07:12 · Code in js/marcador.js (KF.marcador: cambiarModo, ponerOleada), drawn on top of everything else; points and spare ships are read from the player ships.
 - 2026-10-15 07:40 · Two players: at the top right 'P1 points' above 'P2 points' (the players' on-screen names in English, multijugador), each in the colour of its ship's nose, and at the bottom each player's spare ships with its ship's drawing, P1 from the left and P2 from the right. Points belong to each player ship (KF.Nave.puntos) and go to whoever destroyed the alien ship. High scores of two-player games are kept apart (killerflies.dos.*) and count the points of this device's player; they are not shown on screen, only the best wave.
+- 2026-10-15 08:55 · During the challenge wave the top left shows 'CHALLENGE' instead of the wave.
 
 ## Requirements
 - 2026-10-03 18:13 · At the top left the wave number + "/" + the highest wave number reached by that player will be shown. At the top right, the points earned + "/" + the highest points earned by that player will be shown.
@@ -34,3 +35,4 @@ The on-screen information: current and best wave at the top left, points and hig
 - 2026-10-03 19:18 · Derived from partida: use the font from Graphics.
 - 2026-10-13 07:12 · Derived from multijugador: show the points and spare ships of both players in a two-player game.
 - 2026-10-15 07:40 · Derived from multijugador: show the players as P1 and P2 on screen.
+- 2026-10-15 08:55 · Derived from partida/oleada-desafio: show 'CHALLENGE' instead of the wave during the challenge wave.
