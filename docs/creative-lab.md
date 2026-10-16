@@ -8,7 +8,7 @@ threads:
 The project's space for ideas: improvements and new developments are debated here before deciding whether to do them.
 Each idea is a child node of the lab (`status: idea`), the step before a draft; while it is being debated it is not routed to its functional node.
 It leaves the lab when the owner decides: it becomes a draft or is carried out, and it moves to its functional place. A discarded idea stays in the lab with a decision that says so.
-Ideas under debate: jefe, dificultad, vibracion, app-instalable and ajustes-sonido.
+Ideas under debate: jefe, dificultad, app-instalable and ajustes-sonido.
 
 ## Decisions
 - 2026-10-03 18:16 · Created with the project.
@@ -24,6 +24,7 @@ Ideas under debate: jefe, dificultad, vibracion, app-instalable and ajustes-soni
 - 2026-10-15 08:55 · The oleada-desafio idea leaves the lab: executed, it is now the node partida/oleada-desafio.
 - 2026-10-16 08:42 · The combos idea leaves the lab: executed, it is now the node marcador/combos.
 - 2026-10-16 09:28 · The vida-extra-por-puntos idea leaves the lab: executed, it is now the node partida/vida-extra-por-puntos (a spare ship every 10,000 points, up to 5).
+- 2026-10-16 09:57 · The vibracion idea leaves the lab: executed, it is now the node jugador/vibracion (the phone vibrates when the player's ship explodes and when it picks up a power-up capsule, Android only).
 
 ## Requirements
 - 2026-10-13 17:04 · idea: Qué otras mejoras crees que podemos incorporar a este juego ?

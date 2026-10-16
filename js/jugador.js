@@ -44,6 +44,7 @@ KF.Nave = function (numero) {
   this.puntos = 0;
   this.proximaVida = 0;    // puntos con los que gana la próxima vida extra (js/partida.js)
   this.racha = 0;          // naves destruidas seguidas sin fallar (js/combos.js)
+  this.capsulas = 0;       // cápsulas de power-up recogidas (js/vibracion.js)
   this.remoto = false;     // la mueve el otro dispositivo (js/red.js)
   this.peticiones = 0;     // invitado: disparos pedidos al anfitrión
   this.SPRITE = KF.graficos.SPRITES_JUGADOR[numero - 1];

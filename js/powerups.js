@@ -108,6 +108,7 @@ KF.powerups = {
         var c = KF.jugadores[j].caja();
         if (c && k.x - s.width / 2 < c.x + c.ancho && k.x + s.width / 2 > c.x &&
             k.y - s.height / 2 < c.y + c.alto && k.y + s.height / 2 > c.y) {
+          KF.jugadores[j].capsulas++;
           self.otorgar(self.PODERES[Math.floor(Math.random() * self.PODERES.length)], KF.jugadores[j]);
           return false;
         }
