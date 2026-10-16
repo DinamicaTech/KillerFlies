@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Killer Flies · iconos de la app</title>
+<style>
+  body { background: #222; color: #ddd; font-family: sans-serif; }
+  canvas { margin: 8px; border: 1px solid #555; }
+  a { color: #8cf; display: block; }
+</style>
+</head>
+<body>
+<!-- Genera los iconos de la app instalable (architecture/app-instalable) con
+     el dibujo de la nave del jugador del propio juego. Ábrelo en el navegador
+     y guarda cada enlace como assets/iconos/<nombre>. Solo hace falta
+     rehacerlos si cambia el dibujo de la nave. -->
+<div id="iconos"></div>
+<script src="../js/base.js"></script>
+<script src="../js/graficos.js"></script>
+<script>
+(function () {
+  var g = KF.graficos;
+  // Fondo negro con estrellas fijas (siempre las mismas) y la nave en el
+  // centro, dentro del 60 % central para que ningún móvil la recorte
+  // al darle forma redonda o de gota al icono.
+  var ESTRELLAS = [
+    [0.14, 0.18, '#ff5050'], [0.80, 0.12, '#ffff40'], [0.30, 0.82, '#40d0e0'],
+    [0.86, 0.70, '#ffffff'], [0.10, 0.55, '#ffffff'], [0.62, 0.90, '#ff8020'],
+    [0.45, 0.10, '#40e060'], [0.92, 0.38, '#40d0e0'], [0.22, 0.34, '#ffff40']
+  ];
+  function crear(tam) {
+    var c = document.createElement('canvas');
+    c.width = c.height = tam;
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, tam, tam);
+    var punto = Math.max(2, Math.round(tam / 96));
+    ESTRELLAS.forEach(function (e) {
+      ctx.fillStyle = e[2];
+      ctx.fillRect(Math.round(e[0] * tam), Math.round(e[1] * tam), punto, punto);
+    });
+    var escala = tam * 0.6 / 13;
+    ctx.save();
+    ctx.translate((tam - 13 * escala) / 2, (tam - 13 * escala) / 2);
+    ctx.scale(escala, escala);
+    g.dibujarJugador(ctx, { R: '#f02020', W: '#e8f0f8', C: '#30c0d0' });
+    ctx.restore();
+    return c;
+  }
+  var div = document.getElementById('iconos');
+  window.ICONOS = {};
+  [192, 512].forEach(function (tam) {
+    var c = crear(tam);
+    var nombre = 'icono-' + tam + '.png';
+    var url = c.toDataURL('image/png');
+    window.ICONOS[nombre] = url;
+    div.appendChild(c);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = nombre;
+    a.textContent = nombre;
+    div.appendChild(a);
+  });
+})();
+</script>
+</body>
+</html>

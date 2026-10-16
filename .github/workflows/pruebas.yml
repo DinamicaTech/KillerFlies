@@ -1,0 +1,19 @@
+name: Pruebas
+# Pruebas automáticas del juego: en cada pull request, en cada push a main,
+# una vez por semana y a petición.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '30 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  app-instalable:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: El juego se puede jugar sin conexión (architecture/app-instalable)
+        run: node tools/comprobar-instalable.mjs
