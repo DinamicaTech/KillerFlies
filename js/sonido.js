@@ -7,6 +7,9 @@
 // llamen. Los navegadores no dejan sonar nada hasta que el jugador pulsa una
 // tecla o toca la pantalla, así que el audio se pone en marcha con la primera
 // pulsación o el primer toque.
+// La música (de fondo y de inicio de oleada) y los demás sonidos tienen cada
+// uno su volumen (sonido/ajustes-sonido): 100%, 75%, 50%, 25% u OFF, que se
+// cambian en el menú de pausa (js/pausa.js) y se recuerdan en el navegador.
 KF.sonido = {
   VOLUMEN: 1,
   // Volumen de cada sonido, para mantener el orden de antes: la explosión del
@@ -22,11 +25,16 @@ KF.sonido = {
     'ataque': 0.35,
     'musica-fondo': 0.225
   },
+  MUSICA: ['musica-fondo', 'inicio-oleada'],   // los sonidos del grupo 'musica'; el resto son 'sonidos'
+  PASOS: [1, 0.75, 0.5, 0.25, 0],               // niveles de volumen de cada grupo, de más a menos
+  CLAVES: { musica: 'killerflies.musica', sonidos: 'killerflies.sonidos' },
   VELOCIDAD_MAXIMA: 2,     // la música de fondo con la última nave, al 200%
 
   ctx: null,               // AudioContext, creado al cargar y en marcha con la primera tecla o toque
   activado: false,         // ya ha habido una tecla o un toque
   salida: null,            // ganancia general
+  salidas: {},             // grupo ('musica' o 'sonidos') -> su ganancia, conectada a la general
+  niveles: { musica: 0, sonidos: 0 },   // grupo -> posición en PASOS (0, 100%)
   buffers: {},             // nombre -> AudioBuffer ya decodificado
   ataque: null,            // {fuente, ganancia} del sonido de ataque, siempre en marcha
   musica: null,            // {fuente, ganancia} de la música de fondo mientras suena
@@ -47,6 +55,11 @@ KF.sonido = {
     this.salida.gain.value = this.VOLUMEN;
     this.salida.connect(ctx.destination);
     var s = this;
+    ['musica', 'sonidos'].forEach(function (grupo) {
+      var g = s.salidas[grupo] = ctx.createGain();
+      g.gain.value = s.volumen(grupo);
+      g.connect(s.salida);
+    });
     Object.keys(KF.SONIDOS_MP3).forEach(function (nombre) {
       var binario = atob(KF.SONIDOS_MP3[nombre]);
       var bytes = new Uint8Array(binario.length);
@@ -57,6 +70,47 @@ KF.sonido = {
         if (nombre === 'ataque') s.ponerAtaque();
       }, function () {});
     });
+  },
+
+  grupo: function (nombre) {
+    return this.MUSICA.indexOf(nombre) >= 0 ? 'musica' : 'sonidos';
+  },
+
+  // Volumen de un grupo, de 0 a 1.
+  volumen: function (grupo) {
+    return this.PASOS[this.niveles[grupo]];
+  },
+
+  // Texto del volumen de un grupo para el menú de pausa: '75%' u 'OFF'.
+  textoVolumen: function (grupo) {
+    var v = this.volumen(grupo);
+    return v ? Math.round(v * 100) + '%' : 'OFF';
+  },
+
+  // Cambia el volumen de un grupo: paso +1 lo baja y -1 lo sube; con vuelta,
+  // de OFF pasa a 100% (al elegir la opción), y sin ella se queda en el
+  // extremo (flechas izquierda y derecha). Lo aplica y lo guarda.
+  cambiarVolumen: function (grupo, paso, conVuelta) {
+    var n = this.PASOS.length, i = this.niveles[grupo] + paso;
+    if (conVuelta) i = (i + n) % n;
+    else i = Math.max(0, Math.min(n - 1, i));
+    this.niveles[grupo] = i;
+    if (this.salidas[grupo]) this.salidas[grupo].gain.value = this.volumen(grupo);
+    try {
+      window.localStorage.setItem(this.CLAVES[grupo], String(Math.round(this.volumen(grupo) * 100)));
+    } catch (e) { /* sin almacenamiento: dura solo la sesión */ }
+  },
+
+  // Los volúmenes guardados; lo que falte o no se entienda queda al 100%.
+  leerVolumenes: function () {
+    for (var grupo in this.CLAVES) {
+      var i = 0;
+      try {
+        var v = window.localStorage.getItem(this.CLAVES[grupo]);
+        if (v !== null) i = this.PASOS.indexOf(parseInt(v, 10) / 100);
+      } catch (e) { i = 0; }
+      this.niveles[grupo] = i >= 0 ? i : 0;
+    }
   },
 
   iniciarAudio: function () {
@@ -92,7 +146,7 @@ KF.sonido = {
     var g = this.ctx.createGain();
     g.gain.value = this.VOLUMENES[nombre];
     fuente.connect(g);
-    g.connect(this.salida);
+    g.connect(this.salidas[this.grupo(nombre)]);
     fuente.start();
     return fuente;
   },
@@ -109,7 +163,7 @@ KF.sonido = {
     var g = this.ctx.createGain();
     g.gain.value = 0;
     fuente.connect(g);
-    g.connect(this.salida);
+    g.connect(this.salidas[this.grupo(nombre)]);
     fuente.start(0, tramo.inicio);
     return { fuente: fuente, ganancia: g };
   },
@@ -201,6 +255,7 @@ KF.sonido = {
 
 (function () {
   var s = KF.sonido;
+  s.leerVolumenes();
   s.crearContexto();
   window.addEventListener('keydown', function () { s.iniciarAudio(); });
   document.addEventListener('touchend', function () { s.iniciarAudio(); });

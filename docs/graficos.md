@@ -31,7 +31,8 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-05 12:43 · Engine flame of the player ship: two 3×3 shapes, orange with a yellow tip, that alternate to flicker (KF.graficos.SPRITES_LLAMA), for jugador/estela-motor.
 - 2026-10-13 07:12 · Two players: SPRITES_JUGADOR has the J1 ship (red nose, light-blue interior) and the J2 ship (green nose, amber interior); COLORES_JUGADOR gives each player's colour for the scoreboard texts.
 - 2026-10-16 10:30 · The mothership boss (enemigos/jefe) is drawn by code in the 21st-century ships style (dibujarJefe): a purple saucer with swept wings, a cyan dome with red eyes, three cannons and a row of lights; SPRITE_JEFE and a white silhouette, SPRITE_JEFE_BLANCO, for the flash of each hit.
-- 2026-10-16 10:41 · Font: a single 5×7 pixel-art font for all texts, with digits, slash, '<' and '>', letters A to Z and space, in js/graficos.js (KF.graficos.crearFuente(color), escribir and anchoTexto, with a scale to enlarge it). It comes from the digit font the scoreboard had; '<' and '>' frame the difficulty line of the start menu (partida/dificultad).
+- 2026-10-16 10:41 · [replaced by 2026-10-16 10:58] Font: a single 5×7 pixel-art font for all texts, with digits, slash, '<' and '>', letters A to Z and space, in js/graficos.js (KF.graficos.crearFuente(color), escribir and anchoTexto, with a scale to enlarge it). It comes from the digit font the scoreboard had; '<' and '>' frame the difficulty line of the start menu (partida/dificultad).
+- 2026-10-16 10:58 · Font: a single 5×7 pixel-art font for all texts, with digits, slash, '%', '<' and '>', letters A to Z and space, in js/graficos.js (KF.graficos.crearFuente(color), escribir and anchoTexto, with a scale to enlarge it). It comes from the digit font the scoreboard had; '<' and '>' frame the difficulty line of the start menu (partida/dificultad) and '%' shows the volumes in the pause menu (sonido/ajustes-sonido).
 
 ## Requirements
 - 2026-10-03 18:13 · I attach two screenshots as visual reference. In the first one, a formation of a yellow ship and two red ones descends to attack. In the second one, a purple ship descends towards the player ship while two bombs (somewhat thick vertical white lines) are falling.
@@ -50,3 +51,4 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-13 07:12 · Derived from multijugador: draw the second player's ship in another colour.
 - 2026-10-16 10:30 · Derived from enemigos/jefe: the sprite of the mothership boss and its white version for the hits.
 - 2026-10-16 10:41 · Derived from partida/dificultad: the '<' and '>' characters in the font.
+- 2026-10-16 10:58 · Derived from sonido/ajustes-sonido: the '%' character in the font.

@@ -23,3 +23,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Niveles de dificultad EASY, NORMAL y HARD (partida/dificultad)
         run: node tools/comprobar-dificultad.mjs
+  ajustes-sonido:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Volumen de la música y de los sonidos en la pausa (sonido/ajustes-sonido)
+        run: node tools/comprobar-sonido.mjs

@@ -3,12 +3,14 @@
 // reanuda, sin disparar. Se pausa sola al ocultarse la pestaña (cambio de
 // pestaña, ventana minimizada o móvil bloqueado) y nunca se reanuda sola.
 // Mientras dura, todo se congela (KF.detenido), el sonido se calla y se ve
-// 'PAUSED' en el centro, con dos opciones debajo: CONTINUE (marcada) y
+// 'PAUSED' en el centro, con cuatro opciones debajo: CONTINUE (marcada),
+// MUSIC y SOUNDS con su volumen (sonido/ajustes-sonido, en js/sonido.js) y
 // RESTART, que empieza una partida nueva en la oleada 1. Las flechas arriba y
-// abajo cambian de opción y Enter o espacio la eligen; P reanuda siempre. En
-// la pantalla táctil, tocar una opción la elige y tocar en otro sitio elige
-// la marcada. Al reanudar, la posición del móvil vuelve a ser el centro de la
-// inclinación.
+// abajo cambian de opción y Enter o espacio la eligen; elegir MUSIC o SOUNDS
+// baja su volumen un paso (de OFF vuelve a 100%) y las flechas izquierda y
+// derecha lo bajan o lo suben. P reanuda siempre. En la pantalla táctil,
+// tocar una opción la elige y tocar en otro sitio continúa. Al reanudar, la
+// posición del móvil vuelve a ser el centro de la inclinación.
 // En la partida a dos la pausa es de los dos: cada mensaje de js/red.js
 // lleva quién ha pausado (z) y un número de versión (zv) que crece con cada
 // cambio, y gana el más nuevo; en empate, el del anfitrión. Solo ve y elige
@@ -19,7 +21,8 @@ KF.pausa = {
   COLOR_BOTON: '#808080',
   ESCALA_TEXTO: 2,
   BOTON_ZONA: 16,          // píxeles a cada lado del centro y desde arriba que cuentan como tocar II
-  OPCIONES: ['CONTINUE', 'RESTART'],
+  OPCIONES: ['CONTINUE', 'MUSIC', 'SOUNDS', 'RESTART'],
+  GRUPOS: [null, 'musica', 'sonidos', null],   // grupo de volumen de cada opción
   SEPARACION_OPCIONES: 16, // píxeles entre una opción y la siguiente
   enPausa: true,           // se actualiza también con la partida en pausa
 
@@ -27,7 +30,7 @@ KF.pausa = {
   quien: 0,                // número del jugador que ha pausado
   version: 0,              // crece con cada cambio de pausa, para la partida a dos
   tactil: false,           // la pantalla es táctil: se ve el botón II
-  opcion: 0,               // opción marcada: 0 CONTINUE, 1 RESTART
+  opcion: 0,               // opción marcada: 0 CONTINUE, 1 MUSIC, 2 SOUNDS, 3 RESTART
   teclaElegir: null,       // Enter o espacio pulsado en pausa, que elige al soltarlo
 
   // Solo se pausa jugando, y no mientras se espera al otro jugador.
@@ -93,8 +96,16 @@ KF.pausa = {
   },
 
   elegir: function () {
-    if (this.opcion === 1) this.reiniciar();
+    var grupo = this.GRUPOS[this.opcion];
+    if (grupo) KF.sonido.cambiarVolumen(grupo, 1, true);
+    else if (this.opcion === 3) this.reiniciar();
     else this.reanudar();
+  },
+
+  // Texto de la opción i, con el volumen en MUSIC y SOUNDS: 'MUSIC 75%'.
+  textoOpcion: function (i) {
+    var grupo = this.GRUPOS[i];
+    return grupo ? this.OPCIONES[i] + ' ' + KF.sonido.textoVolumen(grupo) : this.OPCIONES[i];
   },
 
   alternar: function () {
@@ -146,7 +157,7 @@ KF.pausa = {
     if (this.puedeReanudar()) {
       for (var i = 0; i < this.OPCIONES.length; i++) {
         var letras = i === this.opcion ? this.LETRAS : this.LETRAS_AYUDA;
-        p.escribirCentrado(ctx, letras, this.OPCIONES[i], this.alturaOpcion(i), 1);
+        p.escribirCentrado(ctx, letras, this.textoOpcion(i), this.alturaOpcion(i), 1);
       }
     }
   }
@@ -161,8 +172,13 @@ KF.pausa = {
     if (e.repeat) return;
     if (e.code === 'KeyP') { z.alternar(); return; }
     if (!z.activa || !z.puedeReanudar()) return;
-    if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
-      z.opcion = (z.opcion + 1) % z.OPCIONES.length;
+    var n = z.OPCIONES.length, grupo = z.GRUPOS[z.opcion];
+    if (e.code === 'ArrowUp') {
+      z.opcion = (z.opcion + n - 1) % n;
+    } else if (e.code === 'ArrowDown') {
+      z.opcion = (z.opcion + 1) % n;
+    } else if (grupo && (e.code === 'ArrowLeft' || e.code === 'ArrowRight')) {
+      KF.sonido.cambiarVolumen(grupo, e.code === 'ArrowLeft' ? 1 : -1, false);
     } else if (e.code === 'Enter' || e.code === 'Space') {
       z.teclaElegir = e.code;
     }
@@ -176,14 +192,14 @@ KF.pausa = {
     if (z.activa && z.puedeReanudar()) z.elegir();
   });
   // Tocar II pausa; en pausa, tocar una opción la elige y tocar en otro sitio
-  // elige la marcada. Ninguno de los toques dispara.
+  // continúa. Ninguno de los toques dispara.
   KF.alPulsarCorto(function () {
     z.tactil = true;
     if (z.activa) {
       KF.tactil.disparar = false;
       if (!z.puedeReanudar()) return;
       var i = z.opcionEn(KF.ultimoToque);
-      if (i >= 0) z.opcion = i;
+      z.opcion = i >= 0 ? i : 0;
       z.elegir();
     } else if (KF.partida.estado === 'jugando' && z.enBoton(KF.ultimoToque)) {
       KF.tactil.disparar = false;
