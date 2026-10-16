@@ -10,7 +10,8 @@
 // menú ofrece además 'PLAY AGAIN' mientras los dos sigan conectados. Bajo las
 // opciones, la línea de la dificultad (js/dificultad.js) y, si esa dificultad
 // tiene algún perfect, la línea '< FROM WAVE n >' para empezar la partida a
-// uno desde él (js/perfect.js).
+// uno desde él (js/perfect.js). Tras 'GAME OVER' de una partida a uno se
+// abre el 'hall of fame' (js/salon-fama.js), que vuelve a 'START GAME'.
 KF.partida = {
   NAVES_RECAMBIO: 2,       // naves de recambio al empezar la partida
   MAXIMO_RECAMBIO: 5,      // tope de naves de recambio (vidas extra)
@@ -31,7 +32,8 @@ KF.partida = {
   SEPARACION_OPCIONES: 16, // píxeles entre una opción y la siguiente
   SEPARACION_DIFICULTAD: 8, // píxeles de más entre la última opción y la dificultad
 
-  estado: 'inicio',        // 'inicio' | 'jugando' | 'fin'; mientras se prepara
+  estado: 'inicio',        // 'inicio' | 'jugando' | 'fin' | 'fama' (hall of
+                           // fame, js/salon-fama.js); mientras se prepara
                            // una partida a dos, js/red.js muestra la sala
   oleada: 1,
   esperaOleada: 0,         // segundos desde que se destruyó la última nave
@@ -41,6 +43,7 @@ KF.partida = {
   inicio: null,            // punto de partida de la partida en curso, o null si
                            // empezó en la oleada 1 (lo repite RESTART)
   navePerdida: false,      // se perdió una nave en la oleada principal en curso
+  aUno: true,              // la partida en curso (o la que acaba de terminar) es a uno
 
   // Pantalla de inicio: la formación de la primera oleada se mueve detrás
   // del texto, sin ataques porque no hay naves de jugador.
@@ -63,6 +66,7 @@ KF.partida = {
   empezar: function (inicio) {
     this.estado = 'jugando';
     this.inicio = inicio && !KF.companero ? inicio : null;
+    this.aUno = !KF.companero;
     KF.dificultad.nivel = KF.dificultad.elegido;
     KF.combos.flotantes = [];
     KF.inclinacion.calibrar();
@@ -206,13 +210,21 @@ KF.partida = {
   },
 
   // Cualquier tecla o pulsación corta elige la opción del menú de inicio y
-  // vuelve a él desde 'GAME OVER' (a dos, sin cortar la conexión si sigue).
+  // sale de 'GAME OVER': a uno, al 'hall of fame' (js/salon-fama.js), que
+  // vuelve luego a 'START GAME'; a dos, al menú de inicio, sin cortar la
+  // conexión si sigue.
   pulsar: function () {
     if (this.estado === 'inicio' && !KF.red.activa()) this.elegir();
     else if (this.estado === 'fin' && this.tiempoFin >= this.ESPERA_FIN) {
+      // En el invitado de una partida a dos no se ha llamado a empezar: lo
+      // dice KF.companero, que se mira antes de cortar la conexión.
+      var puntos = KF.jugador.puntos, aUno = this.aUno && !KF.companero;
       if (KF.red.fase === 'jugando') KF.red.alMenu();
       else KF.red.cerrar();
-      this.irAInicio();
+      if (aUno) {
+        this.estado = 'fama';
+        KF.salonFama.abrir(puntos, this.oleada);
+      } else this.irAInicio();
     }
   },
 
@@ -323,6 +335,8 @@ KF.partida = {
   p.LETRAS_OPCION = KF.graficos.crearFuente(p.COLOR_OPCION);
   window.addEventListener('keydown', function (e) {
     if (e.repeat) return;
+    // En el 'hall of fame', las teclas escriben el nombre o lo cierran.
+    if (p.estado === 'fama') { KF.salonFama.tecla(e); return; }
     // Con la partida a dos en marcha (sala, conexión, pausa), las teclas son
     // para ella, salvo en 'GAME OVER'.
     if (p.estado !== 'fin' && KF.red.activa()) { KF.red.tecla(); return; }
@@ -346,6 +360,11 @@ KF.partida = {
   // otro sitio elige la opción marcada.
   KF.alPulsarCorto(function () {
     var antes = p.estado;
+    if (antes === 'fama') {
+      KF.salonFama.toque(KF.ultimoToque);
+      KF.tactil.disparar = false;
+      return;
+    }
     if (antes !== 'fin' && KF.red.activa()) {
       if (antes !== 'jugando') KF.tactil.disparar = false;
       KF.red.toque(KF.ultimoToque);

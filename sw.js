@@ -30,6 +30,7 @@ var ARCHIVOS = [
   'js/dificultad.js',
   'js/perfect.js',
   'js/partida.js',
+  'js/salon-fama.js',
   'js/lib/peerjs.min.js',
   'js/lib/qrcode.js',
   'js/red.js',
