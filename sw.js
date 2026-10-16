@@ -28,6 +28,7 @@ var ARCHIVOS = [
   'js/sonidos-datos.js',
   'js/sonido.js',
   'js/dificultad.js',
+  'js/perfect.js',
   'js/partida.js',
   'js/lib/peerjs.min.js',
   'js/lib/qrcode.js',

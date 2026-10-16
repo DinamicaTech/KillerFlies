@@ -8,7 +8,9 @@
 // juego y el invitado recibe su estado; cada jugador tiene sus naves y sus
 // puntos, y la partida acaba cuando a ninguno le quedan naves. Tras ella, el
 // menú ofrece además 'PLAY AGAIN' mientras los dos sigan conectados. Bajo las
-// opciones, la línea de la dificultad (js/dificultad.js).
+// opciones, la línea de la dificultad (js/dificultad.js) y, si esa dificultad
+// tiene algún perfect, la línea '< FROM WAVE n >' para empezar la partida a
+// uno desde él (js/perfect.js).
 KF.partida = {
   NAVES_RECAMBIO: 2,       // naves de recambio al empezar la partida
   MAXIMO_RECAMBIO: 5,      // tope de naves de recambio (vidas extra)
@@ -34,7 +36,11 @@ KF.partida = {
   oleada: 1,
   esperaOleada: 0,         // segundos desde que se destruyó la última nave
   tiempoFin: 0,            // segundos desde 'GAME OVER'
-  opcion: 0,               // opción elegida en el menú de inicio
+  opcion: 0,               // opción elegida en el menú de inicio (la siguiente
+                           // a la última es la línea '< FROM WAVE n >')
+  inicio: null,            // punto de partida de la partida en curso, o null si
+                           // empezó en la oleada 1 (lo repite RESTART)
+  navePerdida: false,      // se perdió una nave en la oleada principal en curso
 
   // Pantalla de inicio: la formación de la primera oleada se mueve detrás
   // del texto, sin ataques porque no hay naves de jugador.
@@ -42,29 +48,35 @@ KF.partida = {
     this.estado = 'inicio';
     this.opcion = 0;
     KF.dificultad.nivel = KF.dificultad.elegido;
+    KF.perfect.marcarUltimo();
     for (var i = 0; i < KF.jugadores.length; i++) KF.jugadores[i].retirar();
     KF.marcador.cambiarModo(!!KF.companero);
     this.ponerOleada(1);
   },
 
   // Empieza la partida, a uno o (con KF.companero) a dos: cada jugador con
-  // sus puntos a cero, sus naves de recambio y su nave en juego. También
-  // desde la pausa (RESTART, js/pausa.js), dejando atrás la partida a medias.
-  empezar: function () {
+  // sus puntos a cero, sus naves de recambio y su nave en juego. A uno puede
+  // empezar desde un perfect (inicio: { oleada, puntos }, js/perfect.js), en esa
+  // oleada y con esos puntos; la vida extra siguiente llega en el múltiplo de
+  // 10.000 que viene después de ellos. También desde la pausa (RESTART,
+  // js/pausa.js), dejando atrás la partida a medias.
+  empezar: function (inicio) {
     this.estado = 'jugando';
+    this.inicio = inicio && !KF.companero ? inicio : null;
     KF.dificultad.nivel = KF.dificultad.elegido;
     KF.combos.flotantes = [];
     KF.inclinacion.calibrar();
     KF.marcador.cambiarModo(!!KF.companero);
-    this.ponerOleada(1);
+    this.ponerOleada(this.inicio ? this.inicio.oleada : 1);
+    var puntos = this.inicio ? this.inicio.puntos : 0;
     for (var i = 0; i < KF.jugadores.length; i++) {
       var j = KF.jugadores[i];
       j.retirar();
       j.disparos = [];
-      j.puntos = 0;
+      j.puntos = puntos;
       j.racha = 0;
       j.recambio = this.NAVES_RECAMBIO;
-      j.proximaVida = this.PUNTOS_VIDA_EXTRA;
+      j.proximaVida = (Math.floor(puntos / this.PUNTOS_VIDA_EXTRA) + 1) * this.PUNTOS_VIDA_EXTRA;
       j.aparecer();
     }
   },
@@ -76,6 +88,7 @@ KF.partida = {
     var factor = Math.pow(this.AUMENTO_OLEADA, n - 1) * KF.dificultad.factorVelocidad();
     this.oleada = n;
     this.esperaOleada = 0;
+    this.navePerdida = false;
     KF.formacion.reiniciar(KF.formacion.VELOCIDAD_INICIAL * factor, n);
     KF.ataque.oleada = n;
     KF.ataque.factorVelocidad = factor;
@@ -123,6 +136,7 @@ KF.partida = {
     for (var i = 0; i < KF.jugadores.length; i++) {
       var j = KF.jugadores[i];
       this.vidaExtraPorPuntos(j);
+      if (j.estado === 'explotando') this.navePerdida = true;
       if (j.estado !== 'explotando' || j.tiempoExplosion < this.ESPERA_RECAMBIO) continue;
       if (j.recambio === 0) {
         j.retirar();
@@ -152,6 +166,7 @@ KF.partida = {
     // nodriza si la oleada es múltiplo de 3, luego la oleada desafío y, tras
     // ella, la oleada siguiente.
     if (KF.navesVivas().length && !this.quedanNaves()) {
+      if (this.esperaOleada === 0) this.anotarPerfect();
       this.esperaOleada += dt;
       if (this.esperaOleada >= this.ESPERA_OLEADA) {
         var j = KF.jefe;
@@ -160,6 +175,13 @@ KF.partida = {
         else this.ponerOleada(this.oleada + 1);
       }
     }
+  },
+
+  // Oleada principal destruida: en la partida a uno, si no se perdió ninguna
+  // nave mientras duraba, es un perfect (js/perfect.js).
+  anotarPerfect: function () {
+    if (this.navePerdida || KF.companero) return;
+    KF.perfect.anotar(KF.dificultad.nivel, this.oleada, KF.jugador.puntos);
   },
 
   // Opciones del menú de inicio ahora mismo.
@@ -171,7 +193,10 @@ KF.partida = {
   // la conexión con el otro jugador, si la había.
   elegir: function () {
     var opcion = this.opciones()[this.opcion];
-    if (opcion === this.OTRA_PARTIDA) KF.red.elegirOtra();
+    if (this.enPerfect()) {
+      KF.red.cerrar();
+      this.empezar(KF.perfect.marcado());
+    } else if (opcion === this.OTRA_PARTIDA) KF.red.elegirOtra();
     else if (opcion === 'CREATE GAME') KF.red.crear();
     else if (opcion === 'JOIN GAME') KF.red.pedirCodigo();
     else {
@@ -201,18 +226,59 @@ KF.partida = {
     return this.alturaOpcion(this.opciones().length) + this.SEPARACION_DIFICULTAD;
   },
 
+  // Altura (borde superior) de la línea '< FROM WAVE n >', bajo la dificultad.
+  alturaPerfect: function () {
+    return this.alturaDificultad() + this.SEPARACION_OPCIONES;
+  },
+
+  // Filas que se recorren con las flechas arriba y abajo: las opciones y, si
+  // la dificultad marcada tiene algún perfect, la línea '< FROM WAVE n >'.
+  filas: function () {
+    return this.opciones().length + (KF.perfect.marcado() ? 1 : 0);
+  },
+
+  // La línea '< FROM WAVE n >' está marcada.
+  enPerfect: function () {
+    return this.opcion === this.opciones().length && !!KF.perfect.marcado();
+  },
+
   // Cambia la dificultad marcada en el menú; la formación de detrás se pone
   // a la velocidad del nivel nuevo.
+  // Cada nivel tiene sus perfects: se marca el de oleada más alta.
   cambiarDificultad: function (paso) {
     KF.dificultad.cambiar(paso);
     KF.dificultad.nivel = KF.dificultad.elegido;
+    KF.perfect.marcarUltimo();
     this.ponerOleada(1);
+  },
+
+  // Las flechas izquierda y derecha cambian el perfect si su línea está
+  // marcada y, si no, la dificultad.
+  cambiarConFlechas: function (paso) {
+    if (this.enPerfect()) KF.perfect.cambiar(paso);
+    else this.cambiarDificultad(paso);
+  },
+
+  // El punto (x, y) de la pantalla lógica está en la línea que empieza en y.
+  enLinea: function (p, y) {
+    return p.y >= y - 5 && p.y < y + KF.graficos.FUENTE_ALTO + 5;
   },
 
   // El punto (x, y) de la pantalla lógica está en la línea de la dificultad.
   enDificultad: function (p) {
-    var y = this.alturaDificultad();
-    return p.y >= y - 5 && p.y < y + KF.graficos.FUENTE_ALTO + 5;
+    return this.enLinea(p, this.alturaDificultad());
+  },
+
+  // El punto (x, y) está en la línea '< FROM WAVE n >', si se muestra.
+  enLineaPerfect: function (p) {
+    return !!KF.perfect.marcado() && this.enLinea(p, this.alturaPerfect());
+  },
+
+  // Tocar la línea '< FROM WAVE n >' la marca; si ya estaba marcada, pasa al
+  // perfect siguiente. Tocar fuera de ella empieza desde el marcado.
+  tocarPerfect: function () {
+    if (this.enPerfect()) KF.perfect.cambiar(1);
+    else this.opcion = this.opciones().length;
   },
 
   // Opción del menú en el punto (x, y) de la pantalla lógica, o -1.
@@ -240,6 +306,10 @@ KF.partida = {
         this.escribirCentrado(ctx, letras, opciones[i], this.alturaOpcion(i), 1);
       }
       this.escribirCentrado(ctx, this.LETRAS_INICIO, KF.dificultad.texto(), this.alturaDificultad(), 1);
+      if (KF.perfect.marcado()) {
+        var letrasPerfect = this.enPerfect() ? this.LETRAS_INICIO : this.LETRAS_OPCION;
+        this.escribirCentrado(ctx, letrasPerfect, KF.perfect.texto(), this.alturaPerfect(), 1);
+      }
     } else if (this.estado === 'fin') {
       this.escribirCentrado(ctx, this.LETRAS_FIN, 'GAME OVER', medio, e);
     }
@@ -258,20 +328,22 @@ KF.partida = {
     if (p.estado !== 'fin' && KF.red.activa()) { KF.red.tecla(); return; }
     // En el menú de inicio, las flechas arriba y abajo cambian de opción.
     if (p.estado === 'inicio' && !KF.red.activa() && (e.code === 'ArrowUp' || e.code === 'ArrowDown')) {
-      var n = p.opciones().length;
+      var n = p.filas();
       p.opcion = (p.opcion + (e.code === 'ArrowUp' ? n - 1 : 1)) % n;
       return;
     }
-    // Y las flechas izquierda y derecha cambian la dificultad.
+    // Y las flechas izquierda y derecha cambian la dificultad (o el perfect,
+    // con su línea marcada).
     if (p.estado === 'inicio' && !KF.red.activa() && (e.code === 'ArrowLeft' || e.code === 'ArrowRight')) {
-      p.cambiarDificultad(e.code === 'ArrowLeft' ? -1 : 1);
+      p.cambiarConFlechas(e.code === 'ArrowLeft' ? -1 : 1);
       return;
     }
     p.pulsar();
   });
   // La pulsación corta que empieza la partida no dispara. En el menú, tocar
-  // una opción la elige, tocar la dificultad pasa al nivel siguiente y tocar
-  // en otro sitio elige la opción marcada.
+  // una opción la elige, tocar la dificultad pasa al nivel siguiente, tocar la
+  // línea '< FROM WAVE n >' la marca (o pasa al perfect siguiente) y tocar en
+  // otro sitio elige la opción marcada.
   KF.alPulsarCorto(function () {
     var antes = p.estado;
     if (antes !== 'fin' && KF.red.activa()) {
@@ -282,6 +354,12 @@ KF.partida = {
     if (antes === 'inicio' && !KF.red.activa() && KF.ultimoToque) {
       if (p.enDificultad(KF.ultimoToque)) {
         p.cambiarDificultad(1);
+        if (p.opcion >= p.filas()) p.opcion = 0;
+        KF.tactil.disparar = false;
+        return;
+      }
+      if (p.enLineaPerfect(KF.ultimoToque)) {
+        p.tocarPerfect();
         KF.tactil.disparar = false;
         return;
       }

@@ -1,5 +1,5 @@
 // Comprueba los niveles de dificultad (partida/dificultad) sin navegador:
-// carga js/dificultad.js, js/ataque.js y js/partida.js con el resto del juego
+// carga js/dificultad.js, js/perfect.js, js/ataque.js y js/partida.js con el resto del juego
 // simulado y mira que NORMAL deja el juego como estaba, que EASY va un 25% más
 // lento y HARD un 25% más rápido (formación, picados y bombas), los atacantes a
 // la vez y la pausa entre ataques, y que el nivel elegido se recuerda.
@@ -33,7 +33,7 @@ function cargar(guardado) {
     localStorage: { getItem: (k) => (almacen.has(k) ? almacen.get(k) : null), setItem: (k, v) => almacen.set(k, v) }
   };
   const ctx = vm.createContext({ KF, window: ventana, Math, performance: { now: () => 0 } });
-  for (const f of ['js/dificultad.js', 'js/ataque.js', 'js/partida.js']) {
+  for (const f of ['js/dificultad.js', 'js/perfect.js', 'js/ataque.js', 'js/partida.js']) {
     vm.runInContext(readFileSync(f, 'utf8'), ctx, { filename: f });
   }
   return { KF, almacen };

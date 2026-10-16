@@ -5,7 +5,8 @@
 // Mientras dura, todo se congela (KF.detenido), el sonido se calla y se ve
 // 'PAUSED' en el centro, con cuatro opciones debajo: CONTINUE (marcada),
 // MUSIC y SOUNDS con su volumen (sonido/ajustes-sonido, en js/sonido.js) y
-// RESTART, que empieza una partida nueva en la oleada 1. Las flechas arriba y
+// RESTART, que empieza una partida nueva desde donde empezó esta (la oleada 1,
+// o la de su perfect: js/perfect.js). Las flechas arriba y
 // abajo cambian de opción y Enter o espacio la eligen; elegir MUSIC o SOUNDS
 // baja su volumen un paso (de OFF vuelve a 100%) y las flechas izquierda y
 // derecha lo bajan o lo suben. P reanuda siempre. En la pantalla táctil,
@@ -82,7 +83,8 @@ KF.pausa = {
     }
   },
 
-  // RESTART: partida nueva en la oleada 1; a dos, para los dos.
+  // RESTART: partida nueva en la oleada en que empezó la que se deja (la 1, o
+  // la de su perfect, js/perfect.js); a dos, para los dos en la oleada 1.
   reiniciar: function () {
     if (!this.puedeReanudar()) return;
     if (KF.red.activa()) {
@@ -92,7 +94,7 @@ KF.pausa = {
     this.poner(false, 0, this.version + 1);
     // El anfitrión que seguía solo empieza la nueva como partida a uno.
     if (KF.red.fase === 'solo') KF.red.cerrar();
-    KF.partida.empezar();
+    KF.partida.empezar(KF.partida.inicio);
   },
 
   elegir: function () {
