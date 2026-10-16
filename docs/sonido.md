@@ -9,7 +9,7 @@ threads:
   - Real sounds | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFf1TgQJLpT3XvZn4f9CLXB
 ---
 ## Summary
-The game's sounds, recorded audio files played with Web Audio from js/sonido.js (the detail is in sonido/sonidos-con-profundidad): the shot, the explosions of alien ships (a different one for the yellow), the player's explosion, a sound while alien ships attack, a sound on each power-up, a tune at the start of each wave and background music that speeds up as fewer ships remain (at its starting speed during the challenge wave, partida/oleada-desafio). Sound is enabled with the first key pressed or the first touch on the screen, and goes silent while the page is hidden or the game is paused (partida/pausa).
+The game's sounds, recorded audio files played with Web Audio from js/sonido.js (the detail is in sonido/sonidos-con-profundidad): the shot, the explosions of alien ships (a different one for the yellow), the player's explosion, a sound while alien ships attack, a sound on each power-up, a tune at the start of each wave and background music that speeds up as fewer ships remain (at its starting speed during the challenge wave, partida/oleada-desafio, and the mothership boss, enemigos/jefe). Each hit on the mothership plays the alien explosion and its destruction the yellow's. Sound is enabled with the first key pressed or the first touch on the screen, and goes silent while the page is hidden or the game is paused (partida/pausa).
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -28,6 +28,7 @@ The game's sounds, recorded audio files played with Web Audio from js/sonido.js 
 - 2026-10-13 07:12 · Two players: shots, explosions and the background music take every player ship into account (music is silent only when no ship is in play). On the guest of a two-player game the sounds come from the changes the host's snapshots bring, so both devices hear the same.
 - 2026-10-13 17:16 · Silence: the audio is suspended while the page is hidden or the game is paused (KF.pausa.activa, partida/pausa) and resumes when neither applies (KF.sonido.ajustarSilencio in js/sonido.js).
 - 2026-10-15 08:55 · During the challenge wave the background music plays at its starting speed; its extra ship plays the power-up sound.
+- 2026-10-16 10:30 · With the mothership boss (enemigos/jefe), the music plays at its starting speed, each hit plays the alien explosion (Sound watches KF.jefe.impactos) and its destruction the yellow's explosion.
 
 ## Requirements
 - 2026-10-03 18:13 · There are sound effects: shots from the player ship; explosion noise when a ship is destroyed; buzz while an alien ship leaves the formation to make an attack.
@@ -38,3 +39,4 @@ The game's sounds, recorded audio files played with Web Audio from js/sonido.js 
 - 2026-10-13 07:12 · Derived from multijugador: sound the same on both devices of a two-player game.
 - 2026-10-13 17:16 · Derived from partida/pausa: go silent during the pause and sound again on resuming.
 - 2026-10-15 08:55 · Derived from partida/oleada-desafio: during the challenge wave, play the background music at its starting speed, and play the power-up sound for its extra ship.
+- 2026-10-16 10:30 · Derived from enemigos/jefe: sounds for the hits and the destruction of the mothership boss, and the music at its starting speed meanwhile.

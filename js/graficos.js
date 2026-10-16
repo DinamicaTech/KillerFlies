@@ -353,6 +353,110 @@ KF.graficos = {
     ctx.stroke();
   },
 
+  // Nave nodriza jefe (js/jefe.js) de 44×22, unas cuatro naves de ancho: un
+  // platillo morado con alas en flecha, cúpula celeste con ojos, tres
+  // cañones abajo y luces rojas a lo largo del casco. Con blanco, se dibuja
+  // la silueta en blanco para el destello de cada impacto.
+  dibujarJefe: function (ctx, blanco) {
+    var g = this, C = '#9038d8', A = '#2850c8', D = '#40d8ff', L = '#ff3838';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    // Alas en flecha a los lados, con un nervio oscuro.
+    for (var lado = 0; lado < 2; lado++) {
+      ctx.save();
+      if (lado) { ctx.translate(44, 0); ctx.scale(-1, 1); }
+      ctx.beginPath();
+      ctx.moveTo(12, 9);
+      ctx.lineTo(0.5, 6);
+      ctx.lineTo(0.3, 10.5);
+      ctx.lineTo(4, 17.5);
+      ctx.lineTo(7, 15);
+      ctx.lineTo(13, 15);
+      ctx.closePath();
+      ctx.fillStyle = g.metal(ctx, A, 6, 17.5);
+      ctx.fill();
+      ctx.strokeStyle = g.tono(A, 0.6);
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(11, 11);
+      ctx.lineTo(2.5, 9);
+      ctx.moveTo(10, 13.5);
+      ctx.lineTo(4.2, 15.8);
+      ctx.strokeStyle = g.tono(A, -0.45);
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+      g.luz(ctx, 1.4, 7.8, 0.6, L);
+      ctx.restore();
+    }
+    // Cañones: tres tubos que asoman por debajo del casco.
+    ctx.strokeStyle = g.metal(ctx, '#a0a8b8', 14, 21.5);
+    ctx.lineWidth = 2;
+    for (var c = -1; c <= 1; c++) {
+      ctx.beginPath();
+      ctx.moveTo(22 + c * 7, 14);
+      ctx.lineTo(22 + c * 7, c ? 19.5 : 21);
+      ctx.stroke();
+    }
+    // Casco: un platillo ancho, más grueso en el centro.
+    ctx.beginPath();
+    ctx.moveTo(6, 10.5);
+    ctx.bezierCurveTo(10, 6.5, 34, 6.5, 38, 10.5);
+    ctx.bezierCurveTo(37, 14.5, 30, 17, 22, 17);
+    ctx.bezierCurveTo(14, 17, 7, 14.5, 6, 10.5);
+    ctx.closePath();
+    var casco = ctx.createRadialGradient(18, 8.5, 1, 22, 11.5, 17);
+    casco.addColorStop(0, g.tono(C, 0.65));
+    casco.addColorStop(0.4, C);
+    casco.addColorStop(1, g.tono(C, -0.6));
+    ctx.fillStyle = casco;
+    ctx.fill();
+    ctx.strokeStyle = g.tono(C, -0.65);
+    ctx.lineWidth = 0.4;
+    ctx.stroke();
+    // Franja del casco con su fila de luces.
+    ctx.beginPath();
+    ctx.moveTo(7.5, 12);
+    ctx.quadraticCurveTo(22, 15.5, 36.5, 12);
+    ctx.strokeStyle = g.tono(C, -0.4);
+    ctx.lineWidth = 0.7;
+    ctx.stroke();
+    for (var k = 0; k < 7; k++) {
+      var u = (k + 0.5) / 7, x = 8.5 + u * 27;
+      g.luz(ctx, x, 12.2 + 2.6 * Math.sin(u * Math.PI), 0.45, k % 2 ? '#ffd040' : L);
+    }
+    // Cúpula: burbuja celeste con reflejo, encima del casco.
+    ctx.beginPath();
+    ctx.moveTo(14, 8.6);
+    ctx.bezierCurveTo(14.5, 3, 18.5, 0.3, 22, 0.3);
+    ctx.bezierCurveTo(25.5, 0.3, 29.5, 3, 30, 8.6);
+    ctx.closePath();
+    var cupula = ctx.createRadialGradient(19.5, 3, 0.3, 22, 6, 9);
+    cupula.addColorStop(0, g.tono(D, 0.8));
+    cupula.addColorStop(0.45, D);
+    cupula.addColorStop(1, g.tono(D, -0.6));
+    ctx.fillStyle = cupula;
+    ctx.fill();
+    ctx.strokeStyle = g.tono(D, -0.5);
+    ctx.lineWidth = 0.4;
+    ctx.stroke();
+    // Ojos rojos dentro de la cúpula y reflejo.
+    g.luz(ctx, 19.3, 5.4, 0.8, L);
+    g.luz(ctx, 24.7, 5.4, 0.8, L);
+    ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(17, 4.5);
+    ctx.quadraticCurveTo(18.3, 2, 21, 1.4);
+    ctx.stroke();
+    if (blanco) {
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.fillRect(0, 0, 44, 22);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+  },
+
   // Nave del jugador de 13×13 con el cañón hacia arriba: morro rojo y tres
   // columnas blancas rellenas de celeste unidas por travesaños.
   // p = { R: rojo, W: blanco, C: celeste }.
@@ -663,6 +767,9 @@ KF.graficos.fondo = {
     })
   ];
   g.SPRITE_JUGADOR = g.SPRITES_JUGADOR[0];
+  // La nave nodriza jefe y su silueta blanca para el destello de los impactos.
+  g.SPRITE_JEFE = g.crearSpriteHD(44, 22, function (ctx) { g.dibujarJefe(ctx, false); });
+  g.SPRITE_JEFE_BLANCO = g.crearSpriteHD(44, 22, function (ctx) { g.dibujarJefe(ctx, true); });
   g.COLORES_JUGADOR = ['#ff5050', '#40e060'];
   g.SPRITE_DISPARO = g.crearSprite(g.MAPA_DISPARO, { Y: '#ffff40' });
   g.SPRITE_DESTELLO = g.crearSprite(g.MAPA_DESTELLO, { W: '#ffffff', Y: '#ffff40' });

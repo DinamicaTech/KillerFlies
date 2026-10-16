@@ -53,6 +53,8 @@ KF.powerups = {
   // puntos son para la nave del jugador que la ha usado.
   aniquilar: function (autor) {
     autor.poder = null;
+    // A la nave nodriza jefe solo le quita vida.
+    KF.jefe.danar(KF.jefe.DANO_ESPECIAL, autor);
     var f = KF.formacion, naves = f.naves;
     var atacantes = KF.ataque.atacantes.concat(KF.desafio.enPantalla());
     for (var i = 0; i < atacantes.length; i++) {
@@ -87,6 +89,7 @@ KF.powerups = {
       var p = f.posicionHueco(n);
       if (dentro(p.x, p.y)) KF.enemigos.destruir(n, p.x, p.y, 'disparo', autor);
     }
+    if (KF.jefe.alcanzaCirculo(x, y, r)) KF.jefe.danar(KF.jefe.DANO_ESPECIAL, autor);
     this.ondas.push({ id: KF.nuevoId(), x: x, y: y, t: 0 });
   },
 
