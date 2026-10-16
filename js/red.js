@@ -427,7 +427,7 @@ KF.red = {
       j: KF.jugadores.map(function (j) {
         return [R(j.x), R(j.vx), est.indexOf(j.estado), R(j.escudo), KF.powerups.PODERES.indexOf(j.poder),
           j.recambio, j.puntos, j.salvas,
-          j.disparos.map(function (d) { return [d.id, d.x, R(d.y), d.bomba ? 1 : 0]; }), j.racha];
+          j.disparos.map(function (d) { return [d.id, d.x, R(d.y), d.bomba ? 1 : 0]; }), j.racha, j.capsulas];
       })
     };
   },
@@ -559,6 +559,7 @@ KF.red = {
       j.recambio = d[5];
       j.puntos = d[6];
       j.racha = d[9] || 0;
+      j.capsulas = d[10] || 0;
       if (d[7] > j.salvas) j.destello = j.DURACION_DESTELLO;
       j.salvas = d[7];
     }
