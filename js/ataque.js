@@ -71,14 +71,16 @@ KF.ataque = {
   },
 
   // Máximo de ataques a la vez (la amarilla con su escolta cuenta como uno):
-  // dos en la primera oleada y uno más en cada oleada siguiente, hasta seis.
+  // dos en la primera oleada y uno más en cada oleada siguiente, hasta seis;
+  // la dificultad (js/dificultad.js) quita uno en EASY y suma uno en HARD.
   maximoAtaques: function () {
-    return Math.min(1 + this.oleada, 6);
+    return Math.max(1, Math.min(1 + this.oleada, 6) + KF.dificultad.ataquesDeMas());
   },
 
-  // Segundos entre un ataque y el siguiente, más corto con cada oleada.
+  // Segundos entre un ataque y el siguiente, más corto con cada oleada (más
+  // largo en EASY y más corto en HARD).
   pausa: function () {
-    return (1.5 + Math.random() * 1.5) / (1 + 0.1 * (this.oleada - 1));
+    return (1.5 + Math.random() * 1.5) / (1 + 0.1 * (this.oleada - 1)) * KF.dificultad.factorPausa();
   },
 
   // Al aparecer la nave de recambio, los ataques esperan antes de empezar.

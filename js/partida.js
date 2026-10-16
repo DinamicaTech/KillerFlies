@@ -7,7 +7,8 @@
 // pulsa una tecla. En la partida a dos (js/red.js) el anfitrión mueve el
 // juego y el invitado recibe su estado; cada jugador tiene sus naves y sus
 // puntos, y la partida acaba cuando a ninguno le quedan naves. Tras ella, el
-// menú ofrece además 'PLAY AGAIN' mientras los dos sigan conectados.
+// menú ofrece además 'PLAY AGAIN' mientras los dos sigan conectados. Bajo las
+// opciones, la línea de la dificultad (js/dificultad.js).
 KF.partida = {
   NAVES_RECAMBIO: 2,       // naves de recambio al empezar la partida
   MAXIMO_RECAMBIO: 5,      // tope de naves de recambio (vidas extra)
@@ -26,6 +27,7 @@ KF.partida = {
   OPCIONES: ['1 PLAYER', 'CREATE GAME', 'JOIN GAME'],
   OTRA_PARTIDA: 'PLAY AGAIN',
   SEPARACION_OPCIONES: 16, // píxeles entre una opción y la siguiente
+  SEPARACION_DIFICULTAD: 8, // píxeles de más entre la última opción y la dificultad
 
   estado: 'inicio',        // 'inicio' | 'jugando' | 'fin'; mientras se prepara
                            // una partida a dos, js/red.js muestra la sala
@@ -39,6 +41,7 @@ KF.partida = {
   irAInicio: function () {
     this.estado = 'inicio';
     this.opcion = 0;
+    KF.dificultad.nivel = KF.dificultad.elegido;
     for (var i = 0; i < KF.jugadores.length; i++) KF.jugadores[i].retirar();
     KF.marcador.cambiarModo(!!KF.companero);
     this.ponerOleada(1);
@@ -49,6 +52,7 @@ KF.partida = {
   // desde la pausa (RESTART, js/pausa.js), dejando atrás la partida a medias.
   empezar: function () {
     this.estado = 'jugando';
+    KF.dificultad.nivel = KF.dificultad.elegido;
     KF.combos.flotantes = [];
     KF.inclinacion.calibrar();
     KF.marcador.cambiarModo(!!KF.companero);
@@ -66,9 +70,10 @@ KF.partida = {
   },
 
   // Formación nueva, la que toca a la oleada n, con su velocidad; Ataque deja
-  // atrás los ataques de la anterior al ver la formación nueva.
+  // atrás los ataques de la anterior al ver la formación nueva. La dificultad
+  // multiplica la velocidad de todas las oleadas.
   ponerOleada: function (n) {
-    var factor = Math.pow(this.AUMENTO_OLEADA, n - 1);
+    var factor = Math.pow(this.AUMENTO_OLEADA, n - 1) * KF.dificultad.factorVelocidad();
     this.oleada = n;
     this.esperaOleada = 0;
     KF.formacion.reiniciar(KF.formacion.VELOCIDAD_INICIAL * factor, n);
@@ -191,6 +196,25 @@ KF.partida = {
     return KF.ALTO / 2 + 20 + i * this.SEPARACION_OPCIONES;
   },
 
+  // Altura (borde superior) de la línea de la dificultad, bajo las opciones.
+  alturaDificultad: function () {
+    return this.alturaOpcion(this.opciones().length) + this.SEPARACION_DIFICULTAD;
+  },
+
+  // Cambia la dificultad marcada en el menú; la formación de detrás se pone
+  // a la velocidad del nivel nuevo.
+  cambiarDificultad: function (paso) {
+    KF.dificultad.cambiar(paso);
+    KF.dificultad.nivel = KF.dificultad.elegido;
+    this.ponerOleada(1);
+  },
+
+  // El punto (x, y) de la pantalla lógica está en la línea de la dificultad.
+  enDificultad: function (p) {
+    var y = this.alturaDificultad();
+    return p.y >= y - 5 && p.y < y + KF.graficos.FUENTE_ALTO + 5;
+  },
+
   // Opción del menú en el punto (x, y) de la pantalla lógica, o -1.
   opcionEn: function (p) {
     for (var i = 0; i < this.opciones().length; i++) {
@@ -215,6 +239,7 @@ KF.partida = {
         var letras = i === this.opcion ? this.LETRAS_INICIO : this.LETRAS_OPCION;
         this.escribirCentrado(ctx, letras, opciones[i], this.alturaOpcion(i), 1);
       }
+      this.escribirCentrado(ctx, this.LETRAS_INICIO, KF.dificultad.texto(), this.alturaDificultad(), 1);
     } else if (this.estado === 'fin') {
       this.escribirCentrado(ctx, this.LETRAS_FIN, 'GAME OVER', medio, e);
     }
@@ -237,10 +262,16 @@ KF.partida = {
       p.opcion = (p.opcion + (e.code === 'ArrowUp' ? n - 1 : 1)) % n;
       return;
     }
+    // Y las flechas izquierda y derecha cambian la dificultad.
+    if (p.estado === 'inicio' && !KF.red.activa() && (e.code === 'ArrowLeft' || e.code === 'ArrowRight')) {
+      p.cambiarDificultad(e.code === 'ArrowLeft' ? -1 : 1);
+      return;
+    }
     p.pulsar();
   });
   // La pulsación corta que empieza la partida no dispara. En el menú, tocar
-  // una opción la elige; tocar en otro sitio elige la marcada.
+  // una opción la elige, tocar la dificultad pasa al nivel siguiente y tocar
+  // en otro sitio elige la opción marcada.
   KF.alPulsarCorto(function () {
     var antes = p.estado;
     if (antes !== 'fin' && KF.red.activa()) {
@@ -249,6 +280,11 @@ KF.partida = {
       return;
     }
     if (antes === 'inicio' && !KF.red.activa() && KF.ultimoToque) {
+      if (p.enDificultad(KF.ultimoToque)) {
+        p.cambiarDificultad(1);
+        KF.tactil.disparar = false;
+        return;
+      }
       var i = p.opcionEn(KF.ultimoToque);
       if (i >= 0) p.opcion = i;
     }

@@ -49,6 +49,7 @@ Online two-player game, each player on their own device, in js/red.js: the start
 - 2026-10-15 08:55 · The host sends the challenge wave's time and its living ships in each snapshot; the guest computes their positions.
 - 2026-10-16 08:42 · Combos (marcador/combos): the host computes each player's streak and sends it to the guest with the floating points (position, time, points and player) in every snapshot.
 - 2026-10-16 10:30 · The snapshot carries the mothership boss (field m: phase, time, health, maximum health, time since destroyed, appearance); the guest computes its position from its time and flashes it when its health drops. The points go to whoever lands the last hit.
+- 2026-10-16 10:41 · Difficulty (partida/dificultad): the host's level applies to both players; the snapshot carries it (k) and the guest plays the wave at that level, whatever its own menu says.
 
 ## Requirements
 - 2026-10-04 12:00 · idea: Multiplayer game option in Killer Flies.
@@ -89,3 +90,4 @@ Online two-player game, each player on their own device, in js/red.js: the start
 - 2026-10-15 08:55 · Derived from partida/oleada-desafio: send the challenge wave to the guest (its time and which ships are alive) and give a perfect challenge's extra ship to each player still in the game.
 - 2026-10-16 08:42 · Derived from marcador/combos: send the guest each player's combo and the floating points.
 - 2026-10-16 10:30 · Derived from enemigos/jefe: send the mothership boss to the guest and give its points to whoever lands the last hit.
+- 2026-10-16 10:41 · Derived from partida/dificultad: send the host's difficulty level to the guest.
