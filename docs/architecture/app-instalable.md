@@ -22,9 +22,11 @@ Acceptance: on an Android phone, open https://dinamicatech.github.io/KillerFlies
 - 2026-10-16 10:35 · Regression test: tools/comprobar-instalable.mjs fails if a file loaded by index.html (script, manifest, icon) is missing from sw.js's ARCHIVOS, or if ARCHIVOS names a file that does not exist; the workflow "Pruebas" (.github/workflows/pruebas.yml) runs it. Adding a script to the game means adding it to ARCHIVOS too.
 - 2026-10-16 10:35 · Checked by Claude in a headless browser: the 25 files are saved on the first visit, the manifest is read (full screen, 4 icons), the page reloads and the game plays offline (also with ?sala=), a change on the server is played on the next online load, and opening from disk still works with no errors. Installing on a real phone is left to the owner's validation.
 - 2026-10-16 10:34 · Validated by the owner on the phone: the node becomes stable.
+- 2026-10-16 11:35 · js/salon-fama.js (marcador/hall-of-fame) is added to the files saved for offline play.
 
 ## Requirements
 - 2026-10-13 17:06 · idea: Let the game be installed on the phone's home screen as an app, playable offline and in full screen.
 - 2026-10-16 10:20 · Pasamos a desarrollo.
 - 2026-10-16 10:24 · Ok!
 - 2026-10-16 10:34 · Ok, funciona
+- 2026-10-16 11:35 · Derived from marcador/hall-of-fame: save js/salon-fama.js for offline play.

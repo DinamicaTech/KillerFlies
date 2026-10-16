@@ -35,3 +35,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Empezar tras un perfect (partida/empezar-tras-perfect)
         run: node tools/comprobar-perfect.mjs
+  hall-of-fame:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hall of fame al acabar la partida (marcador/hall-of-fame)
+        run: node tools/comprobar-salon-fama.mjs
