@@ -27,6 +27,7 @@ var ARCHIVOS = [
   'js/marcador.js',
   'js/sonidos-datos.js',
   'js/sonido.js',
+  'js/dificultad.js',
   'js/partida.js',
   'js/lib/peerjs.min.js',
   'js/lib/qrcode.js',

@@ -23,7 +23,7 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-03 19:08 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] Alien ships 11 pixels wide, with two antennae, arms with the tips pointing up, eyes and wings under the arms: blue (light-blue body, blue wings), purple (purple body and wings), red (red body, light-blue wings). The yellow one (mothership) has an orange dome, yellow body with white edges, dark-blue wings and a tail. No wing-flapping in the formation (the owner accepted the recommendation).
 - 2026-10-03 19:08 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] Player ship of 13×13 pixels: red dome and three white columns filled with light blue. Shot: yellow line of 1×4. Bombs: white line of 2×6. Player explosion in three phases (red, yellow and white, with light-blue debris); alien ships' explosion in four phases, a flash that opens into a ring of sparks.
 - 2026-10-03 19:11 · Validated by the owner: becomes stable.
-- 2026-10-03 19:18 · Font: a single 5×7 pixel-art font for all texts, with digits, slash, letters A to Z and space, in js/graficos.js (KF.graficos.crearFuente(color), escribir and anchoTexto, with a scale to enlarge it). It comes from the digit font the scoreboard had.
+- 2026-10-03 19:18 · [replaced by 2026-10-16 10:41] Font: a single 5×7 pixel-art font for all texts, with digits, slash, letters A to Z and space, in js/graficos.js (KF.graficos.crearFuente(color), escribir and anchoTexto, with a scale to enlarge it). It comes from the digit font the scoreboard had.
 - 2026-10-04 10:52 · Power-ups: 5×7 capsule (two sprites, blue with a yellow stripe and pink with a white stripe, for the blinking; KF.graficos.SPRITES_CAPSULA), player bomb as a 3×3 orange diamond (SPRITE_BOMBA_JUGADOR) and the wave of its explosion, a yellow and orange circle that expands and fades out (dibujarOnda).
 - 2026-10-04 12:05 · [replaced by graficos/naves-siglo-xxi 2026-10-05 13:00] New ships: green (green body, white eyes, dark-green wings), orange (orange body, dark eyes, reddish wings) and cyan (light-cyan body, dark eyes, pink wings), with the same 11-pixel drawing as the blue, purple and red ones.
 - 2026-10-05 12:05 · Muzzle flash of the player ship's cannon when shooting: 5×3 white star with a yellow centre (KF.graficos.SPRITE_DESTELLO), for jugador/destello-disparo.
@@ -31,6 +31,7 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-05 12:43 · Engine flame of the player ship: two 3×3 shapes, orange with a yellow tip, that alternate to flicker (KF.graficos.SPRITES_LLAMA), for jugador/estela-motor.
 - 2026-10-13 07:12 · Two players: SPRITES_JUGADOR has the J1 ship (red nose, light-blue interior) and the J2 ship (green nose, amber interior); COLORES_JUGADOR gives each player's colour for the scoreboard texts.
 - 2026-10-16 10:30 · The mothership boss (enemigos/jefe) is drawn by code in the 21st-century ships style (dibujarJefe): a purple saucer with swept wings, a cyan dome with red eyes, three cannons and a row of lights; SPRITE_JEFE and a white silhouette, SPRITE_JEFE_BLANCO, for the flash of each hit.
+- 2026-10-16 10:41 · Font: a single 5×7 pixel-art font for all texts, with digits, slash, '<' and '>', letters A to Z and space, in js/graficos.js (KF.graficos.crearFuente(color), escribir and anchoTexto, with a scale to enlarge it). It comes from the digit font the scoreboard had; '<' and '>' frame the difficulty line of the start menu (partida/dificultad).
 
 ## Requirements
 - 2026-10-03 18:13 · I attach two screenshots as visual reference. In the first one, a formation of a yellow ship and two red ones descends to attack. In the second one, a purple ship descends towards the player ship while two bombs (somewhat thick vertical white lines) are falling.
@@ -48,3 +49,4 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-05 12:43 · Derived from jugador/estela-motor: sprites of the engine flame (SPRITES_LLAMA).
 - 2026-10-13 07:12 · Derived from multijugador: draw the second player's ship in another colour.
 - 2026-10-16 10:30 · Derived from enemigos/jefe: the sprite of the mothership boss and its white version for the hits.
+- 2026-10-16 10:41 · Derived from partida/dificultad: the '<' and '>' characters in the font.

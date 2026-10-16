@@ -413,6 +413,7 @@ KF.red = {
       t: performance.now(),
       e: p.estado,
       o: p.oleada,
+      k: KF.dificultad.nivel,
       fx: R(f.x),
       n: naves,
       a: KF.ataque.atacantes.filter(function (a) { return a.nave.viva; }).map(function (a) {
@@ -525,7 +526,11 @@ KF.red = {
   // naves de jugador que explotan o aparecen, puntos, poderes).
   aplicarCambios: function (f) {
     var p = KF.partida;
-    if (f.o !== p.oleada || (f.e === 'jugando' && p.estado !== 'jugando')) p.ponerOleada(f.o);
+    // La dificultad de la partida es la del anfitrión (js/dificultad.js).
+    var nivel = f.k === undefined ? KF.dificultad.nivel : f.k;
+    var otroNivel = nivel !== KF.dificultad.nivel;
+    KF.dificultad.nivel = nivel;
+    if (otroNivel || f.o !== p.oleada || (f.e === 'jugando' && p.estado !== 'jugando')) p.ponerOleada(f.o);
     // Al empezar la partida, la posición del móvil del invitado es su centro.
     if (f.e === 'jugando' && p.estado !== 'jugando') KF.inclinacion.calibrar();
     if (f.e === 'fin' && p.estado !== 'fin') p.tiempoFin = 0;
