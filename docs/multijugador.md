@@ -47,6 +47,7 @@ Online two-player game, each player on their own device, in js/red.js: the start
 
 - 2026-10-15 08:05 · Pause (partida/pausa): a player's pause pauses both devices, with 'PAUSED P1' or 'PAUSED P2', and only that player can resume or choose 'RESTART'. Each message (the host's snapshot and the guest's ship) also carries who paused (z) and a version number (zv); the newest version wins, the host's on a tie. A hidden page keeps sending one message per second so the other device does not take the connection as lost. The disconnection rule does not change. 'RESTART' uses the 'PLAY AGAIN' logic: chosen by the host, it starts a new game with the next game number (g) and ends the pause with a new version; chosen by the guest, its ship message carries the request (o) until a snapshot of the new game arrives, and the host only accepts it while the game is paused by the guest.
 - 2026-10-15 08:55 · The host sends the challenge wave's time and its living ships in each snapshot; the guest computes their positions.
+- 2026-10-16 08:42 · Combos (marcador/combos): the host computes each player's streak and sends it to the guest with the floating points (position, time, points and player) in every snapshot.
 
 ## Requirements
 - 2026-10-04 12:00 · idea: Multiplayer game option in Killer Flies.
@@ -85,3 +86,4 @@ Online two-player game, each player on their own device, in js/red.js: the start
 - 2026-10-15 07:35 · Puedes traducir "sala=" también, que no hay QR compartidos actualmente
 - 2026-10-15 07:54 · Derived from partida/pausa: restart the game for both players when the one who paused chooses RESTART.
 - 2026-10-15 08:55 · Derived from partida/oleada-desafio: send the challenge wave to the guest (its time and which ships are alive) and give a perfect challenge's extra ship to each player still in the game.
+- 2026-10-16 08:42 · Derived from marcador/combos: send the guest each player's combo and the floating points.
