@@ -34,6 +34,7 @@ KF.sonido = {
   navesOleada: 1,          // naves de la oleada al empezar, para la velocidad de la música
   ultimasSalvas: 0,        // para notar cada disparo nuevo
   ultimasRecogidas: 0,     // para notar cada power-up recogido
+  ultimosImpactos: 0,      // para notar cada impacto en la nave nodriza jefe
   estadosJugador: [],      // estado de cada nave de jugador en el paso anterior
   estadoPartida: 'inicio',
   oleada: 1,
@@ -162,8 +163,8 @@ KF.sonido = {
     for (var i = 0; i < naves.length; i++) if (naves[i].viva) vivas++;
     var total = this.navesOleada;
     var avance = total > 1 ? (total - Math.max(vivas, 1)) / (total - 1) : 1;
-    // En la oleada desafío, a la velocidad de partida.
-    if (KF.desafio.activo) avance = 0;
+    // En la oleada desafío y con la nave nodriza, a la velocidad de partida.
+    if (KF.desafio.activo || KF.jefe.activo) avance = 0;
     this.musica.fuente.playbackRate.setTargetAtTime(1 + (this.VELOCIDAD_MAXIMA - 1) * avance, t, 0.1);
   },
 
@@ -177,10 +178,12 @@ KF.sonido = {
     }
     var disparoNuevo = salvas !== this.ultimasSalvas;
     var powerUp = KF.powerups.recogidas !== this.ultimasRecogidas;
+    var impacto = KF.jefe.impactos !== this.ultimosImpactos;
     var oleadaNueva = p.estado === 'jugando' &&
       (this.estadoPartida !== 'jugando' || p.oleada !== this.oleada);
     this.ultimasSalvas = salvas;
     this.ultimasRecogidas = KF.powerups.recogidas;
+    this.ultimosImpactos = KF.jefe.impactos;
     this.estadoPartida = p.estado;
     this.oleada = p.oleada;
 
@@ -189,6 +192,8 @@ KF.sonido = {
     if (disparoNuevo) this.tocar('disparo');
     if (jugadorExplota) this.tocar('explosion-jugador');
     if (powerUp) this.tocar('power-up');
+    // Cada impacto en la nave nodriza suena como una nave enemiga que explota.
+    if (impacto && KF.jefe.activo) this.tocar('explosion-enemigo');
     this.actualizarAtaque();
     this.actualizarMusica();
   }
@@ -203,7 +208,7 @@ KF.sonido = {
   document.addEventListener('visibilitychange', function () { s.ajustarSilencio(); });
   KF.enemigos.alDestruir(function (nave) {
     if (!s.ctx || !s.activado || document.hidden || KF.pausa.activa) return;
-    s.tocar(nave.tipo === 'amarilla' ? 'explosion-amarilla' : 'explosion-enemigo');
+    s.tocar(nave.tipo === 'amarilla' || nave.tipo === 'nodriza' ? 'explosion-amarilla' : 'explosion-enemigo');
   });
 })();
 

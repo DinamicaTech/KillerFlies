@@ -24,7 +24,9 @@ KF.combos = {
 
   // Puntos que da una nave a su autor, que suma una más a la racha.
   anotar: function (nave, autor, x, y) {
-    var puntos = KF.TIPOS_NAVE[nave.tipo].puntos * this.multiplicador(autor.racha);
+    // La nave nodriza jefe (js/jefe.js) lleva sus propios puntos.
+    var base = nave.puntos || KF.TIPOS_NAVE[nave.tipo].puntos;
+    var puntos = base * this.multiplicador(autor.racha);
     autor.racha++;
     autor.puntos += puntos;
     this.flotantes.push({ id: KF.nuevoId(), x: x, y: y, t: 0, puntos: puntos, numero: autor.numero });

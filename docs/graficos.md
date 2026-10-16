@@ -9,7 +9,7 @@ threads:
   - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
 ---
 ## Summary
-The game's visual look: the screen, the background and the sprites of all ships, bombs, shots and explosions, using the arcade screenshots as reference. Everything is in js/graficos.js: a background of coloured stars that drift down and twinkle, the pre-coloured sprites the other parts of the game use (the ships drawn in detail at a higher resolution, as "21st-century ships"; everything else in pixel art) and the pixel-art font for the texts.
+The game's visual look: the screen, the background and the sprites of all ships, bombs, shots and explosions, using the arcade screenshots as reference. Everything is in js/graficos.js: a background of coloured stars that drift down and twinkle, the pre-coloured sprites the other parts of the game use (the ships drawn in detail at a higher resolution, as "21st-century ships", the mothership boss among them; everything else in pixel art) and the pixel-art font for the texts.
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -30,6 +30,7 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-05 12:23 · Colours of the player explosion fragments: the same red, yellow, white and light blue as its explosion (KF.graficos.COLORES_FRAGMENTOS), for jugador/explosion-fragmentos.
 - 2026-10-05 12:43 · Engine flame of the player ship: two 3×3 shapes, orange with a yellow tip, that alternate to flicker (KF.graficos.SPRITES_LLAMA), for jugador/estela-motor.
 - 2026-10-13 07:12 · Two players: SPRITES_JUGADOR has the J1 ship (red nose, light-blue interior) and the J2 ship (green nose, amber interior); COLORES_JUGADOR gives each player's colour for the scoreboard texts.
+- 2026-10-16 10:30 · The mothership boss (enemigos/jefe) is drawn by code in the 21st-century ships style (dibujarJefe): a purple saucer with swept wings, a cyan dome with red eyes, three cannons and a row of lights; SPRITE_JEFE and a white silhouette, SPRITE_JEFE_BLANCO, for the flash of each hit.
 
 ## Requirements
 - 2026-10-03 18:13 · I attach two screenshots as visual reference. In the first one, a formation of a yellow ship and two red ones descends to attack. In the second one, a purple ship descends towards the player ship while two bombs (somewhat thick vertical white lines) are falling.
@@ -46,3 +47,4 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-05 12:05 · Derived from jugador/destello-disparo: sprite of the cannon's muzzle flash (SPRITE_DESTELLO).
 - 2026-10-05 12:43 · Derived from jugador/estela-motor: sprites of the engine flame (SPRITES_LLAMA).
 - 2026-10-13 07:12 · Derived from multijugador: draw the second player's ship in another colour.
+- 2026-10-16 10:30 · Derived from enemigos/jefe: the sprite of the mothership boss and its white version for the hits.

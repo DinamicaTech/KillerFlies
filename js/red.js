@@ -423,6 +423,7 @@ KF.red = {
       w: lista(KF.powerups.ondas, true),
       r: KF.powerups.recogidas,
       d: KF.desafio.foto(),
+      m: KF.jefe.foto(),
       p: KF.combos.flotantes.map(function (o) { return [o.id, R(o.x), R(o.y), R(o.t), o.puntos, o.numero]; }),
       j: KF.jugadores.map(function (j) {
         return [R(j.x), R(j.vx), est.indexOf(j.estado), R(j.escudo), KF.powerups.PODERES.indexOf(j.poder),
@@ -504,6 +505,11 @@ KF.red = {
     });
     // El desafío: sus naves se colocan solas a partir de su tiempo.
     if (b.d) KF.desafio.t = a.d && a.d[1] <= b.d[1] ? M(a.d[1], b.d[1], k) : b.d[1];
+    // La nave nodriza jefe, igual: su posición sale de su tiempo.
+    if (b.m) {
+      KF.jefe.t = a.m && a.m[1] <= b.m[1] ? M(a.m[1], b.m[1], k) : b.m[1];
+      KF.jefe.tiempoFin = a.m && a.m[4] <= b.m[4] ? M(a.m[4], b.m[4], k) : b.m[4];
+    }
     for (i = 0; i < KF.jugadores.length; i++) {
       var j = KF.jugadores[i], ja = a.j[i], jb = b.j[i];
       if (!ja || !jb) continue;
@@ -539,6 +545,7 @@ KF.red = {
     }
     KF.powerups.recogidas = f.r;
     KF.desafio.aplicarCambios(f.d);
+    KF.jefe.aplicarCambios(f.m);
 
     for (i = 0; i < KF.jugadores.length; i++) {
       var j = KF.jugadores[i], d = f.j[i];

@@ -1,7 +1,8 @@
 // El ciclo de la partida: pantalla 'START GAME' con su menú (1 jugador, crear
 // una partida a dos o unirse a una), oleadas sucesivas un 5% más rápidas cada
 // una (bloque, picados y bombas) con una oleada desafío entre una y otra
-// (js/desafio.js), tres naves por jugador (una en juego y dos
+// (js/desafio.js) y, tras cada tercera oleada, la nave nodriza jefe antes del
+// desafío (js/jefe.js), tres naves por jugador (una en juego y dos
 // de recambio) y 'GAME OVER' al perder la última, que se queda hasta que se
 // pulsa una tecla. En la partida a dos (js/red.js) el anfitrión mueve el
 // juego y el invitado recibe su estado; cada jugador tiene sus naves y sus
@@ -75,6 +76,7 @@ KF.partida = {
     KF.ataque.factorVelocidad = factor;
     KF.marcador.ponerOleada(n);
     KF.desafio.quitar();
+    KF.jefe.quitar();
   },
 
   // Una nave de recambio más para ese jugador (power-up vida extra), hasta el tope.
@@ -137,15 +139,19 @@ KF.partida = {
       return;
     }
 
-    // Mientras dura la oleada desafío (js/desafio.js) no llega otra oleada.
-    if (KF.desafio.activo) return;
+    // Mientras dura la oleada desafío (js/desafio.js) o la nave nodriza jefe
+    // (js/jefe.js) no llega otra oleada.
+    if (KF.desafio.activo || KF.jefe.activo) return;
 
-    // Oleada destruida: poco después, con alguna nave en juego, llega la
-    // oleada desafío y, tras ella, la oleada siguiente.
+    // Oleada destruida: poco después, con alguna nave en juego, llega la nave
+    // nodriza si la oleada es múltiplo de 3, luego la oleada desafío y, tras
+    // ella, la oleada siguiente.
     if (KF.navesVivas().length && !this.quedanNaves()) {
       this.esperaOleada += dt;
       if (this.esperaOleada >= this.ESPERA_OLEADA) {
-        if (!KF.desafio.hecho) KF.desafio.empezar();
+        var j = KF.jefe;
+        if (this.oleada % j.CADA === 0 && !j.hecho) j.empezar(this.oleada / j.CADA);
+        else if (!KF.desafio.hecho) KF.desafio.empezar();
         else this.ponerOleada(this.oleada + 1);
       }
     }

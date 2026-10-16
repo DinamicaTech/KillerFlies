@@ -8,7 +8,7 @@ threads:
   - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
 ---
 ## Summary
-The alien ships: seven types, each with its points and its maximum bombs per attack: blue (10, 2), purple (20, 3), red (30, 4) and yellow (50, 4), the arcade ones, and three that appear from wave 2 with their own attack: green (40, 2, zigzag), orange (60, no bombs, rams) and cyan (80, 3, shooter). A ship dies when hit by a player shot or when it collides with the player: it explodes on the spot and sends a notification so its points get added. Its child nodes define the formations of each wave and the attacks.
+The alien ships: seven types, each with its points and its maximum bombs per attack: blue (10, 2), purple (20, 3), red (30, 4) and yellow (50, 4), the arcade ones, and three that appear from wave 2 with their own attack: green (40, 2, zigzag), orange (60, no bombs, rams) and cyan (80, 3, shooter). A ship dies when hit by a player shot or when it collides with the player: it explodes on the spot and sends a notification so its points get added. Its child nodes define the formations of each wave, the attacks and the mothership boss that comes after every third wave (enemigos/jefe).
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -22,6 +22,7 @@ The alien ships: seven types, each with its points and its maximum bombs per att
 - 2026-10-04 12:05 · Type table in js/enemigos.js (KF.TIPOS_NAVE): points, maximum bombs, attack style and sprite of each type. The sprite, already coloured, is provided by graficos (KF.graficos.SPRITES_NAVE in js/graficos.js).
 - 2026-10-13 07:12 · Destroyed by whom: KF.enemigos.destruir(nave, x, y, motivo, autor) and the alDestruir listeners receive autor, the player ship that destroyed it (null on the guest of a two-player game), so the points go to that player.
 - 2026-10-16 08:42 · The ship-destroyed notification also gives the place where the ship explodes (x, y), so that Combos can show the points floating there.
+- 2026-10-16 10:30 · New child node enemigos/jefe: the mothership boss after every third wave.
 
 ## Requirements
 - 2026-10-03 18:13 · There are four types of alien ships (blue, purple, red and yellow) that give 10, 20, 30 and 50 points respectively when destroyed.

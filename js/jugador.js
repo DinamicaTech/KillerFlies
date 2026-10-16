@@ -7,7 +7,8 @@
 // vez, que atraviese las naves, una bomba, la aniquilación, la mitad de
 // velocidad o tres proyectiles paralelos que cuentan como un solo disparo.
 // Un disparo que sale por arriba sin haber dado a nada corta la racha de
-// naves seguidas del jugador (js/combos.js).
+// naves seguidas del jugador (js/combos.js). Cada impacto en la nave nodriza
+// jefe (js/jefe.js) le quita una de vida.
 // Explota si la alcanza una nave alienígena o una bomba (KF.jugador.explotar).
 // No reaparece sola: Partida la hace aparecer (KF.jugador.aparecer) al empezar
 // la partida y con cada nave de recambio; fuera de la partida no está.
@@ -269,6 +270,15 @@ KF.Nave.prototype = {
       }
       var r = d.bomba ? { x: d.x - 1, y: d.y, ancho: 3, alto: 3 } : { x: d.x, y: d.y, ancho: 1, alto: h };
       var nave = KF.formacion.tocar(r, autor) || KF.ataque.tocar(r, autor) || KF.desafio.tocar(r, autor);
+      if (!nave && KF.jefe.alcanza(r)) {
+        // La nave nodriza para cualquier disparo, también el profundo; la
+        // bomba le quita vida al explotar.
+        d.salva.acierto = true;
+        d.salva.quedan--;
+        if (d.bomba) KF.powerups.explotarBomba(d.x, d.y + 1, autor);
+        else KF.jefe.danar(1, autor);
+        return false;
+      }
       if (!nave) return true;
       d.salva.acierto = true;
       if (poder !== 'profundo') d.salva.quedan--;
