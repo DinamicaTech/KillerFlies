@@ -42,6 +42,7 @@ KF.Nave = function (numero) {
   this.poder = null;       // power-up activo de esta nave, o null
   this.recambio = 0;       // naves de recambio que le quedan
   this.puntos = 0;
+  this.proximaVida = 0;    // puntos con los que gana la próxima vida extra (js/partida.js)
   this.racha = 0;          // naves destruidas seguidas sin fallar (js/combos.js)
   this.remoto = false;     // la mueve el otro dispositivo (js/red.js)
   this.peticiones = 0;     // invitado: disparos pedidos al anfitrión
