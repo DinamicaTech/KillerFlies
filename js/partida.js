@@ -9,7 +9,8 @@
 // menú ofrece además 'PLAY AGAIN' mientras los dos sigan conectados.
 KF.partida = {
   NAVES_RECAMBIO: 2,       // naves de recambio al empezar la partida
-  MAXIMO_RECAMBIO: 5,      // tope de naves de recambio (power-up vida extra)
+  MAXIMO_RECAMBIO: 5,      // tope de naves de recambio (vidas extra)
+  PUNTOS_VIDA_EXTRA: 10000, // cada tantos puntos, una nave de recambio más
   AUMENTO_OLEADA: 1.05,    // cada oleada va un 5% más rápida que la anterior
   ESPERA_OLEADA: 2,        // segundos entre destruir la última nave y la oleada siguiente
   ESPERA_RECAMBIO: 2,      // segundos mínimos entre explotar y salir la nave de recambio
@@ -58,6 +59,7 @@ KF.partida = {
       j.puntos = 0;
       j.racha = 0;
       j.recambio = this.NAVES_RECAMBIO;
+      j.proximaVida = this.PUNTOS_VIDA_EXTRA;
       j.aparecer();
     }
   },
@@ -80,6 +82,19 @@ KF.partida = {
     if (jugador.recambio < this.MAXIMO_RECAMBIO) jugador.recambio++;
   },
 
+  // Vida extra por puntos: cada 10.000 puntos de un jugador, una nave de
+  // recambio más (hasta el tope), con el sonido del power-up vida extra (Sonido
+  // observa las recogidas). Con el tope lleno no da nada ni suena.
+  vidaExtraPorPuntos: function (jugador) {
+    while (jugador.puntos >= jugador.proximaVida) {
+      jugador.proximaVida += this.PUNTOS_VIDA_EXTRA;
+      if (jugador.recambio < this.MAXIMO_RECAMBIO) {
+        jugador.recambio++;
+        KF.powerups.recogidas++;
+      }
+    }
+  },
+
   quedanNaves: function () {
     var naves = KF.formacion.naves;
     for (var i = 0; i < naves.length; i++) {
@@ -96,9 +111,11 @@ KF.partida = {
     // Nave perdida: tras la explosión, si al jugador le quedan de recambio
     // sale otra. Si no hay otra nave en juego, espera a que las naves en
     // picado vuelvan a la formación y no queden bombas; a dos, con el
-    // compañero jugando, sale en cuanto pasa la espera.
+    // compañero jugando, sale en cuanto pasa la espera. Antes, los puntos
+    // ganados pueden haber dado una vida extra.
     for (var i = 0; i < KF.jugadores.length; i++) {
       var j = KF.jugadores[i];
+      this.vidaExtraPorPuntos(j);
       if (j.estado !== 'explotando' || j.tiempoExplosion < this.ESPERA_RECAMBIO) continue;
       if (j.recambio === 0) {
         j.retirar();
