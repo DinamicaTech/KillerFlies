@@ -47,6 +47,7 @@ KF.partida = {
   // desde la pausa (RESTART, js/pausa.js), dejando atrás la partida a medias.
   empezar: function () {
     this.estado = 'jugando';
+    KF.combos.flotantes = [];
     KF.inclinacion.calibrar();
     KF.marcador.cambiarModo(!!KF.companero);
     this.ponerOleada(1);
@@ -55,6 +56,7 @@ KF.partida = {
       j.retirar();
       j.disparos = [];
       j.puntos = 0;
+      j.racha = 0;
       j.recambio = this.NAVES_RECAMBIO;
       j.aparecer();
     }

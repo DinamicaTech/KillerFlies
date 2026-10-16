@@ -1,5 +1,6 @@
 // El marcador: oleada/oleada máxima arriba a la izquierda, puntos/puntos
-// máximos arriba a la derecha y las naves de recambio abajo a la derecha.
+// máximos arriba a la derecha, debajo el multiplicador del combo cuando lo hay
+// (js/combos.js), y las naves de recambio abajo a la derecha.
 // En la partida a dos, los puntos de cada jugador van arriba a la derecha en
 // el color de su nave (P1 encima de P2) y sus naves de recambio abajo, las de
 // P1 a la izquierda y las de P2 a la derecha.
@@ -84,6 +85,15 @@ KF.marcador = {
     }
   },
 
+  // Multiplicador del combo (js/combos.js), 'X2' a 'X4', alineado a la
+  // derecha en x; no se ve mientras da los puntos normales.
+  dibujarMultiplicador: function (ctx, jugador, x, y, letras) {
+    var n = KF.combos.multiplicador(jugador.racha);
+    if (n < 2) return;
+    var texto = 'X' + n;
+    this.escribir(ctx, texto, x - this.anchoTexto(texto), y, letras);
+  },
+
   dibujar: function (ctx) {
     var m = this.MARGEN;
     // Durante la oleada desafío, su nombre en lugar del número de oleada.
@@ -91,6 +101,7 @@ KF.marcador = {
     if (!KF.companero) {
       var puntos = KF.jugador.puntos + '/' + this.puntosMaximos;
       this.escribir(ctx, puntos, KF.ANCHO - m - this.anchoTexto(puntos), m);
+      this.dibujarMultiplicador(ctx, KF.jugador, KF.ANCHO - m, m + 9, this.LETRAS);
       this.dibujarRecambio(ctx, KF.jugador, false);
       return;
     }
@@ -99,7 +110,10 @@ KF.marcador = {
     for (var i = 0; i < KF.jugadores.length; i++) porNumero[KF.jugadores[i].numero - 1] = KF.jugadores[i];
     for (i = 0; i < 2; i++) {
       var texto = 'P' + (i + 1) + ' ' + porNumero[i].puntos;
-      this.escribir(ctx, texto, KF.ANCHO - m - this.anchoTexto(texto), m + i * 9, this.LETRAS_JUGADOR[i]);
+      var x = KF.ANCHO - m - this.anchoTexto(texto);
+      this.escribir(ctx, texto, x, m + i * 9, this.LETRAS_JUGADOR[i]);
+      // A dos, el multiplicador va a la izquierda de los puntos de cada uno.
+      this.dibujarMultiplicador(ctx, porNumero[i], x - 6, m + i * 9, this.LETRAS_JUGADOR[i]);
     }
     this.dibujarRecambio(ctx, porNumero[0], true);
     this.dibujarRecambio(ctx, porNumero[1], false);
@@ -112,11 +126,8 @@ KF.marcador = {
   mk.LETRAS_JUGADOR = KF.graficos.COLORES_JUGADOR.map(function (c) { return KF.graficos.crearFuente(c); });
   mk.cambiarModo(false);
 
-  // Cada nave destruida, por disparo o por choque, da sus puntos al jugador
-  // que la ha destruido.
-  KF.enemigos.alDestruir(function (nave, motivo, autor) {
-    if (autor) autor.puntos += KF.TIPOS_NAVE[nave.tipo].puntos;
-  });
+  // Los puntos de cada nave destruida, con el multiplicador de la racha, los
+  // suma js/combos.js.
 })();
 
 // Se registra el último para dibujarse encima de todo.

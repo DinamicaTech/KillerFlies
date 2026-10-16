@@ -6,6 +6,8 @@
 // El power-up activo de la nave (poder) cambia el disparo: hasta tres a la
 // vez, que atraviese las naves, una bomba, la aniquilación, la mitad de
 // velocidad o tres proyectiles paralelos que cuentan como un solo disparo.
+// Un disparo que sale por arriba sin haber dado a nada corta la racha de
+// naves seguidas del jugador (js/combos.js).
 // Explota si la alcanza una nave alienígena o una bomba (KF.jugador.explotar).
 // No reaparece sola: Partida la hace aparecer (KF.jugador.aparecer) al empezar
 // la partida y con cada nave de recambio; fuera de la partida no está.
@@ -40,6 +42,7 @@ KF.Nave = function (numero) {
   this.poder = null;       // power-up activo de esta nave, o null
   this.recambio = 0;       // naves de recambio que le quedan
   this.puntos = 0;
+  this.racha = 0;          // naves destruidas seguidas sin fallar (js/combos.js)
   this.remoto = false;     // la mueve el otro dispositivo (js/red.js)
   this.peticiones = 0;     // invitado: disparos pedidos al anfitrión
   this.SPRITE = KF.graficos.SPRITES_JUGADOR[numero - 1];
@@ -72,8 +75,9 @@ KF.Nave.prototype = {
   // Estado de cada nave: x, vx (velocidad horizontal, negativa hacia la
   // izquierda), estado ('ausente' | 'viva' | 'explotando'), tiempoExplosion,
   // destello y escudo (segundos que les quedan), tiempoLlama, fragmentos
-  // {x, y, vx, vy, tam, color, vida}, disparos {id, x, y, bomba} (extremo
-  // superior de cada proyectil), salvas (veces que ha disparado, para Sonido),
+  // {x, y, vx, vy, tam, color, vida}, disparos {id, x, y, bomba, salva}
+  // (extremo superior de cada proyectil; salva {quedan, acierto} la comparten
+  // los proyectiles de un mismo disparo), salvas (veces que ha disparado, para Sonido),
   // objetivo (x a la que va al deslizar el dedo, o null) y pulsacion (se ha
   // pulsado el espacio, sin contar la repetición).
 
@@ -90,6 +94,7 @@ KF.Nave.prototype = {
     this.vx = 0;
     this.tiempoExplosion = 0;
     this.poder = null;
+    KF.combos.cortar(this);
     this.lanzarFragmentos();
   },
 
@@ -239,24 +244,32 @@ KF.Nave.prototype = {
     this.destello = this.DURACION_DESTELLO;
     var x = Math.round(this.x), y = this.Y - this.ALTO / 2 - this.SPRITE_DISPARO.height;
     if (poder === 'triple') {
-      for (var i = -1; i <= 1; i++) this.disparos.push({ id: KF.nuevoId(), x: x + i * this.SEPARACION_TRIPLE, y: y, bomba: false });
+      var salva = { quedan: 3, acierto: false };
+      for (var i = -1; i <= 1; i++) this.disparos.push({ id: KF.nuevoId(), x: x + i * this.SEPARACION_TRIPLE, y: y, bomba: false, salva: salva });
     } else {
-      this.disparos.push({ id: KF.nuevoId(), x: x, y: y, bomba: poder === 'bomba' });
+      this.disparos.push({ id: KF.nuevoId(), x: x, y: y, bomba: poder === 'bomba', salva: { quedan: 1, acierto: false } });
     }
   },
 
   // Los disparos siguen su camino aunque la nave explote. El disparo profundo
-  // no se detiene al dar en una nave; la bomba explota al darle.
+  // no se detiene al dar en una nave; la bomba explota al darle. Cuando el
+  // último proyectil de un disparo sale por arriba sin que ninguno haya dado
+  // en una nave, se corta la racha.
   moverDisparo: function (dt) {
     var poder = this.poder, autor = this;
     var v = this.VELOCIDAD_DISPARO * (poder === 'lento' ? 0.5 : 1);
     var h = this.SPRITE_DISPARO.height;
     this.disparos = this.disparos.filter(function (d) {
       d.y -= v * dt;
-      if (d.y + h < 0) return false;
+      if (d.y + h < 0) {
+        if (--d.salva.quedan === 0 && !d.salva.acierto) KF.combos.cortar(autor);
+        return false;
+      }
       var r = d.bomba ? { x: d.x - 1, y: d.y, ancho: 3, alto: 3 } : { x: d.x, y: d.y, ancho: 1, alto: h };
       var nave = KF.formacion.tocar(r, autor) || KF.ataque.tocar(r, autor) || KF.desafio.tocar(r, autor);
       if (!nave) return true;
+      d.salva.acierto = true;
+      if (poder !== 'profundo') d.salva.quedan--;
       if (d.bomba) {
         KF.powerups.explotarBomba(d.x, d.y + 1, autor);
         return false;

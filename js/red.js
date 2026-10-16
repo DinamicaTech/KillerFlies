@@ -423,10 +423,11 @@ KF.red = {
       w: lista(KF.powerups.ondas, true),
       r: KF.powerups.recogidas,
       d: KF.desafio.foto(),
+      p: KF.combos.flotantes.map(function (o) { return [o.id, R(o.x), R(o.y), R(o.t), o.puntos, o.numero]; }),
       j: KF.jugadores.map(function (j) {
         return [R(j.x), R(j.vx), est.indexOf(j.estado), R(j.escudo), KF.powerups.PODERES.indexOf(j.poder),
           j.recambio, j.puntos, j.salvas,
-          j.disparos.map(function (d) { return [d.id, d.x, R(d.y), d.bomba ? 1 : 0]; })];
+          j.disparos.map(function (d) { return [d.id, d.x, R(d.y), d.bomba ? 1 : 0]; }), j.racha];
       })
     };
   },
@@ -494,6 +495,13 @@ KF.red = {
     KF.ataque.bombas = KF.interpolarLista(a.b, b.b, k).map(function (o) { return { id: o[0], x: o[1], y: o[2], vx: 0 }; });
     KF.powerups.capsulas = KF.interpolarLista(a.c, b.c, k).map(function (o) { return { id: o[0], x: o[1], y: o[2], t: o[3] }; });
     KF.powerups.ondas = KF.interpolarLista(a.w, b.w, k).map(function (o) { return { id: o[0], x: o[1], y: o[2], t: o[3] }; });
+    // Los puntos flotantes de los combos, con su tiempo interpolado.
+    var flotantesAntes = {};
+    (a.p || []).forEach(function (o) { flotantesAntes[o[0]] = o; });
+    KF.combos.flotantes = (b.p || []).map(function (o) {
+      var p = flotantesAntes[o[0]];
+      return { id: o[0], x: o[1], y: o[2], t: p ? M(p[3], o[3], k) : o[3], puntos: o[4], numero: o[5] };
+    });
     // El desafío: sus naves se colocan solas a partir de su tiempo.
     if (b.d) KF.desafio.t = a.d && a.d[1] <= b.d[1] ? M(a.d[1], b.d[1], k) : b.d[1];
     for (i = 0; i < KF.jugadores.length; i++) {
@@ -550,6 +558,7 @@ KF.red = {
       j.poder = d[4] >= 0 ? KF.powerups.PODERES[d[4]] : null;
       j.recambio = d[5];
       j.puntos = d[6];
+      j.racha = d[9] || 0;
       if (d[7] > j.salvas) j.destello = j.DURACION_DESTELLO;
       j.salvas = d[7];
     }

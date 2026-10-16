@@ -34,6 +34,7 @@ The game cycle, in js/partida.js: a 'START GAME' screen with the formation movin
 
 - 2026-10-15 08:05 · Restart from the pause (partida/pausa): 'RESTART' calls KF.partida.empezar during a game, so starting a game also removes what was left of the previous one (each player ship's power-up and shots); the formation, attacks, bombs and capsules start again with the new wave 1.
 - 2026-10-15 08:55 · After clearing each wave comes the challenge wave (partida/oleada-desafio); the next wave starts when it ends.
+- 2026-10-16 08:42 · A new game resets each player's combo streak and clears the floating points (marcador/combos).
 
 ## Requirements
 - 2026-10-03 18:13 · When all the enemy ships have been destroyed, a new wave will start with a movement speed increased by 5%.
@@ -53,3 +54,4 @@ The game cycle, in js/partida.js: a 'START GAME' screen with the formation movin
 - 2026-10-15 07:40 · Derived from multijugador: offer PLAY AGAIN in the start menu while the two players are still connected, and show the menu texts in English.
 - 2026-10-15 07:54 · Derived from partida/pausa: start a new game at wave 1 from the pause menu.
 - 2026-10-15 08:55 · Derived from partida/oleada-desafio: after clearing each wave, play the challenge wave before the next one (partida/oleada-desafio).
+- 2026-10-16 08:42 · Derived from marcador/combos: reset the combos at the start of each game.

@@ -19,7 +19,7 @@ Object.keys(KF.TIPOS_NAVE).forEach(function (tipo) {
 // Destrucción de las naves alienígenas: el único sitio donde muere una nave,
 // ya sea por el disparo del jugador o por chocar contra él. Deja una explosión
 // corta en su sitio y avisa a quien se haya apuntado con KF.enemigos.alDestruir
-// (Marcador sumará los puntos y Sonido lanzará el ruido de explosión).
+// (Combos sumará los puntos y Sonido lanzará el ruido de explosión).
 KF.enemigos = {
   DURACION_FASE: 0.1,  // segundos de cada fase de la explosión
 
@@ -28,8 +28,8 @@ KF.enemigos = {
 
   // fn(nave, motivo, autor) se llama con cada nave destruida; motivo es
   // 'disparo' o 'choque' y autor la nave del jugador que la ha destruido (en
-  // el invitado de una partida a dos, null). Los puntos de la nave están en
-  // KF.TIPOS_NAVE[nave.tipo].puntos.
+  // el invitado de una partida a dos, null) y x, y el sitio donde explota.
+  // Los puntos de la nave están en KF.TIPOS_NAVE[nave.tipo].puntos.
   alDestruir: function (fn) {
     this.oyentes.push(fn);
   },
@@ -37,7 +37,7 @@ KF.enemigos = {
   destruir: function (nave, x, y, motivo, autor) {
     nave.viva = false;
     this.explosiones.push({ x: x, y: y, tiempo: 0 });
-    for (var i = 0; i < this.oyentes.length; i++) this.oyentes[i](nave, motivo, autor || null);
+    for (var i = 0; i < this.oyentes.length; i++) this.oyentes[i](nave, motivo, autor || null, x, y);
   },
 
   actualizar: function (dt) {
