@@ -16,6 +16,7 @@ Ideas under debate: none.
 - 2026-10-04 10:52 · The power-ups idea leaves the lab: carried out, it is now the top-level node power-ups.
 - 2026-10-04 12:06 · New idea under debate: multijugador (multiplayer game option).
 - 2026-10-13 07:12 · The multijugador idea leaves the lab: executed, it is now the top-level node multijugador.
+- 2026-10-16 11:09 · New idea under debate: empezar-tras-perfect (start later games at the wave after a perfect one, with its points).
 - 2026-10-13 14:15 · New idea under debate: accelerometer-control (move the ship by tilting the phone).
 - 2026-10-13 14:22 · The accelerometer-control idea leaves the lab: executed, it is now the node jugador/accelerometer-control.
 - 2026-10-13 17:06 · Nine new ideas under debate, proposed by Claude when the owner asked for improvements: pausa (pause), oleada-desafio (challenge wave), jefe (mothership boss), combos, vida-extra-por-puntos (extra life from points), dificultad (difficulty levels), vibracion (phone vibration), app-instalable (installable app) and ajustes-sonido (sound settings).
