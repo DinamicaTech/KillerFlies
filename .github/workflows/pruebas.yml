@@ -29,3 +29,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Volumen de la música y de los sonidos en la pausa (sonido/ajustes-sonido)
         run: node tools/comprobar-sonido.mjs
+  empezar-tras-perfect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Empezar tras un perfect (partida/empezar-tras-perfect)
+        run: node tools/comprobar-perfect.mjs
