@@ -11,7 +11,7 @@ The rules followed by every thread that works on a node of this project. The pro
 - 2026-10-05 14:19 · Working docs are written in English, no longer in Spanish, because the project is published as a demo of CVP; the owner can keep chatting in Spanish.
 
 ## CVP rules
-<!-- cvp-rules 9 begin · Written by Claude Visual Project ("Update rules" in the page). Do not edit: an update replaces everything up to the end marker. Add your own rules under ## Project rules. -->
+<!-- cvp-rules 10 begin · Written by Claude Visual Project ("Update rules" in the page). Do not edit: an update replaces everything up to the end marker. Add your own rules under ## Project rules. -->
 These rules apply to every thread that works on a node of this project. The prompt that starts the thread names the node it starts from (for a new sub-task, the new node it proposes), the files to read and the task. Paths are relative to the docs folder unless they say otherwise.
 
 **Reading.** Read the node file in full. For its ancestors and dependencies, read only the Summary and Decisions blocks; open them in full only if needed. Ignore every decision marked "[replaced by ...]": a later decision overrides it.
@@ -56,6 +56,8 @@ Once confirmed, the change is atomic: do all of it in this thread and one branch
 - **Acceptance criteria.** Every task and every draft states how to tell that it is done, and the thread checks it before finishing.
 - **Definition of done.** A task is done only when its tests pass, the docs are updated as "Updating the docs" says, and the owner has been told what to validate.
 - **Fields fit their content.** In a user interface, the visual size of each field (inputs, boxes, columns, buttons) fits its content: neither much wider than what it holds nor too narrow to show it.
+- **Useful tooltips.** In a user interface, whenever possible, every control has a tooltip that is useful and descriptive for the user: it says what the control does, not just its name.
+- **No dead ends in errors.** Every error message tells the user everything that helps: why it happened and how to fix it, and when possible it offers the fix itself (a button, a link or the corrected value), so that the user is never left at a dead end.
 - **Hand-over.** If a thread stops before finishing, or grows long, it writes in its node what it did and what is left, so that another thread can go on without reading the conversation.
 
 **Thread link.** If you can tell the link to this thread, add it to the `threads` list in the front matter of the node you work on, as a line `  - <short title> | <link>`.
