@@ -49,6 +49,7 @@ KF.Nave = function (numero) {
   this.remoto = false;     // la mueve el otro dispositivo (js/red.js)
   this.peticiones = 0;     // invitado: disparos pedidos al anfitrión
   this.SPRITE = KF.graficos.SPRITES_JUGADOR[numero - 1];
+  this.SPRITES_PODER = KF.graficos.SPRITES_JUGADOR_PODER[numero - 1];
 };
 
 KF.Nave.prototype = {
@@ -57,6 +58,8 @@ KF.Nave.prototype = {
   VELOCIDAD_MOVIL: 120,    // velocidad máxima con el dedo o inclinando el móvil
   INCLINACION_MINIMA: 3,   // grados: hasta aquí la nave no se mueve
   INCLINACION_MAXIMA: 30,  // grados: desde aquí va a la velocidad máxima
+  RADIO_HALO: 9,           // halo de la nave con la aniquilación lista
+  LATIDO_HALO: 10,         // radianes por segundo del latido del halo
   ACELERACION: 450,        // píxeles por segundo cada segundo (de parada a máxima en 0,2 s)
   FRENADO: 600,            // píxeles por segundo cada segundo (de máxima a parada en 0,15 s)
   VELOCIDAD_DISPARO: 300,  // píxeles por segundo
@@ -293,6 +296,12 @@ KF.Nave.prototype = {
     });
   },
 
+  // El aspecto de la nave depende de su power-up (power-ups/aspecto-nave):
+  // sin poder, o con uno sin aspecto propio, es la nave normal.
+  spriteActual: function () {
+    return (this.poder && this.SPRITES_PODER[this.poder]) || this.SPRITE;
+  },
+
   dibujar: function (ctx) {
     var g = KF.graficos;
     for (var i = 0; i < this.disparos.length; i++) {
@@ -306,7 +315,17 @@ KF.Nave.prototype = {
       // A dos, la nave del otro jugador se ve como un fantasma para no
       // confundirla con la propia; sus disparos y su explosión, no.
       if (this.remoto) ctx.globalAlpha = this.OPACIDAD_FANTASMA;
-      g.dibujar(ctx, this.SPRITE, this.x, this.Y);
+      // Con la aniquilación lista, un halo blanco late alrededor de la nave.
+      if (this.poder === 'aniquilacion') {
+        var alfa = ctx.globalAlpha;
+        ctx.globalAlpha = alfa * (0.25 + 0.2 * Math.sin(this.tiempoLlama * this.LATIDO_HALO));
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(this.x, this.Y, this.RADIO_HALO, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = alfa;
+      }
+      g.dibujar(ctx, this.spriteActual(), this.x, this.Y);
       // El destello va justo encima de la punta del cañón y sigue a la nave.
       if (this.destello > 0) g.dibujar(ctx, this.SPRITE_DESTELLO, this.x, this.Y - 8);
       // Mientras se mueve, una llama parpadeante justo bajo la nave.
