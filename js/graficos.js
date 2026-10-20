@@ -463,8 +463,20 @@ KF.graficos = {
   // Nave del jugador de 13×13 con el cañón hacia arriba: morro rojo y tres
   // columnas blancas rellenas de celeste unidas por travesaños.
   // p = { R: rojo, W: blanco, C: celeste }.
-  dibujarJugador: function (ctx, p) {
+  // Con un power-up (poder) cambia el color del interior y lleva un detalle
+  // propio (power-ups/aspecto-nave); el morro conserva el color del jugador.
+  dibujarJugador: function (ctx, p, poder) {
     var g = this;
+    var interior = this.INTERIOR_PODER[poder];
+    if (interior) p = { R: p.R, W: p.W, C: interior };
+    // Acelerado: dos alerones en flecha a los lados, bajo los motores.
+    if (poder === 'acelerado') {
+      ctx.fillStyle = g.metal(ctx, p.C, 6, 12.5);
+      ctx.beginPath();
+      ctx.moveTo(1.2, 6.5); ctx.lineTo(0, 12.5); ctx.lineTo(1.4, 11);
+      ctx.moveTo(11.8, 6.5); ctx.lineTo(13, 12.5); ctx.lineTo(11.6, 11);
+      ctx.fill();
+    }
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
     // Travesaños entre las columnas.
@@ -506,8 +518,14 @@ KF.graficos = {
       nucleo.addColorStop(1, g.tono(p.C, -0.45));
       ctx.fillStyle = nucleo;
       ctx.fill();
-      // Tobera encendida al pie de cada columna.
-      g.luz(ctx, x, y1 - 0.4, 0.35, p.C);
+      // Tobera encendida al pie de cada columna (apagada con slow fire).
+      if (poder !== 'lento') g.luz(ctx, x, y1 - 0.4, 0.35, p.C);
+      // Triple: un cañón en la punta de cada motor lateral.
+      if (poder === 'triple' && i !== 1) {
+        ctx.fillStyle = g.metal(ctx, p.W, y0 - 3, y0);
+        ctx.fillRect(x - 0.45, y0 - 3, 0.9, 3.2);
+        g.luz(ctx, x, y0 - 3, 0.3, p.C);
+      }
     }
     // Morro: una cabina roja en flecha sobre el fuselaje, con su reflejo.
     ctx.beginPath();
@@ -531,6 +549,37 @@ KF.graficos = {
     ctx.moveTo(5.2, 2.6);
     ctx.quadraticCurveTo(5.7, 1.5, 6.4, 1.0);
     ctx.stroke();
+    // Profundo: un cañón largo violeta que atraviesa el morro.
+    if (poder === 'profundo') {
+      ctx.strokeStyle = g.tono(p.C, 0.3);
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(6.5, 0.2); ctx.lineTo(6.5, 7);
+      ctx.stroke();
+      g.luz(ctx, 6.5, 0.4, 0.35, p.C);
+    }
+    // Bomba: un rombo naranja bajo el morro.
+    if (poder === 'bomba') {
+      ctx.fillStyle = '#ff8020';
+      ctx.strokeStyle = '#ffff40';
+      ctx.lineWidth = 0.3;
+      ctx.beginPath();
+      ctx.moveTo(6.5, 5.6); ctx.lineTo(8, 7.5); ctx.lineTo(6.5, 9.4); ctx.lineTo(5, 7.5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+  },
+
+  // Color del interior de la nave del jugador con cada power-up (la vida
+  // extra no dura, así que no tiene aspecto propio).
+  INTERIOR_PODER: {
+    acelerado: '#ffe030',
+    profundo: '#b040ff',
+    bomba: '#ff8020',
+    aniquilacion: '#ffffff',
+    lento: '#606870',
+    triple: '#40ff70'
   },
 
   // Colores de cada tipo de nave alienígena, tomados de las capturas.
@@ -761,15 +810,22 @@ KF.graficos.fondo = {
   var fuego = { R: '#f02828', Y: '#ffff40', B: '#ffffff', C: '#40d0e0' };
   // La nave del jugador 1, y la del jugador 2 de la partida a dos con morro
   // verde e interior ámbar; sus textos del marcador van en el color del morro.
-  g.SPRITES_JUGADOR = [
-    g.crearSpriteHD(13, 13, function (ctx) {
-      g.dibujarJugador(ctx, { R: '#f02020', W: '#e8f0f8', C: '#30c0d0' });
-    }),
-    g.crearSpriteHD(13, 13, function (ctx) {
-      g.dibujarJugador(ctx, { R: '#20c040', W: '#f8f0d8', C: '#ffb020' });
-    })
+  var paletasJugador = [
+    { R: '#f02020', W: '#e8f0f8', C: '#30c0d0' },
+    { R: '#20c040', W: '#f8f0d8', C: '#ffb020' }
   ];
+  g.SPRITES_JUGADOR = paletasJugador.map(function (p) {
+    return g.crearSpriteHD(13, 13, function (ctx) { g.dibujarJugador(ctx, p); });
+  });
   g.SPRITE_JUGADOR = g.SPRITES_JUGADOR[0];
+  // La nave de cada jugador con cada power-up: SPRITES_JUGADOR_PODER[n][poder].
+  g.SPRITES_JUGADOR_PODER = paletasJugador.map(function (p) {
+    var sprites = {};
+    Object.keys(g.INTERIOR_PODER).forEach(function (poder) {
+      sprites[poder] = g.crearSpriteHD(13, 13, function (ctx) { g.dibujarJugador(ctx, p, poder); });
+    });
+    return sprites;
+  });
   // La nave nodriza jefe y su silueta blanca para el destello de los impactos.
   g.SPRITE_JEFE = g.crearSpriteHD(44, 22, function (ctx) { g.dibujarJefe(ctx, false); });
   g.SPRITE_JEFE_BLANCO = g.crearSpriteHD(44, 22, function (ctx) { g.dibujarJefe(ctx, true); });
