@@ -1,7 +1,7 @@
 // El ciclo de la partida: pantalla 'START GAME' con su menú (1 jugador, crear
 // una partida a dos o unirse a una), oleadas sucesivas un 5% más rápidas cada
 // una (bloque, picados y bombas) con una oleada desafío entre una y otra
-// (js/desafio.js) y, tras cada tercera oleada, la nave nodriza jefe antes del
+// (js/desafio.js; en la partida a uno, solo con la mejora BONUS) y, tras cada tercera oleada, la nave nodriza jefe antes del
 // desafío (js/jefe.js), tres naves por jugador (una en juego y dos
 // de recambio) y 'GAME OVER' al perder la última, que se queda hasta que se
 // pulsa una tecla. En la partida a dos (js/red.js) el anfitrión mueve el
@@ -181,10 +181,17 @@ KF.partida = {
       if (this.esperaOleada >= this.ESPERA_OLEADA) {
         var j = KF.jefe;
         if (this.oleada % j.CADA === 0 && !j.hecho) j.empezar(this.oleada / j.CADA);
-        else if (!KF.desafio.hecho) KF.desafio.empezar();
+        else if (!KF.desafio.hecho && this.conDesafio()) KF.desafio.empezar();
         else this.ponerOleada(this.oleada + 1);
       }
     }
+  },
+
+  // La oleada desafío sale en la partida a dos y, en la de uno, solo con la
+  // mejora BONUS comprada (mejoras/escudo-y-apoyo); sin ella, tras cada
+  // oleada llega la siguiente, como en el Galaxian original.
+  conDesafio: function () {
+    return !!KF.companero || KF.tienda.nivel('BONUS') > 0;
   },
 
   // Oleada principal destruida: en la partida a uno, si no se perdió ninguna

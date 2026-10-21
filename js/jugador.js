@@ -46,6 +46,9 @@ KF.Nave = function (numero) {
   this.proximaVida = 0;    // puntos con los que gana la próxima vida extra (js/partida.js)
   this.racha = 0;          // naves destruidas seguidas sin fallar (js/combos.js)
   this.capsulas = 0;       // cápsulas de power-up recogidas (js/vibracion.js)
+  this.blindaje = false;   // le queda el escudo de la mejora SHIELD (js/tienda.js)
+  this.apoyos = [];        // naves de apoyo de la mejora WINGMAN: {lado: -1 | 1}
+  this.golpes = 0;         // escudos rotos y naves de apoyo perdidas (Sonido los observa)
   this.remoto = false;     // la mueve el otro dispositivo (js/red.js)
   this.peticiones = 0;     // invitado: disparos pedidos al anfitrión
   this.SPRITE = KF.graficos.SPRITES_JUGADOR[numero - 1];
@@ -78,6 +81,11 @@ KF.Nave.prototype = {
   SEPARACION_TRIPLE: 6,    // píxeles entre los proyectiles del disparo triple
   SEPARACION_DOS: 30,      // a dos, cada nave aparece a esta distancia del centro
   OPACIDAD_FANTASMA: 0.4,  // a dos, la nave del otro jugador se ve así de transparente
+  RADIO_BLINDAJE: 9,       // anillo del escudo de la mejora SHIELD
+  ESCUDO_ROTO: 1,          // segundos de invulnerabilidad al romperse el escudo
+  SEPARACION_APOYO: 15,    // píxeles del centro de la nave al de cada nave de apoyo
+  ANCHO_APOYO: 9,
+  ALTO_APOYO: 9,
   // Estado de cada nave: x, vx (velocidad horizontal, negativa hacia la
   // izquierda), estado ('ausente' | 'viva' | 'explotando'), tiempoExplosion,
   // destello y escudo (segundos que les quedan), tiempoLlama, fragmentos
@@ -93,13 +101,21 @@ KF.Nave.prototype = {
     return { x: this.x - this.ANCHO / 2, y: this.Y - this.ALTO / 2, ancho: this.ANCHO, alto: this.ALTO };
   },
 
-  // La llama quien detecta el choque con una nave alienígena o una bomba.
+  // La llama quien detecta el choque con una nave alienígena o una bomba. Con
+  // el escudo de la mejora SHIELD, el golpe solo rompe el escudo.
   explotar: function () {
     if (this.estado !== 'viva' || this.escudo > 0) return;
+    if (this.blindaje) {
+      this.blindaje = false;
+      this.escudo = this.ESCUDO_ROTO;
+      this.golpes++;
+      return;
+    }
     this.estado = 'explotando';
     this.vx = 0;
     this.tiempoExplosion = 0;
     this.poder = null;
+    this.apoyos = [];
     KF.combos.cortar(this);
     this.lanzarFragmentos();
   },
@@ -141,11 +157,43 @@ KF.Nave.prototype = {
     this.objetivo = null;
     this.vx = 0;
     this.escudo = this.DURACION_ESCUDO;
+    // Cada nave nueva trae el escudo y las naves de apoyo que se hayan comprado
+    // (mejoras/escudo-y-apoyo); la del otro jugador, no.
+    var propia = !this.remoto && this === KF.jugador;
+    this.blindaje = propia && KF.tienda.nivel('SHIELD') > 0;
+    this.apoyos = [];
+    var n = propia ? Math.min(2, KF.tienda.nivel('WINGMAN')) : 0;
+    for (var i = 0; i < n; i++) this.apoyos.push({ lado: i === 0 ? -1 : 1 });
+  },
+
+  // Centro de cada nave de apoyo.
+  xApoyo: function (a) {
+    return this.x + a.lado * this.SEPARACION_APOYO;
+  },
+
+  // Rectángulos de choque de las naves de apoyo, con su nave: [{apoyo, x, y, ancho, alto}].
+  cajasApoyo: function () {
+    if (this.estado !== 'viva') return [];
+    var self = this;
+    return this.apoyos.map(function (a) {
+      return { apoyo: a, x: self.xApoyo(a) - self.ANCHO_APOYO / 2, y: self.Y - self.ALTO_APOYO / 2, ancho: self.ANCHO_APOYO, alto: self.ALTO_APOYO };
+    });
+  },
+
+  // Algo ha alcanzado una nave de apoyo: se destruye y explota en su sitio.
+  perderApoyo: function (a) {
+    var i = this.apoyos.indexOf(a);
+    if (i < 0) return;
+    this.apoyos.splice(i, 1);
+    this.golpes++;
+    KF.enemigos.explosiones.push({ x: this.xApoyo(a), y: this.Y, tiempo: 0 });
   },
 
   // La nave deja de estar en pantalla (fin de partida); la llama Partida.
   retirar: function () {
     this.estado = 'ausente';
+    this.blindaje = false;
+    this.apoyos = [];
     this.vx = 0;
     this.escudo = 0;
     this.poder = null;
@@ -177,8 +225,11 @@ KF.Nave.prototype = {
     // La mejora SPEED (js/tienda.js) sube las dos velocidades máximas.
     var mejora = KF.tienda.factorVelocidad();
     var maxima = this.VELOCIDAD * mejora, maximaMovil = this.VELOCIDAD_MOVIL * mejora;
-    var margen = this.ANCHO / 2;
-    var limitar = function (x) { return Math.max(margen, Math.min(KF.ANCHO - margen, x)); };
+    // Con naves de apoyo, la nave se queda más lejos del borde de su lado.
+    var margen = this.ANCHO / 2, extra = this.SEPARACION_APOYO + this.ANCHO_APOYO / 2 - margen;
+    var izquierda = margen + (this.apoyos.some(function (a) { return a.lado < 0; }) ? extra : 0);
+    var derecha = margen + (this.apoyos.some(function (a) { return a.lado > 0; }) ? extra : 0);
+    var limitar = function (x) { return Math.max(izquierda, Math.min(KF.ANCHO - derecha, x)); };
     var deseada = dir * maxima;
     if (dir) {
       this.objetivo = null;
@@ -240,11 +291,14 @@ KF.Nave.prototype = {
     return v + (hacia > v ? paso : -paso);
   },
 
-  // Lanza un disparo si se puede, según el power-up activo.
+  // Lanza un disparo si se puede, según el power-up activo; las naves de apoyo
+  // disparan a la vez un disparo normal cada una, que no cuenta para el máximo
+  // en pantalla. Todos los proyectiles de un disparo comparten su salva.
   disparar: function () {
     var poder = this.poder;
     var maximo = poder === 'acelerado' ? 3 : 1;
-    if (this.disparos.length >= maximo) return;
+    var propios = this.disparos.filter(function (d) { return !d.apoyo; }).length;
+    if (propios >= maximo) return;
     this.salvas++;
     if (poder === 'aniquilacion') {
       KF.powerups.aniquilar(this);
@@ -252,11 +306,14 @@ KF.Nave.prototype = {
     }
     this.destello = this.DURACION_DESTELLO;
     var x = Math.round(this.x), y = this.Y - this.ALTO / 2 - this.SPRITE_DISPARO.height;
+    var salva = { quedan: (poder === 'triple' ? 3 : 1) + this.apoyos.length, acierto: false };
     if (poder === 'triple') {
-      var salva = { quedan: 3, acierto: false };
       for (var i = -1; i <= 1; i++) this.disparos.push({ id: KF.nuevoId(), x: x + i * this.SEPARACION_TRIPLE, y: y, bomba: false, salva: salva });
     } else {
-      this.disparos.push({ id: KF.nuevoId(), x: x, y: y, bomba: poder === 'bomba', salva: { quedan: 1, acierto: false } });
+      this.disparos.push({ id: KF.nuevoId(), x: x, y: y, bomba: poder === 'bomba', salva: salva });
+    }
+    for (var k = 0; k < this.apoyos.length; k++) {
+      this.disparos.push({ id: KF.nuevoId(), x: Math.round(this.xApoyo(this.apoyos[k])), y: y + 2, bomba: false, salva: salva, apoyo: true });
     }
   },
 
@@ -330,6 +387,18 @@ KF.Nave.prototype = {
         ctx.globalAlpha = alfa;
       }
       g.dibujar(ctx, this.spriteActual(), this.x, this.Y);
+      // Las naves de apoyo a los lados y, con el escudo, un anillo alrededor.
+      for (var k = 0; k < this.apoyos.length; k++) g.dibujar(ctx, this.SPRITE_APOYO, this.xApoyo(this.apoyos[k]), this.Y + 1);
+      if (this.blindaje) {
+        var antes = ctx.globalAlpha;
+        ctx.globalAlpha = antes * (0.6 + 0.25 * Math.sin(this.tiempoLlama * 4));
+        ctx.strokeStyle = '#40d0e0';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(this.x, this.Y, this.RADIO_BLINDAJE, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = antes;
+      }
       // El destello va justo encima de la punta del cañón y sigue a la nave.
       if (this.destello > 0) g.dibujar(ctx, this.SPRITE_DESTELLO, this.x, this.Y - 8);
       // Mientras se mueve, una llama parpadeante justo bajo la nave.
@@ -362,6 +431,7 @@ KF.Nave.prototype = {
   P.SPRITES_LLAMA = g.SPRITES_LLAMA;
   P.SPRITE_BOMBA = g.SPRITE_BOMBA_JUGADOR;
   P.SPRITES_EXPLOSION = g.SPRITES_EXPLOSION_JUGADOR;
+  P.SPRITE_APOYO = g.SPRITE_APOYO;
 })();
 
 // Identificador único de cada disparo, bomba, cápsula u onda, para que el

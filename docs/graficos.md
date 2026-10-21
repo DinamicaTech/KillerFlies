@@ -12,6 +12,7 @@ threads:
 ## Summary
 The game's visual look: the screen, the background and the sprites of all ships, bombs, shots and explosions, using the arcade screenshots as reference. Everything is in js/graficos.js: a background of coloured stars that drift down and twinkle, the pre-coloured sprites the other parts of the game use (the ships drawn in detail at a higher resolution, as "21st-century ships", the mothership boss among them; everything else in pixel art) and the pixel-art font for the texts.
 It also has the spinning silver coin, the little pilot (two walking steps), the shop with its striped awning and the red slow fire capsule (mejoras).
+And the support ship of the WINGMAN upgrade: the player 1 ship, smaller, with a green interior.
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -58,3 +59,4 @@ It also has the spinning silver coin, the little pilot (two walking steps), the 
 - 2026-10-16 10:58 · Derived from sonido/ajustes-sonido: the '%' character in the font.
 - 2026-10-20 17:56 · Derived from power-ups/aspecto-nave: one player ship sprite for each power, for both player colours.
 - 2026-10-21 20:22 · Derived from mejoras: provide the sprites of the coin, the pilot, the shop and the red slow fire capsule.
+- 2026-10-21 21:12 · Derived from mejoras/escudo-y-apoyo: provide the support ship sprite.

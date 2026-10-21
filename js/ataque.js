@@ -402,6 +402,7 @@ KF.ataque = {
   },
 
   comprobarChoquesCon: function (jugador) {
+    this.comprobarApoyos(jugador);
     var c = jugador.caja();
     if (!c) return;
     var f = KF.formacion, h = this.SPRITE_BOMBA;
@@ -423,6 +424,34 @@ KF.ataque = {
         jugador.explotar();
         return;
       }
+    }
+  },
+
+  // Una bomba o una nave en picado que toca una nave de apoyo (mejora
+  // WINGMAN) la destruye; la nave que choca también se destruye.
+  comprobarApoyos: function (jugador) {
+    var cajas = jugador.cajasApoyo(), f = KF.formacion, h = this.SPRITE_BOMBA;
+    for (var k = 0; k < cajas.length; k++) {
+      var c = cajas[k];
+      var toca = function (x, y, ancho, alto) {
+        return x < c.x + c.ancho && x + ancho > c.x && y < c.y + c.alto && y + alto > c.y;
+      };
+      var golpe = false;
+      for (var i = 0; i < this.bombas.length && !golpe; i++) {
+        var b = this.bombas[i];
+        if (toca(b.x - h.width / 2, b.y - h.height / 2, h.width, h.height)) {
+          this.bombas.splice(i, 1);
+          golpe = true;
+        }
+      }
+      for (i = 0; i < this.atacantes.length && !golpe; i++) {
+        var a = this.atacantes[i];
+        if (a.nave.viva && toca(a.x - f.ANCHO_NAVE / 2, a.y - f.ALTO_NAVE / 2, f.ANCHO_NAVE, f.ALTO_NAVE)) {
+          KF.enemigos.destruir(a.nave, a.x, a.y, 'choque', jugador);
+          golpe = true;
+        }
+      }
+      if (golpe) jugador.perderApoyo(c.apoyo);
     }
   },
 

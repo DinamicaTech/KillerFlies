@@ -4,8 +4,11 @@
 // todas menos una de enemigos destruidos al azar y la última siempre del
 // último enemigo de la oleada. La moneda cae como una cápsula y se recoge al
 // tocarla con la nave; si se escapa por abajo, sigue pendiente para otra
-// partida. La oleada desafío y la nave nodriza no tienen monedas, y en la
-// partida a dos no cae ninguna (mejoras/dos-jugadores).
+// partida. La nave nodriza no tiene monedas, y en la partida a dos no cae
+// ninguna (mejoras/dos-jugadores).
+// La oleada desafío, que en la partida a uno solo sale con la mejora BONUS,
+// suelta una moneda por cada grupo destruido entero, hasta POR_DESAFIO: las
+// del desafío que sigue a cada oleada también se recogen una sola vez.
 // Lo recogido se guarda en el navegador al momento, aparte para cada
 // dificultad: el saldo, las monedas recogidas en cada oleada y las mejoras
 // compradas en la tienda (js/tienda.js). Todo va bajo el nombre de una cuenta
@@ -14,6 +17,7 @@
 // solas hacia la nave.
 KF.monedas = {
   POR_OLEADA: 5,
+  POR_DESAFIO: 4,          // una por grupo del desafío
   CLAVE: 'killerflies.cuenta.',   // más el nombre de la cuenta: 'killerflies.cuenta.default'
   FACTOR_CAIDA: 0.5,       // caen a la mitad de la velocidad de las bombas, como las cápsulas
   GIRO: 0.12,              // segundos de cada fase del giro de la moneda
@@ -21,14 +25,18 @@ KF.monedas = {
   VELOCIDAD_IMAN: 70,      // píxeles por segundo hacia la nave con el imán
 
   cuenta: 'default',
-  monedas: [],             // {id, x, y, t, oleada}
+  monedas: [],             // {id, x, y, t, oleada, desafio}: desafio si es del desafío tras esa oleada
   naves: null,             // formación de la oleada planificada
   plan: [],                // números de enemigo destruido (1, 2…) que sueltan moneda
   destruidas: 0,           // enemigos de la formación destruidos en la oleada
+  navesDesafio: null,      // naves del desafío en curso
+  soltadasDesafio: 0,      // monedas soltadas en el desafío en curso
+  limiteDesafio: 0,        // las que le faltaban al empezar
   recogidas: 0,            // monedas recogidas desde que empezó el juego (Sonido las observa)
   cache: null,             // datos de la cuenta, leídos una vez
 
-  // Datos de la cuenta: { EASY: { saldo, oleadas: { n: recogidas }, mejoras: { id: nivel } }, … }.
+  // Datos de la cuenta: { EASY: { saldo, oleadas: { n: recogidas },
+  // desafios: { n: recogidas }, mejoras: { id: nivel } }, … }.
   datos: function () {
     if (!this.cache) this.cache = this.leer();
     return this.cache;
@@ -38,7 +46,7 @@ KF.monedas = {
   delNivel: function (nivel) {
     var nombre = KF.dificultad.NIVELES[nivel === undefined ? KF.dificultad.nivel : nivel];
     var d = this.datos();
-    if (!d[nombre]) d[nombre] = { saldo: 0, oleadas: {}, mejoras: {} };
+    if (!d[nombre]) d[nombre] = { saldo: 0, oleadas: {}, desafios: {}, mejoras: {} };
     return d[nombre];
   },
 
@@ -47,6 +55,11 @@ KF.monedas = {
   // Monedas que faltan por recoger en la oleada n de la dificultad en curso.
   faltan: function (n) {
     return Math.max(0, this.POR_OLEADA - (this.delNivel().oleadas[n] || 0));
+  },
+
+  // Monedas que faltan por recoger en el desafío que sigue a la oleada n.
+  faltanDesafio: function (n) {
+    return Math.max(0, this.POR_DESAFIO - (this.delNivel().desafios[n] || 0));
   },
 
   // Gasta monedas de la dificultad en curso, si hay bastantes.
@@ -76,11 +89,15 @@ KF.monedas = {
     KF.dificultad.NIVELES.forEach(function (nombre) {
       var d = datos && typeof datos === 'object' && datos[nombre];
       if (!d || typeof d !== 'object') return;
-      var nivel = { saldo: entero(d.saldo), oleadas: {}, mejoras: {} };
-      for (var k in d.oleadas || {}) {
-        var n = parseInt(k, 10);
-        if (n >= 1 && String(n) === k) nivel.oleadas[n] = Math.min(KF.monedas.POR_OLEADA, entero(d.oleadas[k]));
-      }
+      var nivel = { saldo: entero(d.saldo), oleadas: {}, desafios: {}, mejoras: {} };
+      var porOleada = function (origen, destino, maximo) {
+        for (var k in origen || {}) {
+          var n = parseInt(k, 10);
+          if (n >= 1 && String(n) === k) destino[n] = Math.min(maximo, entero(origen[k]));
+        }
+      };
+      porOleada(d.oleadas, nivel.oleadas, KF.monedas.POR_OLEADA);
+      porOleada(d.desafios, nivel.desafios, KF.monedas.POR_DESAFIO);
       for (var id in d.mejoras || {}) {
         if (entero(d.mejoras[id]) > 0) nivel.mejoras[id] = entero(d.mejoras[id]);
       }
@@ -95,10 +112,10 @@ KF.monedas = {
   },
 
   // Oleada nueva: elige qué enemigos destruidos soltarán las monedas que
-  // faltan; la última, siempre el último.
+  // faltan; la última, siempre el último. Las que aún caen de la oleada
+  // anterior siguen cayendo.
   planificar: function () {
     this.naves = KF.formacion.naves;
-    this.monedas = [];
     this.destruidas = 0;
     this.plan = [];
     var total = this.naves.length, faltan = Math.min(this.faltan(KF.partida.oleada), total);
@@ -111,19 +128,39 @@ KF.monedas = {
     this.plan.push(total);
   },
 
-  // Un enemigo de la formación destruido: si le toca, suelta una moneda.
+  // Un enemigo de la formación destruido: si le toca, suelta una moneda. En
+  // el desafío, la suelta la última nave de cada grupo.
   alDestruir: function (nave, x, y) {
-    if (this.naves !== KF.formacion.naves || this.naves.indexOf(nave) < 0 || !this.enJuego()) return;
+    if (!this.enJuego()) return;
+    if (KF.desafio.activo && KF.desafio.naves.indexOf(nave) >= 0) {
+      this.alDestruirEnDesafio(nave, x, y);
+      return;
+    }
+    if (this.naves !== KF.formacion.naves || this.naves.indexOf(nave) < 0) return;
     this.destruidas++;
     if (this.plan.indexOf(this.destruidas) >= 0) {
       this.monedas.push({ id: KF.nuevoId(), x: x, y: y, t: 0, oleada: KF.partida.oleada });
     }
   },
 
-  // La nave recoge la moneda: cuenta para su oleada y suma al saldo.
+  alDestruirEnDesafio: function (nave, x, y) {
+    var d = KF.desafio;
+    if (this.navesDesafio !== d.naves) {
+      this.navesDesafio = d.naves;
+      this.soltadasDesafio = 0;
+      this.limiteDesafio = this.faltanDesafio(KF.partida.oleada);
+    }
+    var quedan = d.naves.some(function (n) { return n.grupo === nave.grupo && n.viva; });
+    if (quedan || this.soltadasDesafio >= this.limiteDesafio) return;
+    this.soltadasDesafio++;
+    this.monedas.push({ id: KF.nuevoId(), x: x, y: y, t: 0, oleada: KF.partida.oleada, desafio: true });
+  },
+
+  // La nave recoge la moneda: cuenta para su oleada (o su desafío) y suma al saldo.
   recoger: function (moneda) {
     var d = this.delNivel();
-    d.oleadas[moneda.oleada] = Math.min(this.POR_OLEADA, (d.oleadas[moneda.oleada] || 0) + 1);
+    if (moneda.desafio) d.desafios[moneda.oleada] = Math.min(this.POR_DESAFIO, (d.desafios[moneda.oleada] || 0) + 1);
+    else d.oleadas[moneda.oleada] = Math.min(this.POR_OLEADA, (d.oleadas[moneda.oleada] || 0) + 1);
     d.saldo++;
     this.recogidas++;
     this.guardar();
