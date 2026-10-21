@@ -9,7 +9,9 @@
 // Las mejoras son permanentes y valen para la dificultad con cuyas monedas se
 // compraron, en la partida a uno; se notan desde la compra, salvo SHIPS, que
 // da una nave de recambio más al empezar cada partida, hasta el tope de 5 (3
-// niveles). Las demás acumulables no tienen tope: el equilibrio se hace con
+// niveles), y SHIELD y WINGMAN, que llegan con la nave siguiente. BONUS
+// desbloquea la oleada desafío (js/partida.js). La lista muestra 8 filas y se
+// desplaza con la marca o tocando sus flechas. Las demás acumulables no tienen tope: el equilibrio se hace con
 // los precios.
 KF.tienda = {
   // Cada una con su explicación, que se ve bajo la lista mientras está marcada.
@@ -18,6 +20,12 @@ KF.tienda = {
       texto: ['+5% SHIP SPEED PER LEVEL'] },
     { id: 'FIRE',     precio: 5,                // +5% de velocidad del disparo por nivel
       texto: ['+5% SHOT SPEED PER LEVEL'] },
+    { id: 'BONUS',    precio: 10, maximo: 1,    // la oleada desafío, con sus monedas (mejoras/escudo-y-apoyo)
+      texto: ['UNLOCKS THE CHALLENGE WAVE', 'ONE COIN PER GROUP DESTROYED'] },
+    { id: 'SHIELD',   precio: 20, maximo: 1,    // aguanta un golpe; vuelve con cada nave nueva
+      texto: ['A SHIELD THAT TAKES ONE HIT', 'BACK WITH EVERY NEW SHIP'] },
+    { id: 'WINGMAN',  precio: 15, maximo: 2, niveles: true,  // naves de apoyo a los lados, hasta dos
+      texto: ['A SUPPORT SHIP THAT FIRES WITH YOU', 'LEVEL 2 ADDS ONE ON THE OTHER SIDE'] },
     { id: 'SHIPS',    precio: 15, maximo: 3, niveles: true,  // una nave de recambio más al empezar, hasta el tope de 5
       texto: ['START EACH GAME WITH', 'ONE MORE SPARE SHIP'] },
     { id: 'BOMBS',    precio: 5,                // bombas enemigas un 5% más lentas por nivel
@@ -35,6 +43,8 @@ KF.tienda = {
   DURACION_PASO: 0.15,     // segundos de cada paso del piloto
   DURACION_AVISO: 2,       // segundos que se ve el aviso de una compra
   SEPARACION: 12,          // píxeles entre una fila de la lista y la siguiente
+  VISIBLES: 8,             // filas que se ven a la vez; las demás, desplazando la lista
+  ARRIBA_LISTA: 64,        // borde superior de la primera fila visible
   COLOR: '#ffff40',
   COLOR_OPCION: '#808080',
   COLOR_MONEDAS: '#c8d0dc',   // el saldo, del color de la moneda
@@ -45,6 +55,7 @@ KF.tienda = {
   fase: null,              // null (cerrada) | 'ida' | 'lista' | 'vuelta'
   t: 0,                    // segundos en la fase
   opcion: 0,               // fila marcada: una mejora o, la última, BACK
+  primera: 0,              // primera fila visible de la lista
   aviso: '',
   tiempoAviso: 0,
   teclaElegir: null,
@@ -72,6 +83,7 @@ KF.tienda = {
     this.fase = 'ida';
     this.t = 0;
     this.opcion = 0;
+    this.primera = 0;
     this.aviso = '';
     this.teclaElegir = null;
   },
@@ -121,7 +133,19 @@ KF.tienda = {
       d.mejoras[m.id] = nivel + 1;
       KF.monedas.guardar();
       KF.powerups.recogidas++;   // suena como un power-up
+      this.ponerEnLaNave(m.id);
       this.avisar(m.id === 'SHIPS' ? 'FROM NEXT GAME' : 'BOUGHT');
+    }
+  },
+
+  // El escudo y la nave de apoyo recién comprados llegan ya a la nave en juego.
+  ponerEnLaNave: function (id) {
+    var j = KF.jugador;
+    if (j.estado !== 'viva') return;
+    if (id === 'SHIELD') j.blindaje = true;
+    if (id === 'WINGMAN' && j.apoyos.length < 2) {
+      var libre = j.apoyos.some(function (a) { return a.lado < 0; }) ? 1 : -1;
+      j.apoyos.push({ lado: libre });
     }
   },
 
@@ -143,21 +167,44 @@ KF.tienda = {
     }
   },
 
-  // Altura (borde superior) de la fila i de la lista.
-  alturaFila: function (i) { return 64 + i * this.SEPARACION; },
+  visibles: function () { return Math.min(this.VISIBLES, this.filas()); },
+
+  // Altura (borde superior) de la fila i de la lista, si se ve.
+  alturaFila: function (i) { return this.ARRIBA_LISTA + (i - this.primera) * this.SEPARACION; },
+
+  // Alturas de las flechas que desplazan la lista, encima y debajo de ella.
+  alturaFlechaArriba: function () { return this.ARRIBA_LISTA - 8; },
+  alturaFlechaAbajo: function () { return this.ARRIBA_LISTA + this.visibles() * this.SEPARACION - 2; },
+  hayArriba: function () { return this.primera > 0; },
+  hayAbajo: function () { return this.primera + this.visibles() < this.filas(); },
+
+  // La lista se desplaza para que se vea la fila marcada.
+  seguirMarca: function () {
+    if (this.opcion < this.primera) this.primera = this.opcion;
+    else if (this.opcion >= this.primera + this.visibles()) this.primera = this.opcion - this.visibles() + 1;
+  },
+
+  // Desplaza la lista una fila (paso -1 o +1) y marca la primera o la última visible.
+  desplazar: function (paso) {
+    this.primera = Math.max(0, Math.min(this.filas() - this.visibles(), this.primera + paso));
+    this.opcion = Math.max(this.primera, Math.min(this.primera + this.visibles() - 1, this.opcion));
+  },
 
   filaEn: function (p) {
     if (!p) return -1;
-    for (var i = 0; i < this.filas(); i++) {
+    for (var i = this.primera; i < this.primera + this.visibles(); i++) {
       var y = this.alturaFila(i);
       if (p.y >= y - 3 && p.y < y + KF.graficos.FUENTE_ALTO + 3) return i;
     }
     return -1;
   },
 
-  // Toque en la lista: una fila la marca y la elige; fuera, nada.
+  // Toque en la lista: una fila la marca y la elige; las flechas la
+  // desplazan; fuera, nada.
   toque: function (p) {
-    if (this.fase !== 'lista') return;
+    if (this.fase !== 'lista' || !p) return;
+    if (this.hayArriba() && Math.abs(p.y - this.alturaFlechaArriba() - 2) <= 5) { this.desplazar(-1); return; }
+    if (this.hayAbajo() && Math.abs(p.y - this.alturaFlechaAbajo() - 2) <= 5) { this.desplazar(1); return; }
     var i = this.filaEn(p);
     if (i < 0) return;
     this.opcion = i;
@@ -170,6 +217,16 @@ KF.tienda = {
     if (e.code === 'ArrowUp') this.opcion = (this.opcion + n - 1) % n;
     else if (e.code === 'ArrowDown') this.opcion = (this.opcion + 1) % n;
     else if (e.code === 'Enter' || e.code === 'Space') this.teclaElegir = e.code;
+    this.seguirMarca();
+  },
+
+  // Flecha de 5 píxeles de ancho centrada en la pantalla, hacia arriba (-1) o hacia abajo (1).
+  dibujarFlecha: function (ctx, y, sentido) {
+    ctx.fillStyle = this.COLOR_OPCION;
+    for (var k = 0; k < 3; k++) {
+      var ancho = sentido < 0 ? 1 + 2 * k : 5 - 2 * k;
+      ctx.fillRect(KF.ANCHO / 2 - ancho / 2, y + k, ancho, 1);
+    }
   },
 
   soltar: function (e) {
@@ -203,13 +260,15 @@ KF.tienda = {
     var x = (KF.ANCHO - g.anchoTexto(saldo) - 10) / 2;
     g.dibujar(ctx, KF.monedas.SPRITE, x + 3, 47);
     g.escribir(ctx, this.LETRAS_MONEDAS, saldo, x + 10, 44);
-    for (var i = 0; i < this.filas(); i++) {
+    for (var i = this.primera; i < this.primera + this.visibles(); i++) {
       var texto = this.MEJORAS[i] ? this.textoMejora(this.MEJORAS[i]) : 'BACK';
       var letras = i === this.opcion ? this.LETRAS : this.LETRAS_OPCION;
       p.escribirCentrado(ctx, letras, texto, this.alturaFila(i), 1);
     }
+    if (this.hayArriba()) this.dibujarFlecha(ctx, this.alturaFlechaArriba(), -1);
+    if (this.hayAbajo()) this.dibujarFlecha(ctx, this.alturaFlechaAbajo(), 1);
     // La explicación de la fila marcada y, debajo, el aviso de la última compra.
-    var abajo = this.alturaFila(this.filas()) + 6, lineas = this.explicacion();
+    var abajo = this.alturaFlechaAbajo() + 10, lineas = this.explicacion();
     for (i = 0; i < lineas.length; i++) p.escribirCentrado(ctx, this.LETRAS_EXPLICACION, lineas[i], abajo + i * 9, 1);
     if (this.tiempoAviso > 0) p.escribirCentrado(ctx, this.LETRAS_AVISO, this.aviso, abajo + 24, 1);
   }

@@ -43,6 +43,7 @@ KF.sonido = {
   ultimasSalvas: 0,        // para notar cada disparo nuevo
   ultimasRecogidas: 0,     // para notar cada power-up recogido
   ultimasMonedas: 0,       // para notar cada moneda recogida
+  ultimosGolpes: 0,        // para notar cada escudo roto o nave de apoyo perdida
   ultimosImpactos: 0,      // para notar cada impacto en la nave nodriza jefe
   estadosJugador: [],      // estado de cada nave de jugador en el paso anterior
   estadoPartida: 'inicio',
@@ -224,14 +225,19 @@ KF.sonido = {
   },
 
   actualizar: function () {
-    var p = KF.partida, salvas = 0, jugadorExplota = false;
+    var p = KF.partida, salvas = 0, golpes = 0, jugadorExplota = false;
     for (var i = 0; i < KF.jugadores.length; i++) {
       var j = KF.jugadores[i];
       salvas += j.salvas;
+      golpes += j.golpes || 0;
       if (j.estado === 'explotando' && this.estadosJugador[i] !== 'explotando') jugadorExplota = true;
       this.estadosJugador[i] = j.estado;
     }
     var disparoNuevo = salvas !== this.ultimasSalvas;
+    // Un escudo roto o una nave de apoyo perdida (mejoras/escudo-y-apoyo)
+    // suenan como una nave enemiga que explota.
+    var golpe = golpes > this.ultimosGolpes;
+    this.ultimosGolpes = golpes;
     // Las monedas recogidas (js/monedas.js) suenan como un power-up.
     var powerUp = KF.powerups.recogidas !== this.ultimasRecogidas || KF.monedas.recogidas !== this.ultimasMonedas;
     var impacto = KF.jefe.impactos !== this.ultimosImpactos;
@@ -248,6 +254,7 @@ KF.sonido = {
     if (oleadaNueva) this.empezarOleada();
     if (disparoNuevo) this.tocar('disparo');
     if (jugadorExplota) this.tocar('explosion-jugador');
+    if (golpe) this.tocar('explosion-enemigo');
     if (powerUp) this.tocar('power-up');
     // Cada impacto en la nave nodriza suena como una nave enemiga que explota.
     if (impacto && KF.jefe.activo) this.tocar('explosion-enemigo');

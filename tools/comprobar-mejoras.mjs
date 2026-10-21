@@ -33,7 +33,7 @@ function cargar(guardado) {
     formacion: { naves: [], VELOCIDAD_INICIAL: 40,
       reiniciar(v) { this.naves = Array.from({ length: 40 }, (_, i) => ({ i, viva: true })); } },
     marcador: { ponerOleada: nada, cambiarModo: nada },
-    desafio: { activo: false, hecho: false, quitar: nada, empezar() { this.activo = true; } },
+    desafio: { activo: false, hecho: false, naves: [], quitar: nada, empezar() { this.activo = true; } },
     jefe: { CADA: 3, activo: false, hecho: false, quitar: nada, empezar() { this.activo = true; } },
     powerups: { recogidas: 0, capsulas: [] },
     pausa: { activa: true },
@@ -201,6 +201,65 @@ comprobar(KF.monedas.saldo() === 27 && KF.tienda.nivel('SPEED') === 2 && KF.mone
 comprobar(KF.monedas.saldo() === 0 && KF.monedas.faltan(1) === 0 && KF.tienda.nivel('SPEED') === 0 && KF.tienda.nivel('FIRE') === 2, 'los valores guardados sin sentido deben ignorarse');
 ({ KF } = cargar([[CLAVE, 'no es json']]));
 comprobar(KF.monedas.saldo() === 0, 'un valor guardado roto debe ignorarse');
+
+// BONUS: sin ella, tras limpiar una oleada llega la siguiente, sin desafío;
+// con ella, sale el desafío.
+({ KF, almacen, nave, destruir } = cargar([]));
+m = KF.monedas; t = KF.tienda; p = KF.partida;
+const limpiarYEsperar = () => {
+  KF.formacion.naves.forEach((n) => { n.viva = false; });
+  for (let i = 0; i < 4; i++) p.actualizar(0.6);
+};
+p.empezar();
+limpiarYEsperar();
+comprobar(!KF.desafio.activo && p.oleada === 2, 'sin BONUS no debe haber desafío: tras la oleada 1 llega la 2');
+m.delNivel().saldo = 10;
+t.abrir(); t.fase = 'lista';
+t.opcion = t.MEJORAS.findIndex((x) => x.id === 'BONUS');
+t.elegir();
+comprobar(t.nivel('BONUS') === 1 && m.saldo() === 0, 'BONUS debe costar 10');
+limpiarYEsperar();
+comprobar(KF.desafio.activo, 'con BONUS debe salir el desafío tras la oleada');
+KF.desafio.activo = false;
+KF.companero = {};
+p.ponerOleada(4);
+KF.tienda.nivel = () => 0;
+comprobar(p.conDesafio(), 'en la partida a dos el desafío sale siempre');
+delete KF.companero;
+
+// Monedas del desafío: una por grupo destruido entero, hasta 4, y una sola vez.
+({ KF, almacen, nave, destruir } = cargar([]));
+m = KF.monedas; p = KF.partida;
+p.empezar();
+m.actualizar(0);
+const desafio = (KF.desafio.naves = []);
+for (let g = 0; g < 4; g++) for (let k = 0; k < 6; k++) desafio.push({ grupo: g, viva: true });
+KF.desafio.activo = true;
+const antesDesafio = m.monedas.length;
+desafio.filter((n) => n.grupo === 0).slice(0, 5).forEach((n) => destruir(n));
+comprobar(m.monedas.length === antesDesafio, 'un grupo del desafío a medias no debe soltar moneda');
+destruir(desafio[5]);
+comprobar(m.monedas.length === antesDesafio + 1 && m.monedas[m.monedas.length - 1].desafio, 'el grupo destruido entero debe soltar una moneda del desafío');
+desafio.slice(6, 12).forEach((n) => destruir(n));
+m.monedas = m.monedas.filter((mo) => mo.desafio);
+caer(KF, nave, true);
+comprobar(m.faltanDesafio(1) === 2 && m.delNivel().desafios[1] === 2 && m.faltan(1) === 5, 'las monedas del desafío deben contar aparte de las de la oleada');
+KF.desafio.naves = [];
+const otra = (KF.desafio.naves = []);
+for (let g = 0; g < 4; g++) for (let k = 0; k < 6; k++) otra.push({ grupo: g, viva: true });
+otra.forEach((n) => destruir(n));
+comprobar(m.monedas.filter((mo) => mo.desafio).length === 2, 'repetir el desafío de la oleada 1 solo debe soltar las 2 monedas que faltan');
+
+// La lista de la tienda se desplaza: se ven 8 filas y la marca siempre se ve.
+t = KF.tienda;
+t.abrir(); t.fase = 'lista';
+comprobar(t.filas() > t.VISIBLES && t.hayAbajo() && !t.hayArriba(), 'con más de 8 filas la lista debe poder bajar');
+for (let i = 0; i < t.filas() - 1; i++) t.tecla({ code: 'ArrowDown' });
+comprobar(t.opcion === t.filas() - 1 && t.primera === t.filas() - t.VISIBLES && t.hayArriba() && !t.hayAbajo(), 'al bajar hasta BACK la lista debe desplazarse para verla');
+t.tecla({ code: 'ArrowDown' });
+comprobar(t.opcion === 0 && t.primera === 0, 'desde BACK, abajo debe volver a la primera fila');
+t.toque({ x: 112, y: t.alturaFlechaAbajo() + 2 });
+comprobar(t.primera === 1 && t.opcion === 1, 'tocar la flecha de abajo debe desplazar la lista una fila');
 
 if (errores.length) {
   errores.forEach((e) => console.error('ERROR: ' + e));

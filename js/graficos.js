@@ -842,6 +842,12 @@ KF.graficos.fondo = {
     return g.crearSpriteHD(13, 13, function (ctx) { g.dibujarJugador(ctx, p); });
   });
   g.SPRITE_JUGADOR = g.SPRITES_JUGADOR[0];
+  // La nave de apoyo de la mejora WINGMAN: la del jugador 1, más pequeña y con
+  // el interior verde.
+  g.SPRITE_APOYO = g.crearSpriteHD(9, 9, function (ctx) {
+    ctx.scale(9 / 13, 9 / 13);
+    g.dibujarJugador(ctx, { R: '#f02020', W: '#e8f0f8', C: '#60e060' });
+  });
   // La nave de cada jugador con cada power-up: SPRITES_JUGADOR_PODER[n][poder].
   g.SPRITES_JUGADOR_PODER = paletasJugador.map(function (p) {
     var sprites = {};

@@ -53,3 +53,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Monedas y tienda de mejoras (mejoras)
         run: node tools/comprobar-mejoras.mjs
+  escudo-y-apoyo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Escudo y naves de apoyo (mejoras/escudo-y-apoyo)
+        run: node tools/comprobar-escudo-apoyo.mjs
