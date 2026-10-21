@@ -132,7 +132,7 @@ KF.marcador = {
 (function () {
   var mk = KF.marcador;
   mk.LETRAS = KF.graficos.crearFuente(mk.COLOR);
-  mk.LETRAS_MONEDAS = KF.graficos.crearFuente('#ffd030');
+  mk.LETRAS_MONEDAS = KF.graficos.crearFuente('#c8d0dc');
   mk.LETRAS_JUGADOR = KF.graficos.COLORES_JUGADOR.map(function (c) { return KF.graficos.crearFuente(c); });
   mk.cambiarModo(false);
 
