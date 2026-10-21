@@ -2,13 +2,14 @@
 title: Creative lab
 depends_on: []
 threads:
+  - Monedas y tienda de mejoras | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
   - Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
 ---
 ## Summary
 The project's space for ideas: improvements and new developments are debated here before deciding whether to do them.
 Each idea is a child node of the lab (`status: idea`), the step before a draft; while it is being debated it is not routed to its functional node.
 It leaves the lab when the owner decides: it becomes a draft or is carried out, and it moves to its functional place. A discarded idea stays in the lab with a decision that says so.
-Ideas under debate: none.
+Ideas under debate: monedas-y-mejoras (coins that unlock permanent upgrades in a shop).
 
 ## Decisions
 - 2026-10-03 18:16 · Created with the project.
@@ -31,6 +32,7 @@ Ideas under debate: none.
 - 2026-10-16 10:35 · The app-instalable idea leaves the lab: executed, it is now the node architecture/app-instalable (installable on the phone as a PWA, full screen and playable offline).
 - 2026-10-16 10:41 · The dificultad idea leaves the lab: executed, it is now the node partida/dificultad (EASY, NORMAL or HARD in the start menu; the current game is NORMAL).
 - 2026-10-16 10:58 · The ajustes-sonido idea leaves the lab: executed, it is now the node sonido/ajustes-sonido (separate volumes for the music and the sounds, in the pause menu).
+- 2026-10-21 17:39 · New idea under debate: monedas-y-mejoras (coins collected once per wave, spent in an upgrade shop in the pause menu, with player accounts).
 
 ## Requirements
 - 2026-10-13 17:04 · idea: Qué otras mejoras crees que podemos incorporar a este juego ?
