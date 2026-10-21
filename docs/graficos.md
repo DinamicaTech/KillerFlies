@@ -7,9 +7,11 @@ threads:
   - Graphics | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiDr96WsqVT3NCseBCYwgNre
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
   - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
+  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 The game's visual look: the screen, the background and the sprites of all ships, bombs, shots and explosions, using the arcade screenshots as reference. Everything is in js/graficos.js: a background of coloured stars that drift down and twinkle, the pre-coloured sprites the other parts of the game use (the ships drawn in detail at a higher resolution, as "21st-century ships", the mothership boss among them; everything else in pixel art) and the pixel-art font for the texts.
+It also has the spinning gold coin, the little pilot (two walking steps), the shop with its striped awning and the red slow fire capsule (mejoras).
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -34,6 +36,7 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-16 10:41 · [replaced by 2026-10-16 10:58] Font: a single 5×7 pixel-art font for all texts, with digits, slash, '<' and '>', letters A to Z and space, in js/graficos.js (KF.graficos.crearFuente(color), escribir and anchoTexto, with a scale to enlarge it). It comes from the digit font the scoreboard had; '<' and '>' frame the difficulty line of the start menu (partida/dificultad).
 - 2026-10-16 10:58 · Font: a single 5×7 pixel-art font for all texts, with digits, slash, '%', '<' and '>', letters A to Z and space, in js/graficos.js (KF.graficos.crearFuente(color), escribir and anchoTexto, with a scale to enlarge it). It comes from the digit font the scoreboard had; '<' and '>' frame the difficulty line of the start menu (partida/dificultad) and '%' shows the volumes in the pause menu (sonido/ajustes-sonido).
 - 2026-10-20 17:56 · Player ship with each power-up, for power-ups/aspecto-nave: dibujarJugador(ctx, palette, power) changes the interior colour (INTERIOR_PODER) and adds a detail per power, keeping the 13×13 size and the player's nose colour; KF.graficos.SPRITES_JUGADOR_PODER[player][power] holds them for both players. Rapid: yellow interior and two swept fins at the sides. Deep: violet interior and a long violet cannon through the nose. Bomb: orange interior and an orange diamond under the nose. Annihilation: white interior. Slow fire: dull grey interior and unlit nozzles. Triple: green interior and a cannon on the tip of each side engine. Extra life has no look of its own.
+- 2026-10-21 20:22 · Derived from mejoras: It also has the spinning gold coin, the little pilot (two walking steps), the shop with its striped awning and the red slow fire capsule (mejoras).
 
 ## Requirements
 - 2026-10-03 18:13 · I attach two screenshots as visual reference. In the first one, a formation of a yellow ship and two red ones descends to attack. In the second one, a purple ship descends towards the player ship while two bombs (somewhat thick vertical white lines) are falling.
@@ -54,3 +57,4 @@ The game's visual look: the screen, the background and the sprites of all ships,
 - 2026-10-16 10:41 · Derived from partida/dificultad: the '<' and '>' characters in the font.
 - 2026-10-16 10:58 · Derived from sonido/ajustes-sonido: the '%' character in the font.
 - 2026-10-20 17:56 · Derived from power-ups/aspecto-nave: one player ship sprite for each power, for both player colours.
+- 2026-10-21 20:22 · Derived from mejoras: provide the sprites of the coin, the pilot, the shop and the red slow fire capsule.

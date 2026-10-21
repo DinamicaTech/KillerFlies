@@ -42,6 +42,7 @@ function cargar(guardado) {
     partida: { estado: 'jugando', empezar() { this.empezada = true; } },
     red: { activa: () => false, fase: '', enviarYa: nada, cerrar: nada },
     jugador: { numero: 1 },
+    tienda: { abierta() { return !!this.fase; }, abrir() { this.fase = 'ida'; }, cerrar() { this.fase = null; }, tecla: nada, soltar: nada, toque: nada },
     ultimoToque: null
   };
   const ventana = {
@@ -72,15 +73,25 @@ comprobar(salidaDe('inicio-oleada') === s.salidas.musica, 'la música de inicio 
 comprobar(salidaDe('disparo') === s.salidas.sonidos, 'el disparo debe ir por la ganancia de los sonidos');
 comprobar(s.ataque && s.ataque.ganancia.destino === s.salidas.sonidos, 'el sonido de ataque debe ir por la ganancia de los sonidos');
 
-// El menú de pausa: cuatro opciones con los volúmenes.
+// El menú de pausa: cinco opciones, con la tienda y los volúmenes.
 z.pausar();
 comprobar(z.activa && z.opcion === 0, 'P debe pausar con CONTINUE marcada');
-const textos = () => z.OPCIONES.map((o, i) => z.textoOpcion(i)).join(' / ');
-comprobar(textos() === 'CONTINUE / MUSIC 100% / SOUNDS 100% / RESTART', 'el menú debe ser CONTINUE, MUSIC 100%, SOUNDS 100% y RESTART, no ' + textos());
+const textos = () => z.opciones().map((o, i) => z.textoOpcion(i)).join(' / ');
+comprobar(textos() === 'CONTINUE / SHOP / MUSIC 100% / SOUNDS 100% / RESTART', 'el menú debe ser CONTINUE, SHOP, MUSIC 100%, SOUNDS 100% y RESTART, no ' + textos());
+
+// Enter sobre SHOP abre la tienda sin reanudar; P la cierra y reanuda.
+tecla('ArrowDown');
+comprobar(z.opcion === 1, 'la flecha abajo debe marcar SHOP');
+tecla('Enter');
+comprobar(z.activa && KF.tienda.abierta(), 'Enter en SHOP debe abrir la tienda sin reanudar');
+tecla('KeyP');
+comprobar(!z.activa && !KF.tienda.abierta(), 'P con la tienda abierta debe cerrarla y reanudar');
+z.pausar();
+tecla('ArrowDown');
 
 // Enter sobre MUSIC baja un paso cada vez, sin reanudar, y de OFF vuelve a 100%.
 tecla('ArrowDown');
-comprobar(z.opcion === 1, 'la flecha abajo debe marcar MUSIC');
+comprobar(z.opcion === 2, 'la flecha abajo debe marcar MUSIC');
 const vistos = [];
 for (let i = 0; i < 5; i++) { tecla('Enter'); vistos.push(s.textoVolumen('musica')); }
 comprobar(vistos.join(' ') === '75% 50% 25% OFF 100%', 'Enter en MUSIC debe pasar por 75% 50% 25% OFF 100%, no ' + vistos.join(' '));
@@ -89,7 +100,7 @@ comprobar(s.textoVolumen('sonidos') === '100%', 'cambiar la música no debe toca
 
 // Las flechas izquierda y derecha bajan y suben, sin dar la vuelta.
 tecla('ArrowDown');
-comprobar(z.opcion === 2, 'la flecha abajo debe marcar SOUNDS');
+comprobar(z.opcion === 3, 'la flecha abajo debe marcar SOUNDS');
 tecla('ArrowRight');
 comprobar(s.textoVolumen('sonidos') === '100%', 'la flecha derecha al 100% debe quedarse en 100%');
 for (let i = 0; i < 6; i++) tecla('ArrowLeft');
@@ -101,20 +112,20 @@ comprobar(almacen.get('killerflies.sonidos') === '25' && almacen.get('killerflie
 
 // La flecha arriba vuelve atrás, y abajo desde RESTART da la vuelta a CONTINUE.
 tecla('ArrowUp');
-comprobar(z.opcion === 1, 'la flecha arriba debe volver a MUSIC');
+comprobar(z.opcion === 2, 'la flecha arriba debe volver a MUSIC');
 tecla('ArrowDown'); tecla('ArrowDown'); tecla('ArrowDown');
 comprobar(z.opcion === 0, 'la flecha abajo desde RESTART debe volver a CONTINUE');
 
 // En la pantalla táctil, tocar MUSIC la baja y tocar fuera continúa.
 const toque = (p) => { KF.ultimoToque = p; oyentes.toque(); };
-toque({ x: 112, y: z.alturaOpcion(1) + 3 });
+toque({ x: 112, y: z.alturaOpcion(2) + 3 });
 comprobar(s.textoVolumen('musica') === '75%' && z.activa, 'tocar MUSIC debe bajarla a 75% sin reanudar');
 toque({ x: 112, y: 20 });
 comprobar(!z.activa, 'tocar fuera de las opciones debe continuar aunque esté marcada MUSIC');
 
-// RESTART sigue empezando una partida nueva, ahora como cuarta opción.
+// RESTART sigue empezando una partida nueva, ahora como quinta opción.
 z.pausar();
-toque({ x: 112, y: z.alturaOpcion(3) + 3 });
+toque({ x: 112, y: z.alturaOpcion(4) + 3 });
 comprobar(KF.partida.empezada && !z.activa, 'tocar RESTART debe empezar una partida nueva');
 
 // Al volver a abrir el juego se recuerdan; un valor raro da 100%.

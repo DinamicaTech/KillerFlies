@@ -174,9 +174,12 @@ KF.Nave.prototype = {
 
     var t = KF.teclas;
     var dir = (t.ArrowRight ? 1 : 0) - (t.ArrowLeft ? 1 : 0);
+    // La mejora SPEED (js/tienda.js) sube las dos velocidades máximas.
+    var mejora = KF.tienda.factorVelocidad();
+    var maxima = this.VELOCIDAD * mejora, maximaMovil = this.VELOCIDAD_MOVIL * mejora;
     var margen = this.ANCHO / 2;
     var limitar = function (x) { return Math.max(margen, Math.min(KF.ANCHO - margen, x)); };
-    var deseada = dir * this.VELOCIDAD;
+    var deseada = dir * maxima;
     if (dir) {
       this.objetivo = null;
     } else if (dx || this.objetivo !== null) {
@@ -184,7 +187,7 @@ KF.Nave.prototype = {
       // de su velocidad máxima, y frena a tiempo para pararse justo allí.
       this.objetivo = limitar((this.objetivo === null ? this.x : this.objetivo) + dx);
       var falta = this.objetivo - this.x;
-      var rapidez = Math.min(this.VELOCIDAD_MOVIL, Math.sqrt(2 * this.FRENADO * Math.abs(falta)));
+      var rapidez = Math.min(maximaMovil, Math.sqrt(2 * this.FRENADO * Math.abs(falta)));
       deseada = falta > 0 ? rapidez : -rapidez;
     } else {
       // Sin flechas ni dedo, manda la inclinación del móvil: más rápido cuanto
@@ -193,7 +196,7 @@ KF.Nave.prototype = {
       var exceso = Math.abs(g) - this.INCLINACION_MINIMA;
       if (exceso > 0) {
         var parte = Math.min(1, exceso / (this.INCLINACION_MAXIMA - this.INCLINACION_MINIMA));
-        deseada = (g > 0 ? 1 : -1) * this.VELOCIDAD_MOVIL * parte;
+        deseada = (g > 0 ? 1 : -1) * maximaMovil * parte;
       }
     }
     this.vx = this.acercarVelocidad(this.vx, deseada, dt);
@@ -263,7 +266,8 @@ KF.Nave.prototype = {
   // en una nave, se corta la racha.
   moverDisparo: function (dt) {
     var poder = this.poder, autor = this;
-    var v = this.VELOCIDAD_DISPARO * (poder === 'lento' ? 0.5 : 1);
+    // La mejora FIRE (js/tienda.js) acelera el disparo.
+    var v = this.VELOCIDAD_DISPARO * (poder === 'lento' ? 0.5 : 1) * KF.tienda.factorDisparo();
     var h = this.SPRITE_DISPARO.height;
     this.disparos = this.disparos.filter(function (d) {
       d.y -= v * dt;

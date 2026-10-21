@@ -8,9 +8,11 @@ threads:
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
   - Sound settings | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiA9ciq65uYqnPkDkSENqCxN
   - Real sounds | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFf1TgQJLpT3XvZn4f9CLXB
+  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 The game's sounds, recorded audio files played with Web Audio from js/sonido.js (the detail is in sonido/sonidos-con-profundidad): the shot, the explosions of alien ships (a different one for the yellow), the player's explosion, a sound while alien ships attack, a sound on each power-up, a tune at the start of each wave and background music that speeds up as fewer ships remain (at its starting speed during the challenge wave, partida/oleada-desafio, and the mothership boss, enemigos/jefe). Each hit on the mothership plays the alien explosion and its destruction the yellow's. Sound is enabled with the first key pressed or the first touch on the screen, and goes silent while the page is hidden or the game is paused (partida/pausa). The music and the other sounds have separate volumes, set in the pause menu (sonido/ajustes-sonido).
+Picking up a coin and buying an upgrade (mejoras) play the power-up sound.
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -31,6 +33,7 @@ The game's sounds, recorded audio files played with Web Audio from js/sonido.js 
 - 2026-10-15 08:55 · During the challenge wave the background music plays at its starting speed; its extra ship plays the power-up sound.
 - 2026-10-16 10:30 · With the mothership boss (enemigos/jefe), the music plays at its starting speed, each hit plays the alien explosion (Sound watches KF.jefe.impactos) and its destruction the yellow's explosion.
 - 2026-10-16 10:58 · Volumes: the music (background and wave start) and the other sounds go through separate gains, each at 100%, 75%, 50%, 25% or OFF, set in the pause menu and remembered in the browser; the detail is in the child node sonido/ajustes-sonido.
+- 2026-10-21 20:22 · Derived from mejoras: Picking up a coin and buying an upgrade (mejoras) play the power-up sound.
 
 ## Requirements
 - 2026-10-03 18:13 · There are sound effects: shots from the player ship; explosion noise when a ship is destroyed; buzz while an alien ship leaves the formation to make an attack.
@@ -43,3 +46,4 @@ The game's sounds, recorded audio files played with Web Audio from js/sonido.js 
 - 2026-10-15 08:55 · Derived from partida/oleada-desafio: during the challenge wave, play the background music at its starting speed, and play the power-up sound for its extra ship.
 - 2026-10-16 10:30 · Derived from enemigos/jefe: sounds for the hits and the destruction of the mothership boss, and the music at its starting speed meanwhile.
 - 2026-10-16 10:58 · Derived from sonido/ajustes-sonido: separate volumes for the music and the other sounds.
+- 2026-10-21 20:22 · Derived from mejoras: play a sound when a coin is picked up and when an upgrade is bought, reusing an existing sound.

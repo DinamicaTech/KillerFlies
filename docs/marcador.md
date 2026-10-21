@@ -4,9 +4,11 @@ depends_on: [enemigos, partida, architecture, jugador]
 threads:
   - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
   - Scoreboard | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiEmsD9WvmtQFinsch84vnYn
+  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 The on-screen information: current and best wave at the top left ('CHALLENGE' during the challenge wave, partida/oleada-desafio), points and high score at the top right, and the spare ships at the bottom right; in a two-player game, the points of P1 and P2 in their ship's colour at the top right and each player's spare ships at the bottom (P1 left, P2 right). While a combo multiplier is active (marcador/combos), 'X2' to 'X4' is shown under the points (in a two-player game, to the left of each player's points). High scores are saved in the browser as soon as they are beaten. It shows the values Game gives it (wave, spare ships, game start), with the font from Graphics. The 'hall of fame' (asking for the name on entering the top 10 and showing the 10 best at the end of a one-player game) is the child node `marcador/hall-of-fame`.
+In a one-player game the coins of the current difficulty (mejoras) are shown at the bottom left: a coin and its balance.
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -27,6 +29,7 @@ The on-screen information: current and best wave at the top left ('CHALLENGE' du
 - 2026-10-15 08:55 · During the challenge wave the top left shows 'CHALLENGE' instead of the wave.
 - 2026-10-16 08:42 · Points: each alien ship destroyed, by the shot or by colliding with the player, adds its points (blue 10, purple 20, red 30, yellow 50, green 40, orange 60, cyan 80) times the combo multiplier of the player who destroyed it (marcador/combos, js/combos.js, which subscribes to Enemies' ship-destroyed notification).
 - 2026-10-16 11:35 · The hall of fame is built in its child node marcador/hall-of-fame (js/salon-fama.js); it keeps its own table, apart from the high scores shown here.
+- 2026-10-21 20:22 · Derived from mejoras: In a one-player game the coins of the current difficulty (mejoras) are shown at the bottom left: a coin and its balance.
 
 ## Requirements
 - 2026-10-03 18:13 · At the top left the wave number + "/" + the highest wave number reached by that player will be shown. At the top right, the points earned + "/" + the highest points earned by that player will be shown.
@@ -39,3 +42,4 @@ The on-screen information: current and best wave at the top left ('CHALLENGE' du
 - 2026-10-15 07:40 · Derived from multijugador: show the players as P1 and P2 on screen.
 - 2026-10-15 08:55 · Derived from partida/oleada-desafio: show 'CHALLENGE' instead of the wave during the challenge wave.
 - 2026-10-16 08:42 · Derived from marcador/combos: multiply the points by the combo of whoever destroys the ship and show the multiplier under the points while it is active.
+- 2026-10-21 20:22 · Derived from mejoras: show the coin balance of the current difficulty at the bottom left in one-player games.

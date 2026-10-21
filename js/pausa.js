@@ -3,7 +3,8 @@
 // reanuda, sin disparar. Se pausa sola al ocultarse la pestaña (cambio de
 // pestaña, ventana minimizada o móvil bloqueado) y nunca se reanuda sola.
 // Mientras dura, todo se congela (KF.detenido), el sonido se calla y se ve
-// 'PAUSED' en el centro, con cuatro opciones debajo: CONTINUE (marcada),
+// 'PAUSED' en el centro, con cinco opciones debajo: CONTINUE (marcada),
+// SHOP, la tienda de mejoras (js/tienda.js, solo en la partida a uno),
 // MUSIC y SOUNDS con su volumen (sonido/ajustes-sonido, en js/sonido.js) y
 // RESTART, que empieza una partida nueva desde donde empezó esta (la oleada 1,
 // o la de su perfect: js/perfect.js). Las flechas arriba y
@@ -22,8 +23,8 @@ KF.pausa = {
   COLOR_BOTON: '#808080',
   ESCALA_TEXTO: 2,
   BOTON_ZONA: 16,          // píxeles a cada lado del centro y desde arriba que cuentan como tocar II
-  OPCIONES: ['CONTINUE', 'MUSIC', 'SOUNDS', 'RESTART'],
-  GRUPOS: [null, 'musica', 'sonidos', null],   // grupo de volumen de cada opción
+  OPCIONES: ['CONTINUE', 'SHOP', 'MUSIC', 'SOUNDS', 'RESTART'],
+  GRUPOS: { MUSIC: 'musica', SOUNDS: 'sonidos' },   // grupo de volumen de cada opción
   SEPARACION_OPCIONES: 16, // píxeles entre una opción y la siguiente
   enPausa: true,           // se actualiza también con la partida en pausa
 
@@ -31,7 +32,7 @@ KF.pausa = {
   quien: 0,                // número del jugador que ha pausado
   version: 0,              // crece con cada cambio de pausa, para la partida a dos
   tactil: false,           // la pantalla es táctil: se ve el botón II
-  opcion: 0,               // opción marcada: 0 CONTINUE, 1 MUSIC, 2 SOUNDS, 3 RESTART
+  opcion: 0,               // opción marcada, en opciones(): 0 es CONTINUE
   teclaElegir: null,       // Enter o espacio pulsado en pausa, que elige al soltarlo
 
   // Solo se pausa jugando, y no mientras se espera al otro jugador.
@@ -72,7 +73,13 @@ KF.pausa = {
       KF.tactil.disparar = false;
       KF.inclinacion.calibrar();
     }
+    if (!activa) KF.tienda.cerrar();
     KF.sonido.ajustarSilencio();
+  },
+
+  // Opciones del menú ahora mismo: en la partida a dos no hay tienda.
+  opciones: function () {
+    return KF.companero || KF.red.activa() ? this.OPCIONES.filter(function (o) { return o !== 'SHOP'; }) : this.OPCIONES;
   },
 
   // Partida a dos: estado de pausa recibido del otro dispositivo.
@@ -97,17 +104,23 @@ KF.pausa = {
     KF.partida.empezar(KF.partida.inicio);
   },
 
+  // Grupo de volumen de la opción marcada, o undefined.
+  grupo: function () {
+    return this.GRUPOS[this.opciones()[this.opcion]];
+  },
+
   elegir: function () {
-    var grupo = this.GRUPOS[this.opcion];
+    var opcion = this.opciones()[this.opcion], grupo = this.grupo();
     if (grupo) KF.sonido.cambiarVolumen(grupo, 1, true);
-    else if (this.opcion === 3) this.reiniciar();
+    else if (opcion === 'SHOP') KF.tienda.abrir();
+    else if (opcion === 'RESTART') this.reiniciar();
     else this.reanudar();
   },
 
   // Texto de la opción i, con el volumen en MUSIC y SOUNDS: 'MUSIC 75%'.
   textoOpcion: function (i) {
-    var grupo = this.GRUPOS[i];
-    return grupo ? this.OPCIONES[i] + ' ' + KF.sonido.textoVolumen(grupo) : this.OPCIONES[i];
+    var opcion = this.opciones()[i], grupo = this.GRUPOS[opcion];
+    return grupo ? opcion + ' ' + KF.sonido.textoVolumen(grupo) : opcion;
   },
 
   alternar: function () {
@@ -131,7 +144,7 @@ KF.pausa = {
   // Opción en el punto (x, y) de la pantalla lógica, o -1.
   opcionEn: function (p) {
     if (!p) return -1;
-    for (var i = 0; i < this.OPCIONES.length; i++) {
+    for (var i = 0; i < this.opciones().length; i++) {
       var y = this.alturaOpcion(i);
       if (p.y >= y - 5 && p.y < y + KF.graficos.FUENTE_ALTO + 5) return i;
     }
@@ -151,13 +164,19 @@ KF.pausa = {
     }
     // Esperando al otro jugador, manda el aviso de js/red.js.
     if (!this.activa || KF.red.fase === 'pausa') return;
+    // Con la tienda abierta, ella se dibuja encima (js/tienda.js).
+    if (KF.tienda.abierta()) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.fillRect(0, 0, KF.ANCHO, KF.ALTO);
+      return;
+    }
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(0, 0, KF.ANCHO, KF.ALTO);
     var p = KF.partida, e = this.ESCALA_TEXTO, medio = (KF.ALTO - KF.graficos.FUENTE_ALTO * e) / 2;
     var texto = KF.red.activa() ? 'PAUSED P' + this.quien : 'PAUSED';
     p.escribirCentrado(ctx, this.LETRAS, texto, medio, e);
     if (this.puedeReanudar()) {
-      for (var i = 0; i < this.OPCIONES.length; i++) {
+      for (var i = 0; i < this.opciones().length; i++) {
         var letras = i === this.opcion ? this.LETRAS : this.LETRAS_AYUDA;
         p.escribirCentrado(ctx, letras, this.textoOpcion(i), this.alturaOpcion(i), 1);
       }
@@ -174,7 +193,8 @@ KF.pausa = {
     if (e.repeat) return;
     if (e.code === 'KeyP') { z.alternar(); return; }
     if (!z.activa || !z.puedeReanudar()) return;
-    var n = z.OPCIONES.length, grupo = z.GRUPOS[z.opcion];
+    if (KF.tienda.abierta()) { KF.tienda.tecla(e); return; }
+    var n = z.opciones().length, grupo = z.grupo();
     if (e.code === 'ArrowUp') {
       z.opcion = (z.opcion + n - 1) % n;
     } else if (e.code === 'ArrowDown') {
@@ -188,6 +208,11 @@ KF.pausa = {
   // Enter o espacio eligen al soltarlos, para que el espacio no dispare al
   // seguir la partida.
   window.addEventListener('keyup', function (e) {
+    if (KF.tienda.abierta()) {
+      KF.jugador.pulsacion = false;
+      KF.tienda.soltar(e);
+      return;
+    }
     if (e.code !== z.teclaElegir) return;
     z.teclaElegir = null;
     KF.jugador.pulsacion = false;
@@ -200,6 +225,7 @@ KF.pausa = {
     if (z.activa) {
       KF.tactil.disparar = false;
       if (!z.puedeReanudar()) return;
+      if (KF.tienda.abierta()) { KF.tienda.toque(KF.ultimoToque); return; }
       var i = z.opcionEn(KF.ultimoToque);
       z.opcion = i >= 0 ? i : 0;
       z.elegir();

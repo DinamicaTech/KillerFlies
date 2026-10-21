@@ -641,6 +641,29 @@ KF.graficos = {
     'CCCCC',
     '.CCC.'
   ],
+  // Piloto de la nave, de 3×6: casco blanco (W), traje naranja (O) y botas
+  // azules (B); dos pasos para andar.
+  MAPAS_PILOTO: [
+    ['.W.', 'WWW', 'OOO', '.O.', 'O.O', 'B.B'],
+    ['.W.', 'WWW', 'OOO', '.O.', '.O.', '.B.']
+  ],
+  // Tienda de 15×13: toldo de rayas rojas y blancas (R, W), paredes amarillas
+  // (Y), escaparate (C) y puerta (D).
+  MAPA_TIENDA: [
+    '.RWRWRWRWRWRWR.',
+    'RWRWRWRWRWRWRWR',
+    'RWRWRWRWRWRWRWR',
+    '.R.R.R.R.R.R.R.',
+    '.YYYYYYYYYYYYY.',
+    '.YCCCCYYYDDDYY.',
+    '.YCCCCYYYDDDYY.',
+    '.YCCCCYYYDDDYY.',
+    '.YYYYYYYYDDDYY.',
+    '.YYYYYYYYDDDYY.',
+    '.YYYYYYYYDDDYY.',
+    '.YYYYYYYYDDDYY.',
+    'YYYYYYYYYYYYYYY'
+  ],
   // Bomba de las naves alienígenas: línea blanca vertical algo gruesa. B = blanco.
   MAPA_BOMBA: [
     'BB',
@@ -839,6 +862,30 @@ KF.graficos.fondo = {
     g.crearSprite(g.MAPA_CAPSULA, { C: '#30c0ff', B: '#ffffff', L: '#ffff40' }),
     g.crearSprite(g.MAPA_CAPSULA, { C: '#ff40c0', B: '#ffffff', L: '#ffffff' })
   ];
+  // La cápsula del slow fire con la mejora RED SLOW (js/tienda.js): roja.
+  g.SPRITES_CAPSULA_ROJA = [
+    g.crearSprite(g.MAPA_CAPSULA, { C: '#f02828', B: '#ffffff', L: '#ffff40' }),
+    g.crearSprite(g.MAPA_CAPSULA, { C: '#a01010', B: '#ffffff', L: '#ffffff' })
+  ];
+  // La moneda (js/monedas.js): dorada, girando entre una cara entera y de canto.
+  g.SPRITES_MONEDA = [1, 0.6, 0.25, 0.6].map(function (ancho) {
+    return g.crearSpriteHD(7, 7, function (ctx) {
+      ctx.fillStyle = '#b07810';
+      ctx.beginPath();
+      ctx.ellipse(3.5, 3.5, 3.4 * ancho, 3.4, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffd030';
+      ctx.beginPath();
+      ctx.ellipse(3.5, 3.5, 2.6 * ancho, 2.6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff4b0';
+      ctx.fillRect(3.5 - 1.2 * ancho, 1.8, 0.8 * ancho, 1.6);
+    });
+  });
+  g.SPRITE_MONEDA = g.SPRITES_MONEDA[0];
+  // El piloto que va a la tienda (js/tienda.js), con dos pasos al andar, y la tienda.
+  g.SPRITES_PILOTO = g.MAPAS_PILOTO.map(function (m) { return g.crearSprite(m, { W: '#ffffff', O: '#ff8020', B: '#3060ff' }); });
+  g.SPRITE_TIENDA = g.crearSprite(g.MAPA_TIENDA, { R: '#f02828', W: '#ffffff', Y: '#ffd030', D: '#804010', C: '#40d0e0' });
   // Colores de los fragmentos que lanza la explosión del jugador.
   g.COLORES_FRAGMENTOS = [fuego.R, fuego.Y, fuego.B, fuego.C];
   g.SPRITES_EXPLOSION_JUGADOR = g.MAPAS_EXPLOSION_JUGADOR.map(function (m) { return g.crearSprite(m, fuego); });

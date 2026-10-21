@@ -9,9 +9,11 @@ threads:
   - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
   - Extra life from points | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiV1h2zDMq5zcCryXFSArvd7
   - Difficulty levels | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi5nXSFnaSDCcojo6UjHX3wU
+  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 The game cycle, in js/partida.js: a 'START GAME' screen with the formation moving behind it and a menu ('1 PLAYER', 'CREATE GAME', 'JOIN GAME', and first 'PLAY AGAIN' after a two-player game while both players are still connected; any key or a short tap starts the selected option, '1 PLAYER' by default; under the options, the difficulty line '< NORMAL >', see partida/dificultad); successive waves with a challenge wave between one and the next (partida/oleada-desafio) and, after every third wave (3, 6, 9…), the mothership boss before it (enemigos/jefe), each wave 5% faster than the previous one in everything (block, dives and bombs), all of them multiplied by the difficulty level (partida/dificultad); three player ships (one in play and two spares, which the extra life power-up, the perfect challenge wave and every 10,000 points (partida/vida-extra-por-puntos) can raise up to five) and 'GAME OVER' on losing the last one, which stays until a key is pressed or a short tap is made and then returns to 'START GAME' (in a one-player game, through the hall of fame, marcador/hall-of-fame). It tells the scoreboard the wave; each player ship carries its spare ships and points. In a two-player game (multijugador) each player has their own ships and the game ends when neither has any. A one-player game can also start at a wave after a 'perfect' (a main wave cleared without losing a ship), with the points it had then, from the line '< FROM WAVE n >' under the difficulty (partida/empezar-tras-perfect). A game can be paused while playing, and restarted from the pause from where it started (partida/pausa).
+Each game starts with 2 spare ships plus one per level of the SHIPS upgrade (mejoras), never more than the cap of 5.
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -42,6 +44,7 @@ The game cycle, in js/partida.js: a 'START GAME' screen with the formation movin
 - 2026-10-16 10:41 · Difficulty levels (partida/dificultad): the start menu shows the difficulty line under the options, and each wave's speed (formation, KF.ataque.factorVelocidad) is multiplied by the level's factor (EASY 0.75, NORMAL 1, HARD 1.25); starting a game and opening the start screen take the level chosen in the menu.
 
 - 2026-10-16 11:22 · Start from a perfect (partida/empezar-tras-perfect): KF.partida.empezar(inicio) takes an optional starting point { oleada, puntos } for one-player games and keeps it in KF.partida.inicio for RESTART; while playing it notes lost ships per main wave (navePerdida) and records a perfect when the last ship of a wave is destroyed. The start menu rows are the options plus, if the difficulty has perfects, the '< FROM WAVE n >' line.- 2026-10-16 11:35 · Hall of fame (marcador/hall-of-fame): leaving 'GAME OVER' of a one-player game sets the state 'fama' and opens KF.salonFama with the points and the wave reached; while it is open, keys and short taps go to it, and it returns to 'START GAME' with irAInicio. KF.partida.aUno records whether the game was for one player; a two-player game (host or guest) goes straight back to 'START GAME'.
+- 2026-10-21 20:22 · Derived from mejoras: Each game starts with 2 spare ships plus one per level of the SHIPS upgrade (mejoras), never more than the cap of 5.
 
 ## Requirements
 - 2026-10-03 18:13 · When all the enemy ships have been destroyed, a new wave will start with a movement speed increased by 5%.
@@ -67,3 +70,4 @@ The game cycle, in js/partida.js: a 'START GAME' screen with the formation movin
 - 2026-10-16 10:41 · Derived from partida/dificultad: show the difficulty line in the start menu and multiply each wave's speed by the chosen level.
 - 2026-10-16 11:22 · Derived from partida/empezar-tras-perfect: record perfect waves and let a one-player game start from one, from the start menu.
 - 2026-10-16 11:35 · Derived from marcador/hall-of-fame: after 'GAME OVER' in a one-player game, go to the hall of fame (name entry if needed) and from it to 'START GAME'.
+- 2026-10-21 20:22 · Derived from mejoras: start each one-player game with one more spare ship per level of the SHIPS upgrade, keeping the cap of 5.
