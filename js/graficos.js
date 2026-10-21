@@ -868,18 +868,18 @@ KF.graficos.fondo = {
     g.crearSprite(g.MAPA_CAPSULA, { C: '#f02828', B: '#ffffff', L: '#ffff40' }),
     g.crearSprite(g.MAPA_CAPSULA, { C: '#a01010', B: '#ffffff', L: '#ffffff' })
   ];
-  // La moneda (js/monedas.js): dorada, girando entre una cara entera y de canto.
+  // La moneda (js/monedas.js): plateada, girando entre una cara entera y de canto.
   g.SPRITES_MONEDA = [1, 0.6, 0.25, 0.6].map(function (ancho) {
     return g.crearSpriteHD(7, 7, function (ctx) {
-      ctx.fillStyle = '#b07810';
+      ctx.fillStyle = '#707884';
       ctx.beginPath();
       ctx.ellipse(3.5, 3.5, 3.4 * ancho, 3.4, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#ffd030';
+      ctx.fillStyle = '#c8d0dc';
       ctx.beginPath();
       ctx.ellipse(3.5, 3.5, 2.6 * ancho, 2.6, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = '#fff4b0';
+      ctx.fillStyle = '#ffffff';
       ctx.fillRect(3.5 - 1.2 * ancho, 1.8, 0.8 * ancho, 1.6);
     });
   });

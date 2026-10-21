@@ -37,7 +37,8 @@ KF.tienda = {
   SEPARACION: 12,          // píxeles entre una fila de la lista y la siguiente
   COLOR: '#ffff40',
   COLOR_OPCION: '#808080',
-  COLOR_MONEDAS: '#ffd030',
+  COLOR_MONEDAS: '#c8d0dc',   // el saldo, del color de la moneda
+  COLOR_AVISO: '#ffd030',
   COLOR_EXPLICACION: '#40d0e0',
   enPausa: true,           // se mueve con la partida en pausa
 
@@ -210,7 +211,7 @@ KF.tienda = {
     // La explicación de la fila marcada y, debajo, el aviso de la última compra.
     var abajo = this.alturaFila(this.filas()) + 6, lineas = this.explicacion();
     for (i = 0; i < lineas.length; i++) p.escribirCentrado(ctx, this.LETRAS_EXPLICACION, lineas[i], abajo + i * 9, 1);
-    if (this.tiempoAviso > 0) p.escribirCentrado(ctx, this.LETRAS_MONEDAS, this.aviso, abajo + 24, 1);
+    if (this.tiempoAviso > 0) p.escribirCentrado(ctx, this.LETRAS_AVISO, this.aviso, abajo + 24, 1);
   }
 };
 
@@ -219,6 +220,7 @@ KF.tienda = {
   t.LETRAS = g.crearFuente(t.COLOR);
   t.LETRAS_OPCION = g.crearFuente(t.COLOR_OPCION);
   t.LETRAS_MONEDAS = g.crearFuente(t.COLOR_MONEDAS);
+  t.LETRAS_AVISO = g.crearFuente(t.COLOR_AVISO);
   t.LETRAS_EXPLICACION = g.crearFuente(t.COLOR_EXPLICACION);
   t.SPRITE_TIENDA = g.SPRITE_TIENDA;
   t.SPRITES_PILOTO = g.SPRITES_PILOTO;

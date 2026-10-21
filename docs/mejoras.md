@@ -20,6 +20,7 @@ Tested by tools/comprobar-mejoras.mjs in the "Pruebas" workflow.
 - 2026-10-21 20:22 · Shop in the pause menu ('SHOP', under 'CONTINUE'), with the pilot walking to a shop next to the ship. Base upgrades and starting prices: SPEED 5, FIRE 5 (faster shot), SHIPS 15 (one more spare ship at the start, cap of 5 kept), BOMBS 5, MAGNET 10, RED SLOW 3. Upgrades count only for the difficulty whose coins bought them.
 - 2026-10-21 21:05 · The shop shows under the list an explanation of the marked upgrade (or of BACK), in one or two lines in English; the font gets a '+' sign for them.
 - 2026-10-21 21:05 · Validated by the owner: coins and the base shop pass from draft to stable.
+- 2026-10-21 21:06 · The coins are silver (the balance too), to match the game's palette better than gold.
 
 ## Requirements
 - 2026-10-21 17:37 · idea: Coins that drop from random enemies, X per wave and each collectable only once (the last one always from the last enemy), saved in a purse per wave, spent in a new upgrade shop in the pause menu (with a little pilot walking from the ship to a shop) on permanent upgrades, with several player accounts, each with its own upgrades.
@@ -57,3 +58,4 @@ Tested by tools/comprobar-mejoras.mjs in the "Pruebas" workflow.
 - 2026-10-21 20:16 · answer: FIRE as a faster shot → Ok.
 - 2026-10-21 20:53 · En la tienda, al seleccionar un item, mostrar una explicación de lo que hace la mejora marcada.
 - 2026-10-21 21:02 · answer: validation of the coins and the base shop, and the explanation texts → "Bastante bien, he llegado a nivel 9, subiendo solo la velocidad de disparo y sigue siendo un reto sobrevivir."
+- 2026-10-21 21:04 · Las monedas plateadas, que quedan más de acorde con la paleta de colores que el dorado
