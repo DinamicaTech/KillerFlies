@@ -44,8 +44,16 @@ KF.powerups = {
     else jugador.poder = poder;
   },
 
+  // El poder de la cápsula se decide al soltarla, para que con la mejora
+  // RED SLOW (js/tienda.js) la del slow fire caiga en roja.
   soltar: function (x, y) {
-    this.capsulas.push({ id: KF.nuevoId(), x: x, y: y, t: 0 });
+    var poder = this.PODERES[Math.floor(Math.random() * this.PODERES.length)];
+    this.capsulas.push({ id: KF.nuevoId(), x: x, y: y, t: 0, poder: poder });
+  },
+
+  // La cápsula se ve roja: es la del slow fire y se tiene la mejora RED SLOW.
+  esRoja: function (k) {
+    return k.poder === 'lento' && KF.tienda.nivel('RED SLOW') > 0;
   },
 
   // Destruye todas las naves alienígenas vivas, en formación, en picado y del
@@ -112,7 +120,7 @@ KF.powerups = {
         if (c && k.x - s.width / 2 < c.x + c.ancho && k.x + s.width / 2 > c.x &&
             k.y - s.height / 2 < c.y + c.alto && k.y + s.height / 2 > c.y) {
           KF.jugadores[j].capsulas++;
-          self.otorgar(self.PODERES[Math.floor(Math.random() * self.PODERES.length)], KF.jugadores[j]);
+          self.otorgar(k.poder || self.PODERES[Math.floor(Math.random() * self.PODERES.length)], KF.jugadores[j]);
           return false;
         }
       }
@@ -127,8 +135,9 @@ KF.powerups = {
     var g = KF.graficos;
     for (var i = 0; i < this.capsulas.length; i++) {
       var k = this.capsulas[i];
-      var fase = Math.floor(k.t / this.PARPADEO) % this.SPRITES_CAPSULA.length;
-      g.dibujar(ctx, this.SPRITES_CAPSULA[fase], k.x, k.y);
+      var sprites = this.esRoja(k) ? this.SPRITES_CAPSULA_ROJA : this.SPRITES_CAPSULA;
+      var fase = Math.floor(k.t / this.PARPADEO) % sprites.length;
+      g.dibujar(ctx, sprites[fase], k.x, k.y);
     }
     for (i = 0; i < this.ondas.length; i++) {
       var o = this.ondas[i];
@@ -138,6 +147,7 @@ KF.powerups = {
 };
 
 KF.powerups.SPRITES_CAPSULA = KF.graficos.SPRITES_CAPSULA;
+KF.powerups.SPRITES_CAPSULA_ROJA = KF.graficos.SPRITES_CAPSULA_ROJA;
 KF.powerups.reiniciar();
 KF.ataque.alDestruirEscolta(function (x, y) { KF.powerups.soltar(x, y); });
 

@@ -42,6 +42,7 @@ KF.sonido = {
   navesOleada: 1,          // naves de la oleada al empezar, para la velocidad de la música
   ultimasSalvas: 0,        // para notar cada disparo nuevo
   ultimasRecogidas: 0,     // para notar cada power-up recogido
+  ultimasMonedas: 0,       // para notar cada moneda recogida
   ultimosImpactos: 0,      // para notar cada impacto en la nave nodriza jefe
   estadosJugador: [],      // estado de cada nave de jugador en el paso anterior
   estadoPartida: 'inicio',
@@ -231,12 +232,14 @@ KF.sonido = {
       this.estadosJugador[i] = j.estado;
     }
     var disparoNuevo = salvas !== this.ultimasSalvas;
-    var powerUp = KF.powerups.recogidas !== this.ultimasRecogidas;
+    // Las monedas recogidas (js/monedas.js) suenan como un power-up.
+    var powerUp = KF.powerups.recogidas !== this.ultimasRecogidas || KF.monedas.recogidas !== this.ultimasMonedas;
     var impacto = KF.jefe.impactos !== this.ultimosImpactos;
     var oleadaNueva = p.estado === 'jugando' &&
       (this.estadoPartida !== 'jugando' || p.oleada !== this.oleada);
     this.ultimasSalvas = salvas;
     this.ultimasRecogidas = KF.powerups.recogidas;
+    this.ultimasMonedas = KF.monedas.recogidas;
     this.ultimosImpactos = KF.jefe.impactos;
     this.estadoPartida = p.estado;
     this.oleada = p.oleada;

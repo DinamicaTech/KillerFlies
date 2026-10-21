@@ -24,7 +24,7 @@ function cargar(guardado) {
     formacion: { naves: [], VELOCIDAD_INICIAL: 40, reiniciar(v) { this.velocidad = v; } },
     marcador: { ponerOleada: nada, cambiarModo: nada },
     desafio: { quitar: nada }, jefe: { quitar: nada },
-    combos: {}, inclinacion: { calibrar: nada },
+    combos: {}, tienda: { nivel: () => 0 }, inclinacion: { calibrar: nada },
     red: { activa: () => false, fase: '', cerrar: nada },
     jugadores: [], alPulsarCorto: nada, tactil: {}
   };

@@ -1,6 +1,7 @@
 // El marcador: oleada/oleada máxima arriba a la izquierda, puntos/puntos
 // máximos arriba a la derecha, debajo el multiplicador del combo cuando lo hay
-// (js/combos.js), y las naves de recambio abajo a la derecha.
+// (js/combos.js), las naves de recambio abajo a la derecha y, en la partida a
+// uno, las monedas de la dificultad en curso abajo a la izquierda (js/monedas.js).
 // En la partida a dos, los puntos de cada jugador van arriba a la derecha en
 // el color de su nave (P1 encima de P2) y sus naves de recambio abajo, las de
 // P1 a la izquierda y las de P2 a la derecha.
@@ -94,6 +95,13 @@ KF.marcador = {
     this.escribir(ctx, texto, x - this.anchoTexto(texto), y, letras);
   },
 
+  // Monedas para gastar en la tienda: una moneda y el saldo, abajo a la izquierda.
+  dibujarMonedas: function (ctx) {
+    var m = this.MARGEN, s = KF.monedas.SPRITE, y = KF.ALTO - 1 - s.height / 2;
+    KF.graficos.dibujar(ctx, s, m + s.width / 2, y);
+    this.escribir(ctx, String(KF.monedas.saldo()), m + s.width + 2, Math.round(y - KF.graficos.FUENTE_ALTO / 2), this.LETRAS_MONEDAS);
+  },
+
   dibujar: function (ctx) {
     var m = this.MARGEN;
     // Durante la oleada desafío, su nombre en lugar del número de oleada.
@@ -103,6 +111,7 @@ KF.marcador = {
       this.escribir(ctx, puntos, KF.ANCHO - m - this.anchoTexto(puntos), m);
       this.dibujarMultiplicador(ctx, KF.jugador, KF.ANCHO - m, m + 9, this.LETRAS);
       this.dibujarRecambio(ctx, KF.jugador, false);
+      this.dibujarMonedas(ctx);
       return;
     }
     // A dos: P1 y P2 por su número, sea cual sea el de este dispositivo.
@@ -123,6 +132,7 @@ KF.marcador = {
 (function () {
   var mk = KF.marcador;
   mk.LETRAS = KF.graficos.crearFuente(mk.COLOR);
+  mk.LETRAS_MONEDAS = KF.graficos.crearFuente('#ffd030');
   mk.LETRAS_JUGADOR = KF.graficos.COLORES_JUGADOR.map(function (c) { return KF.graficos.crearFuente(c); });
   mk.cambiarModo(false);
 

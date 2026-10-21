@@ -4,9 +4,11 @@ depends_on: [jugador, enemigos, enemigos/formacion, enemigos/ataque, graficos, s
 threads:
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
   - Real sounds | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFf1TgQJLpT3XvZn4f9CLXB
+  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 Random power-ups, in js/powerups.js: when a yellow and its two red escorts are destroyed outside the formation, a blinking capsule falls at half the speed of a bomb (the same for every power and worth no points). If the player ship picks it up, it gets a random power, all with the same probability: rapid shot, deep shot, bomb, annihilation (single use), slow fire (a power-down) or triple shot, or else an extra life (one more spare ship, up to 5). It lasts until the end of the wave (the challenge wave that follows does not end it; its ships are also hit by the bomb and annihilation), the mothership boss does not end it either (enemigos/jefe), a new one replaces the previous one, and it is lost if the ship is destroyed. To test them, Shift+1…7 gives each power from the keyboard. Each pickup, extra life included, is counted in KF.powerups.recogidas so Sound can play its sound. In a two-player game the power belongs to whoever picks up the capsule.
+Each capsule's power is chosen when it is dropped; with the RED SLOW upgrade (mejoras) the slow fire capsule falls in red, and with the MAGNET upgrade nearby capsules drift toward the ship.
 
 ## Decisions
 - 2026-10-04 10:48 · Created in the lab as an idea.
@@ -35,6 +37,7 @@ Random power-ups, in js/powerups.js: when a yellow and its two red escorts are d
 - 2026-10-13 07:12 · Two players: the power belongs to the ship that picks up the capsule (KF.Nave.poder), each player has their own, and the extra life goes to that player's spare ships; the points of annihilation and of the bomb go to that player. All powers end at a new wave. On the guest of a two-player game capsules and bomb waves arrive from the host. The Shift+1…7 test keys give the power to this device's ship (not on the guest).
 - 2026-10-15 08:55 · The challenge wave does not end the active power; the bomb and annihilation also reach its ships.
 - 2026-10-16 10:30 · The bomb and the annihilation take 5 from the mothership boss's health (enemigos/jefe) instead of destroying it; the power is kept while it is there.
+- 2026-10-21 20:22 · Derived from mejoras: Each capsule's power is chosen when it is dropped; with the RED SLOW upgrade (mejoras) the slow fire capsule falls in red, and with the MAGNET upgrade nearby capsules drift toward the ship.
 
 ## Requirements
 - 2026-10-04 10:46 · idea: When a yellow with its two red escorts is destroyed while diving, a random power-up falls as if it were a bomb (a blinking capsule, the same for all and with the same probability; it gives no points); if the player picks it up, they get that power until the end of the wave. Possible ones: rapid shot (up to three active shots instead of one), deep shot (the shot goes through and destroys every ship in its path), bomb (on hitting a ship it explodes and destroys the ships wholly or partly inside a circle five ship widths across), annihilation (on firing, all enemy ships are destroyed), slow fire (power-down: the shot travels at half speed) and triple shot (three parallel projectiles).
@@ -67,3 +70,4 @@ Random power-ups, in js/powerups.js: when a yellow and its two red escorts are d
 - 2026-10-13 07:12 · Derived from multijugador: give the power to the ship that picks up the capsule.
 - 2026-10-15 08:55 · Derived from partida/oleada-desafio: the bomb and annihilation also destroy the ships of the challenge wave, and the active power is kept through it.
 - 2026-10-16 10:30 · Derived from enemigos/jefe: the bomb and annihilation take 5 from the mothership boss's health.
+- 2026-10-21 20:22 · Derived from mejoras: let the slow fire capsule fall in red with the RED SLOW upgrade, and let nearby capsules drift toward the ship with the MAGNET upgrade.

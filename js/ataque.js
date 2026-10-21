@@ -385,8 +385,9 @@ KF.ataque = {
     this.bombas.push({ id: KF.nuevoId(), x: a.x, y: a.y + 5, vx: a.vx * this.factorVelocidad });
   },
 
+  // La mejora BOMBS (js/tienda.js) las frena.
   moverBombas: function (dt) {
-    var vy = this.VELOCIDAD_BOMBA * this.factorVelocidad;
+    var vy = this.VELOCIDAD_BOMBA * this.factorVelocidad * KF.tienda.factorBombas();
     for (var i = 0; i < this.bombas.length; i++) {
       this.bombas[i].x += this.bombas[i].vx * dt;
       this.bombas[i].y += vy * dt;

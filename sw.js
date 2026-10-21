@@ -21,6 +21,7 @@ var ARCHIVOS = [
   'js/jugador.js',
   'js/ataque.js',
   'js/powerups.js',
+  'js/monedas.js',
   'js/desafio.js',
   'js/jefe.js',
   'js/combos.js',
@@ -35,6 +36,7 @@ var ARCHIVOS = [
   'js/lib/qrcode.js',
   'js/red.js',
   'js/pausa.js',
+  'js/tienda.js',
   'js/vibracion.js',
   'js/instalable.js'
 ];

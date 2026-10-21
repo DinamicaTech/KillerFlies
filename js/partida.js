@@ -79,7 +79,7 @@ KF.partida = {
       j.disparos = [];
       j.puntos = puntos;
       j.racha = 0;
-      j.recambio = this.NAVES_RECAMBIO;
+      j.recambio = this.navesAlEmpezar();
       j.proximaVida = (Math.floor(puntos / this.PUNTOS_VIDA_EXTRA) + 1) * this.PUNTOS_VIDA_EXTRA;
       j.aparecer();
     }
@@ -99,6 +99,12 @@ KF.partida = {
     KF.marcador.ponerOleada(n);
     KF.desafio.quitar();
     KF.jefe.quitar();
+  },
+
+  // Naves de recambio al empezar: 2 y una más por cada nivel de la mejora
+  // SHIPS (js/tienda.js), sin pasar del tope.
+  navesAlEmpezar: function () {
+    return Math.min(this.MAXIMO_RECAMBIO, this.NAVES_RECAMBIO + KF.tienda.nivel('SHIPS'));
   },
 
   // Una nave de recambio más para ese jugador (power-up vida extra), hasta el tope.

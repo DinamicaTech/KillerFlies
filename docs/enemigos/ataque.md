@@ -7,9 +7,11 @@ threads:
   - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
   - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
   - Escorts stop firing | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi5smrQFKAMrwWFX1Sq9bmj5
+  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 The attacks: a ship (or a yellow with its escort of reds) leaves the formation with a small parabola, turns, dives toward the player dropping bombs and, if it does not collide, exits at the bottom, reappears at the top and returns to its place. The new types come down in their own way: the green in zigzag, the orange rams in a straight line without bombs and the cyan stops at mid-screen and fires an aimed burst. One or two attacks start at a time and there are more with each wave, which also makes them faster; the difficulty level (partida/dificultad) takes one away in EASY and adds one in HARD. When the player's spare ship comes out, attacks wait two seconds. The yellow leaves with the two reds below it (or the nearest ones); if the yellow is destroyed during the attack, its reds stop dropping bombs. An attacking ship that collides with the player makes it explode and is destroyed; the player's shot also hits it.
+The BOMBS upgrade (mejoras) slows the enemy bombs to 95% of their speed per level in one-player games.
 
 ## Decisions
 - 2026-10-03 18:22 · Created in the initial requirements load.
@@ -38,6 +40,8 @@ The attacks: a ship (or a yellow with its escort of reds) leaves the formation w
 - 2026-10-13 07:45 · Bombs: each ship drops at random between one and its type's maximum (blue and green 2, purple 3, red and yellow 4; orange none), at least 0.3 seconds apart, only while descending from height 90 of the screen down to 60 pixels above the player (the band the game already had; the earlier wording "between 90 and 60 pixels above the player" did not match it). They fall at 110 pixels per second keeping the horizontal speed the ship had when dropping them. The cyan does not drop them this way: it fires them in its burst.
 
 - 2026-10-16 10:41 · Difficulty (partida/dificultad): the maximum of attacks at a time gets the level's attackers added (EASY −1, never below one; HARD +1) and the seconds between attacks are multiplied by the level's factor (EASY ×1.3, HARD ×0.75); NORMAL leaves both as they were (KF.dificultad.ataquesDeMas and factorPausa).
+- 2026-10-21 20:22 · Derived from mejoras: The BOMBS upgrade (mejoras) slows the enemy bombs to 95% of their speed per level in one-player games.
+
 ## Requirements
 - 2026-10-03 18:13 · From sources/KillerFlies.txt § 4: random dive attacks with a gently irregular trajectory toward the player, dropping bombs that keep the ship's horizontal inertia; maximum bombs: blue 2, purple 3, red and yellow 4.
 - 2026-10-03 18:13 · From sources/KillerFlies.txt § 5: the yellow attacks escorted by two reds (or one if no more are left) that go in parallel below it as a shield.
@@ -56,3 +60,4 @@ The attacks: a ship (or a yellow with its escort of reds) leaves the formation w
 - 2026-10-13 07:42 · The rule of the original game is that if the yellow dies, the reds stop firing.
 - 2026-10-13 07:43 · The bombing band is perfect as it is.
 - 2026-10-16 10:41 · Derived from partida/dificultad: one attacker less at a time and more spaced attacks in EASY, one more and closer attacks in HARD.
+- 2026-10-21 20:22 · Derived from mejoras: slow the enemy bombs to 95% of their speed per level of the BOMBS upgrade in one-player games.
