@@ -156,6 +156,18 @@ for (let i = 0; i < 3; i++) comprar('SHIPS');
 p.empezar();
 comprobar(nave.recambio === 5 && t.nivel('SHIPS') === 3 && t.aviso === 'ALREADY AT MAX', 'SHIPS no debe pasar del tope de 5 naves de recambio');
 comprobar(m.saldo() === 100 - 5 - 10 - 10 - 3 - 15 * 3, 'cada compra debe descontar su precio');
+// Cada fila tiene su explicación, de una o dos líneas que caben en la pantalla
+// y solo con letras de la fuente.
+const fuente = readFileSync('js/graficos.js', 'utf8');
+for (let i = 0; i <= t.MEJORAS.length; i++) {
+  t.opcion = i;
+  const lineas = t.explicacion();
+  comprobar(lineas.length >= 1 && lineas.length <= 2, 'la fila ' + i + ' debe tener una explicación de una o dos líneas');
+  for (const l of lineas) {
+    comprobar(l.length * 6 <= KF.ANCHO - 8, 'la explicación "' + l + '" no cabe en la pantalla');
+    for (const c of l) comprobar(fuente.includes("'" + c + "': ["), 'la letra "' + c + '" de "' + l + '" no está en la fuente');
+  }
+}
 t.opcion = t.MEJORAS.length;
 t.elegir();
 comprobar(t.fase === 'vuelta', 'BACK debe devolver el piloto a la nave');

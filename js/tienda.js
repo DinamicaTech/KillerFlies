@@ -12,14 +12,22 @@
 // niveles). Las demás acumulables no tienen tope: el equilibrio se hace con
 // los precios.
 KF.tienda = {
+  // Cada una con su explicación, que se ve bajo la lista mientras está marcada.
   MEJORAS: [
-    { id: 'SPEED',    precio: 5 },              // +5% de velocidad de la nave por nivel
-    { id: 'FIRE',     precio: 5 },              // +5% de velocidad del disparo por nivel
-    { id: 'SHIPS',    precio: 15, maximo: 3, niveles: true },  // una nave de recambio más al empezar, hasta el tope de 5
-    { id: 'BOMBS',    precio: 5 },              // bombas enemigas un 5% más lentas por nivel
-    { id: 'MAGNET',   precio: 10, maximo: 1 },  // monedas y cápsulas van hacia la nave
-    { id: 'RED SLOW', precio: 3, maximo: 1 }    // la cápsula del slow fire cae en roja
+    { id: 'SPEED',    precio: 5,                // +5% de velocidad de la nave por nivel
+      texto: ['+5% SHIP SPEED PER LEVEL'] },
+    { id: 'FIRE',     precio: 5,                // +5% de velocidad del disparo por nivel
+      texto: ['+5% SHOT SPEED PER LEVEL'] },
+    { id: 'SHIPS',    precio: 15, maximo: 3, niveles: true,  // una nave de recambio más al empezar, hasta el tope de 5
+      texto: ['START EACH GAME WITH', 'ONE MORE SPARE SHIP'] },
+    { id: 'BOMBS',    precio: 5,                // bombas enemigas un 5% más lentas por nivel
+      texto: ['ENEMY BOMBS 5% SLOWER PER LEVEL'] },
+    { id: 'MAGNET',   precio: 10, maximo: 1,    // monedas y cápsulas van hacia la nave
+      texto: ['COINS AND CAPSULES', 'FLY TO YOUR SHIP'] },
+    { id: 'RED SLOW', precio: 3, maximo: 1,     // la cápsula del slow fire cae en roja
+      texto: ['THE SLOW FIRE CAPSULE', 'FALLS IN RED'] }
   ],
+  TEXTO_BACK: ['RETURN TO THE PAUSE MENU'],
   AUMENTO: 0.05,           // SPEED y FIRE: +5% por nivel, sumados
   BOMBAS: 0.95,            // BOMBS: cada nivel deja las bombas al 95% de su velocidad
   DURACION_PASEO: 1.5,     // segundos que tarda el piloto entre la nave y la tienda
@@ -30,6 +38,7 @@ KF.tienda = {
   COLOR: '#ffff40',
   COLOR_OPCION: '#808080',
   COLOR_MONEDAS: '#ffd030',
+  COLOR_EXPLICACION: '#40d0e0',
   enPausa: true,           // se mueve con la partida en pausa
 
   fase: null,              // null (cerrada) | 'ida' | 'lista' | 'vuelta'
@@ -91,6 +100,12 @@ KF.tienda = {
   },
 
   filas: function () { return this.MEJORAS.length + 1; },
+
+  // Líneas de la explicación de la fila marcada.
+  explicacion: function () {
+    var m = this.MEJORAS[this.opcion];
+    return m ? m.texto : this.TEXTO_BACK;
+  },
 
   // Compra la mejora marcada, o vuelve si está marcado BACK.
   elegir: function () {
@@ -192,7 +207,10 @@ KF.tienda = {
       var letras = i === this.opcion ? this.LETRAS : this.LETRAS_OPCION;
       p.escribirCentrado(ctx, letras, texto, this.alturaFila(i), 1);
     }
-    if (this.tiempoAviso > 0) p.escribirCentrado(ctx, this.LETRAS_MONEDAS, this.aviso, this.alturaFila(this.filas()) + 6, 1);
+    // La explicación de la fila marcada y, debajo, el aviso de la última compra.
+    var abajo = this.alturaFila(this.filas()) + 6, lineas = this.explicacion();
+    for (i = 0; i < lineas.length; i++) p.escribirCentrado(ctx, this.LETRAS_EXPLICACION, lineas[i], abajo + i * 9, 1);
+    if (this.tiempoAviso > 0) p.escribirCentrado(ctx, this.LETRAS_MONEDAS, this.aviso, abajo + 24, 1);
   }
 };
 
@@ -201,6 +219,7 @@ KF.tienda = {
   t.LETRAS = g.crearFuente(t.COLOR);
   t.LETRAS_OPCION = g.crearFuente(t.COLOR_OPCION);
   t.LETRAS_MONEDAS = g.crearFuente(t.COLOR_MONEDAS);
+  t.LETRAS_EXPLICACION = g.crearFuente(t.COLOR_EXPLICACION);
   t.SPRITE_TIENDA = g.SPRITE_TIENDA;
   t.SPRITES_PILOTO = g.SPRITES_PILOTO;
 })();
