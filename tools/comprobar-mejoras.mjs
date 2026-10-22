@@ -44,8 +44,9 @@ function cargar(guardado, busqueda) {
     nuevoId: (() => { let n = 0; return () => ++n; })(),
     navesVivas: () => [nave].filter((n) => n.estado === 'viva')
   };
+  const alCargar = [];
   const ventana = {
-    addEventListener: nada,
+    addEventListener: (tipo, f) => { if (tipo === 'DOMContentLoaded') alCargar.push(f); },
     location: { pathname: '/', search: busqueda || '', hash: '' },
     history: { replaceState(e, t, url) { ventana.direccion = url; } },
     localStorage: { getItem: (k) => (almacen.has(k) ? almacen.get(k) : null), setItem: (k, v) => almacen.set(k, v) }
@@ -54,6 +55,7 @@ function cargar(guardado, busqueda) {
   for (const f of ['js/dificultad.js', 'js/perfect.js', 'js/ataque.js', 'js/partida.js', 'js/monedas.js', 'js/tienda.js']) {
     vm.runInContext(readFileSync(f, 'utf8'), ctx, { filename: f });
   }
+  alCargar.forEach((f) => f());
   // Destruye la nave i de la formación, en (x, y).
   const destruir = (n, x = 50, y = 50) => {
     n.viva = false;
