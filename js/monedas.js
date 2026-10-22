@@ -15,6 +15,9 @@
 // ('default'), que serán varias en mejoras/cuentas.
 // Con la mejora MAGNET, las monedas y las cápsulas de power-up cercanas van
 // solas hacia la nave.
+// Para hacer pruebas, abrir el juego con ?monedas=N suma N monedas al saldo
+// de cada dificultad; el parámetro se quita de la dirección para que recargar
+// no las vuelva a sumar.
 KF.monedas = {
   POR_OLEADA: 5,
   POR_DESAFIO: 4,          // una por grupo del desafío
@@ -104,6 +107,18 @@ KF.monedas = {
       limpio[nombre] = nivel;
     });
     return limpio;
+  },
+
+  // Puerta trasera de pruebas: ?monedas=N en la dirección.
+  cargarDeRegalo: function () {
+    var loc = window.location, m = loc && /[?&]monedas=(\d{1,6})(?=&|$)/.exec(loc.search);
+    if (!m) return;
+    var n = parseInt(m[1], 10), self = this;
+    KF.dificultad.NIVELES.forEach(function (nombre, i) { self.delNivel(i).saldo += n; });
+    this.guardar();
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, '', loc.pathname + loc.search.replace(/([?&])monedas=\d+&?/, '$1').replace(/[?&]$/, '') + (loc.hash || ''));
+    }
   },
 
   // Hay monedas en esta partida: a uno, jugando y en el anfitrión (o solo).
@@ -210,4 +225,5 @@ KF.monedas = {
 KF.monedas.SPRITES = KF.graficos.SPRITES_MONEDA;
 KF.monedas.SPRITE = KF.graficos.SPRITE_MONEDA;
 KF.enemigos.alDestruir(function (nave, motivo, autor, x, y) { KF.monedas.alDestruir(nave, x, y); });
+KF.monedas.cargarDeRegalo();
 KF.registrar(KF.monedas);
