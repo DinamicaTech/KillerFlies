@@ -15,7 +15,7 @@ const comprobar = (cond, texto) => { if (!cond) errores.push(texto); };
 const nada = () => {};
 const CLAVE = 'killerflies.cuenta.default';
 
-function cargar(guardado) {
+function cargar(guardado, busqueda) {
   const almacen = new Map(guardado);
   const oyentes = [];
   const nave = {
@@ -46,6 +46,8 @@ function cargar(guardado) {
   };
   const ventana = {
     addEventListener: nada,
+    location: { pathname: '/', search: busqueda || '', hash: '' },
+    history: { replaceState(e, t, url) { ventana.direccion = url; } },
     localStorage: { getItem: (k) => (almacen.has(k) ? almacen.get(k) : null), setItem: (k, v) => almacen.set(k, v) }
   };
   const ctx = vm.createContext({ KF, window: ventana, Math, JSON, String, Array, parseInt, performance: { now: () => 0 } });
@@ -57,7 +59,7 @@ function cargar(guardado) {
     n.viva = false;
     for (const f of oyentes) f(n, 'disparo', nave, x, y);
   };
-  return { KF, almacen, nave, destruir };
+  return { KF, almacen, nave, destruir, ventana };
 }
 
 // Destruye todas las naves de la oleada en curso y devuelve las monedas que
@@ -260,6 +262,14 @@ t.tecla({ code: 'ArrowDown' });
 comprobar(t.opcion === 0 && t.primera === 0, 'desde BACK, abajo debe volver a la primera fila');
 t.toque({ x: 112, y: t.alturaFlechaAbajo() + 2 });
 comprobar(t.primera === 1 && t.opcion === 1, 'tocar la flecha de abajo debe desplazar la lista una fila');
+
+// Puerta trasera de pruebas: ?monedas=N suma N a cada dificultad y se quita de la dirección.
+let regalo = cargar([[CLAVE, '{"NORMAL":{"saldo":3}}']], '?room=ABCD&monedas=100');
+comprobar(regalo.KF.monedas.saldo(0) === 100 && regalo.KF.monedas.saldo(1) === 103 && regalo.KF.monedas.saldo(2) === 100, '?monedas=100 debe sumar 100 monedas a cada dificultad');
+comprobar(JSON.parse(regalo.almacen.get(CLAVE)).HARD.saldo === 100, 'las monedas regaladas deben quedar guardadas');
+comprobar(regalo.ventana.direccion === '/?room=ABCD', 'el parámetro monedas debe quitarse de la dirección');
+regalo = cargar([], '?monedas=abc');
+comprobar(regalo.KF.monedas.saldo(1) === 0 && !regalo.ventana.direccion, 'un ?monedas no numérico no debe hacer nada');
 
 if (errores.length) {
   errores.forEach((e) => console.error('ERROR: ' + e));
