@@ -38,8 +38,8 @@ KF.partida = {
   oleada: 1,
   esperaOleada: 0,         // segundos desde que se destruyó la última nave
   tiempoFin: 0,            // segundos desde 'GAME OVER'
-  opcion: 0,               // opción elegida en el menú de inicio (la siguiente
-                           // a la última es la línea '< FROM WAVE n >')
+  opcion: 0,               // opción elegida en el menú de inicio (tras la
+                           // última van la línea del perfil y la de '< FROM WAVE n >')
   inicio: null,            // punto de partida de la partida en curso, o null si
                            // empezó en la oleada 1 (lo repite RESTART)
   navePerdida: false,      // se perdió una nave en la oleada principal en curso
@@ -51,6 +51,7 @@ KF.partida = {
     this.estado = 'inicio';
     this.opcion = 0;
     KF.dificultad.nivel = KF.dificultad.elegido;
+    KF.perfiles.mostrarActivo();
     KF.perfect.marcarUltimo();
     for (var i = 0; i < KF.jugadores.length; i++) KF.jugadores[i].retirar();
     KF.marcador.cambiarModo(!!KF.companero);
@@ -66,6 +67,7 @@ KF.partida = {
   empezar: function (inicio) {
     this.estado = 'jugando';
     this.inicio = inicio && !KF.companero ? inicio : null;
+    KF.perfiles.mostrarActivo();
     this.aUno = !KF.companero;
     KF.dificultad.nivel = KF.dificultad.elegido;
     KF.combos.flotantes = [];
@@ -210,7 +212,13 @@ KF.partida = {
   // la conexión con el otro jugador, si la había.
   elegir: function () {
     var opcion = this.opciones()[this.opcion];
-    if (this.enPerfect()) {
+    // Con '< NEW PROFILE >' en el menú, la partida a uno pide antes el nombre
+    // del perfil nuevo.
+    if (KF.perfiles.nuevo && (this.enPerfil() || opcion === this.OPCIONES[0])) {
+      KF.red.cerrar();
+      this.estado = 'fama';
+      KF.salonFama.abrirPerfil();
+    } else if (this.enPerfect()) {
       KF.red.cerrar();
       this.empezar(KF.perfect.marcado());
     } else if (opcion === this.OTRA_PARTIDA) KF.red.elegirOtra();
@@ -251,36 +259,57 @@ KF.partida = {
     return this.alturaOpcion(this.opciones().length) + this.SEPARACION_DIFICULTAD;
   },
 
-  // Altura (borde superior) de la línea '< FROM WAVE n >', bajo la dificultad.
-  alturaPerfect: function () {
+  // Altura (borde superior) de la línea del perfil, bajo la dificultad.
+  alturaPerfil: function () {
     return this.alturaDificultad() + this.SEPARACION_OPCIONES;
   },
 
-  // Filas que se recorren con las flechas arriba y abajo: las opciones y, si
-  // la dificultad marcada tiene algún perfect, la línea '< FROM WAVE n >'.
+  // Altura (borde superior) de la línea '< FROM WAVE n >', bajo el perfil.
+  alturaPerfect: function () {
+    return this.alturaPerfil() + this.SEPARACION_OPCIONES;
+  },
+
+  // Filas que se recorren con las flechas arriba y abajo: las opciones, la
+  // línea del perfil y, si el perfil tiene algún perfect, la línea
+  // '< FROM WAVE n >'.
   filas: function () {
-    return this.opciones().length + (KF.perfect.marcado() ? 1 : 0);
+    return this.opciones().length + 1 + (KF.perfect.marcado() ? 1 : 0);
+  },
+
+  // La línea del perfil está marcada.
+  enPerfil: function () {
+    return this.opcion === this.opciones().length;
   },
 
   // La línea '< FROM WAVE n >' está marcada.
   enPerfect: function () {
-    return this.opcion === this.opciones().length && !!KF.perfect.marcado();
+    return this.opcion === this.opciones().length + 1 && !!KF.perfect.marcado();
   },
 
   // Cambia la dificultad marcada en el menú; la formación de detrás se pone
   // a la velocidad del nivel nuevo.
   // Cada nivel tiene sus perfects: se marca el de oleada más alta.
+  // Cada nivel tiene sus perfiles: se muestra el activo.
   cambiarDificultad: function (paso) {
     KF.dificultad.cambiar(paso);
     KF.dificultad.nivel = KF.dificultad.elegido;
+    KF.perfiles.mostrarActivo();
     KF.perfect.marcarUltimo();
     this.ponerOleada(1);
   },
 
-  // Las flechas izquierda y derecha cambian el perfect si su línea está
-  // marcada y, si no, la dificultad.
+  // Pasa al perfil siguiente o anterior (o a '< NEW PROFILE >'); cada perfil
+  // tiene sus perfects: se marca el de oleada más alta.
+  cambiarPerfil: function (paso) {
+    KF.perfiles.cambiar(paso);
+    KF.perfect.marcarUltimo();
+  },
+
+  // Las flechas izquierda y derecha cambian el perfil o el perfect si su
+  // línea está marcada y, si no, la dificultad.
   cambiarConFlechas: function (paso) {
-    if (this.enPerfect()) KF.perfect.cambiar(paso);
+    if (this.enPerfil()) this.cambiarPerfil(paso);
+    else if (this.enPerfect()) KF.perfect.cambiar(paso);
     else this.cambiarDificultad(paso);
   },
 
@@ -294,6 +323,18 @@ KF.partida = {
     return this.enLinea(p, this.alturaDificultad());
   },
 
+  // El punto (x, y) está en la línea del perfil.
+  enLineaPerfil: function (p) {
+    return this.enLinea(p, this.alturaPerfil());
+  },
+
+  // Tocar la línea del perfil la marca; si ya estaba marcada, pasa al perfil
+  // siguiente.
+  tocarPerfil: function () {
+    if (this.enPerfil()) this.cambiarPerfil(1);
+    else this.opcion = this.opciones().length;
+  },
+
   // El punto (x, y) está en la línea '< FROM WAVE n >', si se muestra.
   enLineaPerfect: function (p) {
     return !!KF.perfect.marcado() && this.enLinea(p, this.alturaPerfect());
@@ -303,7 +344,7 @@ KF.partida = {
   // perfect siguiente. Tocar fuera de ella empieza desde el marcado.
   tocarPerfect: function () {
     if (this.enPerfect()) KF.perfect.cambiar(1);
-    else this.opcion = this.opciones().length;
+    else this.opcion = this.opciones().length + 1;
   },
 
   // Opción del menú en el punto (x, y) de la pantalla lógica, o -1.
@@ -331,6 +372,7 @@ KF.partida = {
         this.escribirCentrado(ctx, letras, opciones[i], this.alturaOpcion(i), 1);
       }
       this.escribirCentrado(ctx, this.LETRAS_INICIO, KF.dificultad.texto(), this.alturaDificultad(), 1);
+      this.escribirCentrado(ctx, this.enPerfil() ? this.LETRAS_INICIO : this.LETRAS_OPCION, KF.perfiles.texto(), this.alturaPerfil(), 1);
       if (KF.perfect.marcado()) {
         var letrasPerfect = this.enPerfect() ? this.LETRAS_INICIO : this.LETRAS_OPCION;
         this.escribirCentrado(ctx, letrasPerfect, KF.perfect.texto(), this.alturaPerfect(), 1);
@@ -369,8 +411,8 @@ KF.partida = {
   });
   // La pulsación corta que empieza la partida no dispara. En el menú, tocar
   // una opción la elige, tocar la dificultad pasa al nivel siguiente, tocar la
-  // línea '< FROM WAVE n >' la marca (o pasa al perfect siguiente) y tocar en
-  // otro sitio elige la opción marcada.
+  // línea del perfil o la de '< FROM WAVE n >' la marca (o pasa al perfil o
+  // al perfect siguiente) y tocar en otro sitio elige la opción marcada.
   KF.alPulsarCorto(function () {
     var antes = p.estado;
     if (antes === 'fama') {
@@ -387,6 +429,11 @@ KF.partida = {
       if (p.enDificultad(KF.ultimoToque)) {
         p.cambiarDificultad(1);
         if (p.opcion >= p.filas()) p.opcion = 0;
+        KF.tactil.disparar = false;
+        return;
+      }
+      if (p.enLineaPerfil(KF.ultimoToque)) {
+        p.tocarPerfil();
         KF.tactil.disparar = false;
         return;
       }

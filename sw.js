@@ -21,6 +21,7 @@ var ARCHIVOS = [
   'js/jugador.js',
   'js/ataque.js',
   'js/powerups.js',
+  'js/perfiles.js',
   'js/monedas.js',
   'js/desafio.js',
   'js/jefe.js',

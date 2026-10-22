@@ -52,7 +52,7 @@ function cargar(guardado, busqueda) {
     localStorage: { getItem: (k) => (almacen.has(k) ? almacen.get(k) : null), setItem: (k, v) => almacen.set(k, v) }
   };
   const ctx = vm.createContext({ KF, window: ventana, Math, JSON, String, Array, parseInt, performance: { now: () => 0 } });
-  for (const f of ['js/dificultad.js', 'js/perfect.js', 'js/ataque.js', 'js/partida.js', 'js/monedas.js', 'js/tienda.js']) {
+  for (const f of ['js/dificultad.js', 'js/perfiles.js', 'js/perfect.js', 'js/ataque.js', 'js/partida.js', 'js/monedas.js', 'js/tienda.js']) {
     vm.runInContext(readFileSync(f, 'utf8'), ctx, { filename: f });
   }
   alCargar.forEach((f) => f());

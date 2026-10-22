@@ -40,7 +40,7 @@ function cargar(guardado) {
     localStorage: { getItem: (k) => (almacen.has(k) ? almacen.get(k) : null), setItem: (k, v) => almacen.set(k, v) }
   };
   const ctx = vm.createContext({ KF, window: ventana, Math, JSON, String, parseInt, performance: { now: () => 0 } });
-  for (const f of ['js/dificultad.js', 'js/perfect.js', 'js/ataque.js', 'js/partida.js']) {
+  for (const f of ['js/dificultad.js', 'js/perfiles.js', 'js/perfect.js', 'js/ataque.js', 'js/partida.js']) {
     vm.runInContext(readFileSync(f, 'utf8'), ctx, { filename: f });
   }
   return { KF, almacen, nave };
@@ -58,7 +58,7 @@ const NORMAL = 'killerflies.perfect.NORMAL';
 
 // Sin nada guardado no hay línea '< FROM WAVE n >'.
 comprobar(!pf.marcado() && pf.texto() === '', 'sin perfects no debe haber línea en el menú');
-comprobar(p.filas() === p.opciones().length, 'sin perfects las flechas solo deben recorrer las opciones');
+comprobar(p.filas() === p.opciones().length + 1, 'sin perfects las flechas solo deben recorrer las opciones y el perfil');
 
 // Perfect en la oleada 1 con 1500 puntos: se guarda la 2 con esos puntos.
 p.empezar();
@@ -105,9 +105,9 @@ delete KF.companero;
 // marcada y, si no, cambian la dificultad.
 p.irAInicio();
 comprobar(pf.texto() === '< FROM WAVE 4 >', 'el menú debe marcar el perfect de oleada más alta');
-comprobar(p.filas() === p.opciones().length + 1, 'con perfects las flechas deben llegar a su línea');
-p.opcion = p.opciones().length;
-comprobar(p.enPerfect(), 'la fila siguiente a la última opción debe ser la línea del perfect');
+comprobar(p.filas() === p.opciones().length + 2, 'con perfects las flechas deben llegar a su línea');
+p.opcion = p.opciones().length + 1;
+comprobar(p.enPerfect(), 'la fila siguiente a la del perfil debe ser la línea del perfect');
 p.cambiarConFlechas(1);
 comprobar(pf.texto() === '< FROM WAVE 2 >' && KF.dificultad.elegido === 1, 'con la línea marcada, la flecha cambia el perfect y no la dificultad');
 p.tocarPerfect();
@@ -126,7 +126,7 @@ comprobar(p.oleada === 1 && nave.puntos === 0 && p.inicio === null, "'1 PLAYER' 
 // Por dificultad: HARD no tiene los perfects de NORMAL, y los suyos se guardan aparte.
 p.irAInicio();
 p.cambiarDificultad(1);
-comprobar(!pf.marcado() && p.filas() === p.opciones().length, 'HARD no debe mostrar los perfects de NORMAL');
+comprobar(!pf.marcado() && p.filas() === p.opciones().length + 1, 'HARD no debe mostrar los perfects de NORMAL');
 p.empezar();
 nave.puntos = 900;
 limpiarOleada(KF);

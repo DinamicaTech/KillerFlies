@@ -45,7 +45,7 @@ function cargar(guardado) {
     localStorage: { getItem: (k) => (almacen.has(k) ? almacen.get(k) : null), setItem: (k, v) => almacen.set(k, v) }
   };
   const ctx = vm.createContext({ KF, window: ventana, Math, JSON, String, Array, parseInt, performance: { now: () => 0 } });
-  for (const f of ['js/dificultad.js', 'js/perfect.js', 'js/ataque.js', 'js/partida.js', 'js/salon-fama.js']) {
+  for (const f of ['js/dificultad.js', 'js/perfiles.js', 'js/perfect.js', 'js/ataque.js', 'js/partida.js', 'js/salon-fama.js']) {
     vm.runInContext(readFileSync(f, 'utf8'), ctx, { filename: f });
   }
   // Una tecla como la da el navegador (keydown) y una pulsación corta en (x, y).
@@ -72,13 +72,15 @@ const escribe = (j, texto) => { for (const c of texto) j.tecla(c, c === ' ' ? 'S
 const pasa = (j, s) => j.KF.salonFama.actualizar(s);
 const guardada = (j) => JSON.parse(j.almacen.get(CLAVE) || '[]');
 
-// Primera partida, con la tabla vacía: entra, se pide el nombre sin nada escrito.
+// Primera partida, con la tabla vacía: entra, se pide el nombre, escrito ya
+// con el del perfil de jugador (PLAYER).
 let j = cargar([]);
 let p = j.KF.partida, s = j.KF.salonFama;
 acabarPartida(j, 4, 1230);
 comprobar(p.estado === 'fama' && s.fase === 'nombre', 'con la tabla vacía, unos puntos deben pedir el nombre');
-comprobar(s.nombre === '', 'sin nombre anterior, el nombre debe empezar vacío');
-comprobar(s.nombre === '', "la tecla que sale de 'GAME OVER' no debe escribirse");
+comprobar(s.nombre === 'PLAYER', 'el nombre debe venir escrito con el del perfil');
+comprobar(s.nombre === 'PLAYER', "la tecla que sale de 'GAME OVER' no debe escribirse");
+for (let i = 0; i < 6; i++) j.tecla('Backspace', 'Backspace');
 escribe(j, 'ronaldo99x');
 comprobar(s.nombre === 'RONALDO9', 'el nombre se escribe en mayúsculas y como mucho con 8 caracteres');
 j.tecla('Backspace', 'Backspace');
@@ -94,12 +96,12 @@ pasa(j, s.ESPERA);
 j.tecla('x', 'KeyX');
 comprobar(p.estado === 'inicio' && s.fase === null, "una tecla en la tabla debe volver a 'START GAME'");
 
-// Segunda partida: el nombre viene relleno con el último; con el teclado en pantalla.
+// Segunda partida: el nombre viene otra vez con el del perfil; con el teclado en pantalla.
 acabarPartida(j, 2, 500);
-comprobar(s.fase === 'nombre' && s.nombre === 'RONALDO', 'el nombre debe venir relleno con el último usado');
+comprobar(s.fase === 'nombre' && s.nombre === 'PLAYER', 'el nombre debe venir con el del perfil, no con el último escrito');
 const tecla = (nombre) => s.teclas().find((k) => k.tecla === nombre);
 const centro = (k) => ({ x: k.x + k.ancho / 2, y: k.y + k.alto / 2 });
-for (let i = 0; i < 7; i++) j.tocar(centro(tecla('DEL')));
+for (let i = 0; i < 6; i++) j.tocar(centro(tecla('DEL')));
 j.tocar(centro(tecla('A')));
 j.tocar(centro(tecla('SPACE')));
 j.tocar(centro(tecla('SPACE')));
@@ -135,6 +137,7 @@ pasa(j, s.ESPERA);
 j.tecla('x', 'KeyX');
 acabarPartida(j, 5, 4500);
 comprobar(s.fase === 'nombre', 'superar al décimo debe pedir el nombre');
+for (let i = 0; i < 8; i++) j.tecla('Backspace', 'Backspace');
 escribe(j, 'NEW');
 j.tecla('Enter', 'Enter');
 t = guardada(j);

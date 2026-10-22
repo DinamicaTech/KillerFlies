@@ -4,7 +4,10 @@
 // un teclado de letras dibujado en el juego) y se guarda con los puntos y la
 // oleada alcanzada; luego se muestra la tabla con los 10 mejores (puesto,
 // nombre, oleada y puntos) y una tecla o un toque vuelve a 'START GAME'.
-// Partida lo abre (KF.partida.estado 'fama') y lo cierra irAInicio.
+// Partida lo abre (KF.partida.estado 'fama') y lo cierra irAInicio. El
+// nombre viene escrito con el del perfil de jugador (js/perfiles.js).
+// El mismo teclado pide el nombre de un perfil nuevo desde el menú de inicio
+// (abrirPerfil); Escape lo cancela.
 KF.salonFama = {
   MAXIMO: 10,              // puestos de la tabla
   LARGO_NOMBRE: 8,         // caracteres del nombre como mucho
@@ -30,6 +33,7 @@ KF.salonFama = {
   ALTO_TECLADO: 150,       // borde superior del teclado en pantalla
 
   fase: null,              // null (cerrado) | 'nombre' | 'tabla'
+  perfil: false,           // el nombre es el de un perfil nuevo, no el de la tabla
   nombre: '',
   puntos: 0,
   oleada: 1,
@@ -81,12 +85,21 @@ KF.salonFama = {
     this.oleada = oleada;
     this.nueva = -1;
     this.tiempo = 0;
+    this.perfil = false;
     if (this.entra(puntos)) {
       this.fase = 'nombre';
-      this.nombre = this.ultimoNombre();
+      this.nombre = this.limpiar(KF.perfiles.nombre());
     } else {
       this.fase = 'tabla';
     }
+  },
+
+  // Desde el menú de inicio: pide el nombre de un perfil nuevo.
+  abrirPerfil: function () {
+    this.perfil = true;
+    this.fase = 'nombre';
+    this.nombre = '';
+    this.tiempo = 0;
   },
 
   // El último nombre escrito, para no tener que repetirlo.
@@ -100,6 +113,11 @@ KF.salonFama = {
 
   // Guarda el nombre escrito con los puntos y la oleada y pasa a la tabla.
   confirmar: function () {
+    if (this.perfil) {
+      KF.perfiles.crear(this.limpiar(this.nombre));
+      this.cerrar();
+      return;
+    }
     var nombre = this.limpiar(this.nombre) || this.NOMBRE_VACIO;
     var lista = this.lista(), puesto = 0;
     while (puesto < lista.length && lista[puesto].puntos >= this.puntos) puesto++;
@@ -123,6 +141,7 @@ KF.salonFama = {
 
   cerrar: function () {
     this.fase = null;
+    this.perfil = false;
     this.guardada = null;
     KF.partida.irAInicio();
   },
@@ -145,6 +164,7 @@ KF.salonFama = {
     if (this.fase === 'nombre') {
       if (e.code === 'Enter' || e.code === 'NumpadEnter') this.escribir('END');
       else if (e.code === 'Backspace') this.escribir('DEL');
+      else if (e.code === 'Escape' && this.perfil) this.cerrar();
       else if (e.key && e.key.length === 1) this.escribir(e.key.toUpperCase() === ' ' ? 'SPACE' : e.key.toUpperCase());
       if (e.preventDefault) e.preventDefault();
     } else if (this.fase === 'tabla' && this.tiempo >= this.ESPERA) {
@@ -205,9 +225,15 @@ KF.salonFama = {
 
   dibujarNombre: function (ctx) {
     var g = KF.graficos;
-    this.centrado(ctx, this.LETRAS_TITULO, 'NEW HIGH SCORE', 30, 2);
-    this.centrado(ctx, this.LETRAS_TEXTO, 'WAVE ' + this.oleada + '   ' + this.puntos + ' POINTS', 60, 1);
-    this.centrado(ctx, this.LETRAS_GRIS, 'ENTER YOUR NAME', 84, 1);
+    if (this.perfil) {
+      this.centrado(ctx, this.LETRAS_TITULO, 'NEW PROFILE', 30, 2);
+      this.centrado(ctx, this.LETRAS_TEXTO, KF.dificultad.NIVELES[KF.dificultad.elegido], 60, 1);
+      this.centrado(ctx, this.LETRAS_GRIS, 'ENTER ITS NAME', 84, 1);
+    } else {
+      this.centrado(ctx, this.LETRAS_TITULO, 'NEW HIGH SCORE', 30, 2);
+      this.centrado(ctx, this.LETRAS_TEXTO, 'WAVE ' + this.oleada + '   ' + this.puntos + ' POINTS', 60, 1);
+      this.centrado(ctx, this.LETRAS_GRIS, 'ENTER YOUR NAME', 84, 1);
+    }
     // El nombre a doble tamaño, con una raya bajo cada hueco y la del
     // siguiente carácter parpadeando.
     var paso = (g.FUENTE_ANCHO + 1) * 2, x0 = (KF.ANCHO - g.anchoTexto('X'.repeat(this.LARGO_NOMBRE), 2)) / 2;
@@ -221,6 +247,7 @@ KF.salonFama = {
     }
     if (!this.tactil) {
       this.centrado(ctx, this.LETRAS_GRIS, 'PRESS ENTER TO SAVE', 140, 1);
+      if (this.perfil) this.centrado(ctx, this.LETRAS_GRIS, 'ESC TO CANCEL', 152, 1);
       return;
     }
     // Teclado en pantalla.
