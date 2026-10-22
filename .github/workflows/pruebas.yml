@@ -59,3 +59,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Escudo y naves de apoyo (mejoras/escudo-y-apoyo)
         run: node tools/comprobar-escudo-apoyo.mjs
+
+  skins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Skins, cosméticos y demás mejoras de la fase 4 (mejoras/skins)
+        run: node tools/comprobar-skins.mjs

@@ -265,8 +265,38 @@ comprobar(t.opcion === 0 && t.primera === 0, 'desde BACK, abajo debe volver a la
 t.toque({ x: 112, y: t.alturaFlechaAbajo() + 2 });
 comprobar(t.primera === 1 && t.opcion === 1, 'tocar la flecha de abajo debe desplazar la lista una fila');
 
+// Skins y cosméticos (mejoras/skins): comprados quedan puestos, su fila los
+// quita y los pone, solo hay una skin puesta y se recuerda al volver a abrir.
+({ KF, almacen } = cargar([]));
+t = KF.tienda; m = KF.monedas;
+m.delNivel().saldo = 50;
+t.abrir(); t.fase = 'lista';
+const elegirId = (id) => { t.opcion = t.MEJORAS.findIndex((x) => x.id === id); t.elegir(); };
+const fila = (id) => t.textoMejora(t.mejora(id)).trim();
+elegirId('SKIN BLUE');
+comprobar(m.saldo() === 40 && t.nivel('SKIN BLUE') === 1 && fila('SKIN BLUE').endsWith('ON'), 'comprar SKIN BLUE debe costar 10 y dejarla puesta');
+elegirId('SKIN BLUE');
+comprobar(m.saldo() === 40 && t.nivel('SKIN BLUE') === 0 && t.aviso === 'OFF' && fila('SKIN BLUE').endsWith('OFF'), 'elegir una skin comprada debe quitarla sin cobrar');
+elegirId('SKIN BLUE');
+elegirId('SKIN GOLD');
+comprobar(t.nivel('SKIN GOLD') === 1 && t.nivel('SKIN BLUE') === 0, 'poner una skin debe quitar la otra');
+elegirId('SKIN BLUE');
+comprobar(t.nivel('SKIN GOLD') === 0 && t.nivel('SKIN BLUE') === 1 && m.saldo() === 30, 'volver a poner la primera skin debe quitar la segunda sin cobrar');
+elegirId('TRAIL'); elegirId('STARS'); elegirId('STARS');
+comprobar(t.nivel('TRAIL') === 1 && t.nivel('STARS') === 0 && t.nivel('SKIN BLUE') === 1 && m.saldo() === 20, 'los cosméticos se ponen y se quitan sin tocar la skin');
+t.opcion = t.MEJORAS.findIndex((x) => x.id === 'STARS');
+comprobar(t.explicacion()[1] === t.TEXTO_QUITADO, 'la explicación de un cosmético quitado debe decir cómo ponerlo');
+m.delNivel().saldo = 30;
+elegirId('YELLOW'); elegirId('YELLOW'); elegirId('KEEP POWER');
+comprobar(t.nivel('YELLOW') === 2 && t.nivel('KEEP POWER') === 1 && m.saldo() === 5, 'YELLOW es acumulable y KEEP POWER se compra una vez');
+let regalo = cargar([[CLAVE, almacen.get(CLAVE)]]);
+comprobar(regalo.KF.tienda.nivel('SKIN BLUE') === 1 && regalo.KF.tienda.nivel('SKIN GOLD') === 0 && regalo.KF.tienda.nivel('STARS') === 0 && regalo.KF.tienda.nivel('TRAIL') === 1, 'al volver a abrir el juego debe recordar qué skins y cosméticos están puestos');
+KF.companero = {};
+comprobar(t.nivel('SKIN BLUE') === 0 && t.nivel('TRAIL') === 0, 'en la partida a dos no debe haber skins ni cosméticos');
+delete KF.companero;
+
 // Puerta trasera de pruebas: ?monedas=N suma N a cada dificultad y se quita de la dirección.
-let regalo = cargar([[CLAVE, '{"NORMAL":{"saldo":3}}']], '?room=ABCD&monedas=100');
+regalo = cargar([[CLAVE, '{"NORMAL":{"saldo":3}}']], '?room=ABCD&monedas=100');
 comprobar(regalo.KF.monedas.saldo(0) === 100 && regalo.KF.monedas.saldo(1) === 103 && regalo.KF.monedas.saldo(2) === 100, '?monedas=100 debe sumar 100 monedas a cada dificultad');
 comprobar(JSON.parse(regalo.almacen.get(CLAVE)).HARD.saldo === 100, 'las monedas regaladas deben quedar guardadas');
 comprobar(regalo.ventana.direccion === '/?room=ABCD', 'el parámetro monedas debe quitarse de la dirección');

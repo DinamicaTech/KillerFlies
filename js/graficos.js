@@ -782,6 +782,8 @@ KF.graficos.fondo = {
   NUM_ESTRELLAS: 70,
   VELOCIDAD_ESTRELLAS: 12, // píxeles por segundo
   COLORES_ESTRELLAS: ['#ffffff', '#ffffff', '#ffffff', '#f0f040', '#40e0ff', '#ff4040', '#60ff60', '#ff60ff', '#6070ff'],
+  // Con el cosmético STARS de la tienda (mejoras/skins): fríos, de nebulosa.
+  COLORES_ESTRELLAS_STARS: ['#c0d8ff', '#c0d8ff', '#ffffff', '#80a0ff', '#40e0ff', '#b060ff', '#ff80e0', '#6070ff', '#60fff0'],
   estrellas: [],
 
   crearEstrellas: function () {
@@ -790,7 +792,7 @@ KF.graficos.fondo = {
       this.estrellas.push({
         x: Math.floor(Math.random() * KF.ANCHO),
         y: Math.random() * KF.ALTO,
-        color: this.COLORES_ESTRELLAS[Math.floor(Math.random() * this.COLORES_ESTRELLAS.length)],
+        color: Math.floor(Math.random() * this.COLORES_ESTRELLAS.length),   // índice en la paleta
         // Cada estrella se apaga y se enciende con su propio ritmo.
         periodo: 0.6 + Math.random() * 1.4,
         fase: Math.random()
@@ -811,11 +813,12 @@ KF.graficos.fondo = {
   },
 
   dibujar: function (ctx) {
+    var colores = KF.tienda && KF.tienda.nivel('STARS') > 0 ? this.COLORES_ESTRELLAS_STARS : this.COLORES_ESTRELLAS;
     for (var i = 0; i < this.estrellas.length; i++) {
       var e = this.estrellas[i];
       // Encendida tres cuartas partes de su ciclo.
       if (e.fase < 0.75) {
-        ctx.fillStyle = e.color;
+        ctx.fillStyle = colores[e.color];
         ctx.fillRect(e.x, Math.floor(e.y), 1, 1);
       }
     }
@@ -856,6 +859,21 @@ KF.graficos.fondo = {
     });
     return sprites;
   });
+  // Las skins de la tienda (mejoras/skins), solo para la nave del jugador 1:
+  // otro casco y otro morro, con el interior de cada power-up como siempre.
+  // SPRITES_SKIN[id] = { normal, poder: { poder: sprite } }.
+  var paletasSkin = {
+    'SKIN BLUE': { R: '#3070ff', W: '#c8d8f0', C: '#30c0d0' },
+    'SKIN GOLD': { R: '#ffb020', W: '#f0d890', C: '#30c0d0' }
+  };
+  g.SPRITES_SKIN = {};
+  Object.keys(paletasSkin).forEach(function (id) {
+    var p = paletasSkin[id], poderes = {};
+    Object.keys(g.INTERIOR_PODER).forEach(function (poder) {
+      poderes[poder] = g.crearSpriteHD(13, 13, function (ctx) { g.dibujarJugador(ctx, p, poder); });
+    });
+    g.SPRITES_SKIN[id] = { normal: g.crearSpriteHD(13, 13, function (ctx) { g.dibujarJugador(ctx, p); }), poder: poderes };
+  });
   // La nave nodriza jefe y su silueta blanca para el destello de los impactos.
   g.SPRITE_JEFE = g.crearSpriteHD(44, 22, function (ctx) { g.dibujarJefe(ctx, false); });
   g.SPRITE_JEFE_BLANCO = g.crearSpriteHD(44, 22, function (ctx) { g.dibujarJefe(ctx, true); });
@@ -863,6 +881,8 @@ KF.graficos.fondo = {
   g.SPRITE_DISPARO = g.crearSprite(g.MAPA_DISPARO, { Y: '#ffff40' });
   g.SPRITE_DESTELLO = g.crearSprite(g.MAPA_DESTELLO, { W: '#ffffff', Y: '#ffff40' });
   g.SPRITES_LLAMA = g.MAPAS_LLAMA.map(function (m) { return g.crearSprite(m, { O: '#ff8020', Y: '#ffff40' }); });
+  // La llama azul del cosmético TRAIL.
+  g.SPRITES_LLAMA_AZUL = g.MAPAS_LLAMA.map(function (m) { return g.crearSprite(m, { O: '#2060ff', Y: '#80e8ff' }); });
   g.SPRITE_BOMBA = g.crearSprite(g.MAPA_BOMBA, { B: '#ffffff' });
   g.SPRITE_BOMBA_JUGADOR = g.crearSprite(g.MAPA_BOMBA_JUGADOR, { O: '#ff8020', Y: '#ffff40' });
   g.SPRITES_CAPSULA = [
@@ -897,6 +917,11 @@ KF.graficos.fondo = {
   g.COLORES_FRAGMENTOS = [fuego.R, fuego.Y, fuego.B, fuego.C];
   g.SPRITES_EXPLOSION_JUGADOR = g.MAPAS_EXPLOSION_JUGADOR.map(function (m) { return g.crearSprite(m, fuego); });
   g.SPRITES_EXPLOSION_NAVE = g.MAPAS_EXPLOSION_NAVE.map(function (m) { return g.crearSprite(m, fuego); });
+  // Las explosiones del cosmético BLAST: de plasma, en violetas y celestes.
+  var plasma = { R: '#a040ff', Y: '#60e0ff', B: '#ffffff', C: '#ff60e0' };
+  g.COLORES_FRAGMENTOS_PLASMA = [plasma.R, plasma.Y, plasma.B, plasma.C];
+  g.SPRITES_EXPLOSION_JUGADOR_PLASMA = g.MAPAS_EXPLOSION_JUGADOR.map(function (m) { return g.crearSprite(m, plasma); });
+  g.SPRITES_EXPLOSION_NAVE_PLASMA = g.MAPAS_EXPLOSION_NAVE.map(function (m) { return g.crearSprite(m, plasma); });
   g.fondo.crearEstrellas();
 })();
 

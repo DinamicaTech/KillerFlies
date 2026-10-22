@@ -114,7 +114,10 @@ KF.Nave.prototype = {
     this.estado = 'explotando';
     this.vx = 0;
     this.tiempoExplosion = 0;
-    this.poder = null;
+    // Con la mejora KEEP POWER, la primera vez en la partida que la destruyen
+    // con un power-up, la nave siguiente lo conserva.
+    if (this.poder && !this.poderSalvado && KF.tienda.nivel('KEEP POWER') > 0) this.poderSalvado = true;
+    else this.poder = null;
     this.apoyos = [];
     KF.combos.cortar(this);
     this.lanzarFragmentos();
@@ -122,7 +125,7 @@ KF.Nave.prototype = {
 
   // Fragmentos desde el centro de la nave, en direcciones y velocidades al azar.
   lanzarFragmentos: function () {
-    var colores = KF.graficos.COLORES_FRAGMENTOS;
+    var colores = this.cosmetico('BLAST') ? KF.graficos.COLORES_FRAGMENTOS_PLASMA : KF.graficos.COLORES_FRAGMENTOS;
     var v = this.VELOCIDAD_FRAGMENTO;
     for (var i = 0; i < this.FRAGMENTOS; i++) {
       var angulo = Math.random() * Math.PI * 2;
@@ -192,6 +195,7 @@ KF.Nave.prototype = {
   // La nave deja de estar en pantalla (fin de partida); la llama Partida.
   retirar: function () {
     this.estado = 'ausente';
+    this.poderSalvado = false;
     this.blindaje = false;
     this.apoyos = [];
     this.vx = 0;
@@ -357,10 +361,21 @@ KF.Nave.prototype = {
     });
   },
 
+  // Un cosmético o una skin de la tienda (mejoras/skins) puesto, solo en la
+  // nave de este dispositivo.
+  cosmetico: function (id) {
+    return this === KF.jugador && KF.tienda.nivel(id) > 0;
+  },
+
   // El aspecto de la nave depende de su power-up (power-ups/aspecto-nave):
-  // sin poder, o con uno sin aspecto propio, es la nave normal.
+  // sin poder, o con uno sin aspecto propio, es la nave normal. Con una skin
+  // puesta, la de esa skin, que también tiene su variante para cada poder.
   spriteActual: function () {
-    return (this.poder && this.SPRITES_PODER[this.poder]) || this.SPRITE;
+    var sprites = this.SPRITES_PODER, normal = this.SPRITE;
+    for (var id in KF.graficos.SPRITES_SKIN) {
+      if (this.cosmetico(id)) { sprites = KF.graficos.SPRITES_SKIN[id].poder; normal = KF.graficos.SPRITES_SKIN[id].normal; }
+    }
+    return (this.poder && sprites[this.poder]) || normal;
   },
 
   dibujar: function (ctx) {
@@ -403,14 +418,16 @@ KF.Nave.prototype = {
       if (this.destello > 0) g.dibujar(ctx, this.SPRITE_DESTELLO, this.x, this.Y - 8);
       // Mientras se mueve, una llama parpadeante justo bajo la nave.
       if (this.vx !== 0) {
-        var forma = Math.floor(this.tiempoLlama / this.CAMBIO_LLAMA) % this.SPRITES_LLAMA.length;
-        g.dibujar(ctx, this.SPRITES_LLAMA[forma], this.x, this.Y + 8);
+        var llamas = this.cosmetico('TRAIL') ? g.SPRITES_LLAMA_AZUL : this.SPRITES_LLAMA;
+        var forma = Math.floor(this.tiempoLlama / this.CAMBIO_LLAMA) % llamas.length;
+        g.dibujar(ctx, llamas[forma], this.x, this.Y + 8);
       }
       ctx.globalAlpha = 1;
     } else if (this.estado === 'explotando') {
       var fase = Math.floor(this.tiempoExplosion / this.DURACION_FASE);
-      if (fase < this.SPRITES_EXPLOSION.length) {
-        g.dibujar(ctx, this.SPRITES_EXPLOSION[fase], this.x, this.Y);
+      var explosion = this.cosmetico('BLAST') ? g.SPRITES_EXPLOSION_JUGADOR_PLASMA : this.SPRITES_EXPLOSION;
+      if (fase < explosion.length) {
+        g.dibujar(ctx, explosion[fase], this.x, this.Y);
       }
     }
     // Los fragmentos van encima y se apagan a medida que se les acaba la vida.

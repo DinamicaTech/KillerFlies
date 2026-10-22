@@ -11,8 +11,10 @@
 // da una nave de recambio más al empezar cada partida, hasta el tope de 5 (3
 // niveles), y SHIELD y WINGMAN, que llegan con la nave siguiente. BONUS
 // desbloquea la oleada desafío (js/partida.js). La lista muestra 8 filas y se
-// desplaza con la marca o tocando sus flechas. Las demás acumulables no tienen tope: el equilibrio se hace con
-// los precios.
+// desplaza con la marca o tocando sus flechas. Las demás acumulables no
+// tienen tope: el equilibrio se hace con los precios.
+// Las skins y los cosméticos (mejoras/skins) se compran una vez y después su
+// fila los pone o los quita (ON/OFF); solo puede haber una skin puesta.
 KF.tienda = {
   // Cada una con su explicación, que se ve bajo la lista mientras está marcada.
   MEJORAS: [
@@ -33,8 +35,28 @@ KF.tienda = {
     { id: 'MAGNET',   precio: 10, maximo: 1,    // monedas y cápsulas van hacia la nave
       texto: ['COINS AND CAPSULES', 'FLY TO YOUR SHIP'] },
     { id: 'RED SLOW', precio: 3, maximo: 1,     // la cápsula del slow fire cae en roja
-      texto: ['THE SLOW FIRE CAPSULE', 'FALLS IN RED'] }
+      texto: ['THE SLOW FIRE CAPSULE', 'FALLS IN RED'] },
+    // Fase 4 (mejoras/skins).
+    { id: 'YELLOW',   precio: 5,                // +10% de ataques de amarillas por nivel (js/ataque.js)
+      texto: ['+10% YELLOW ATTACKS PER LEVEL', 'MORE CHANCES OF A CAPSULE'] },
+    { id: 'KEEP POWER', precio: 15, maximo: 1,  // la primera vez que te destruyen con power-up, lo conservas
+      texto: ['KEEP YOUR POWER UP THE FIRST', 'TIME YOU ARE DESTROYED IN A GAME'] },
+    { id: 'ESCORT',   precio: 10, maximo: 1,    // cápsula con la amarilla y una sola escolta
+      texto: ['A CAPSULE FOR THE YELLOW', 'AND ONLY ONE OF ITS ESCORT'] },
+    // Skins y cosméticos: una vez comprados, la fila los pone y los quita.
+    { id: 'SKIN BLUE', precio: 10, maximo: 1, conmutable: true, skin: true,
+      texto: ['A BLUE SHIP WITH ITS OWN LOOK', 'FOR EVERY POWER UP'] },
+    { id: 'SKIN GOLD', precio: 10, maximo: 1, conmutable: true, skin: true,
+      texto: ['A GOLD SHIP WITH ITS OWN LOOK', 'FOR EVERY POWER UP'] },
+    { id: 'TRAIL',    precio: 5, maximo: 1, conmutable: true,
+      texto: ['A BLUE ENGINE FLAME'] },
+    { id: 'BLAST',    precio: 5, maximo: 1, conmutable: true,
+      texto: ['PLASMA COLOURED EXPLOSIONS'] },
+    { id: 'STARS',    precio: 5, maximo: 1, conmutable: true,
+      texto: ['STARS IN NEBULA COLOURS'] }
   ],
+  TEXTO_PUESTO: 'SELECT TO TAKE IT OFF',
+  TEXTO_QUITADO: 'SELECT TO PUT IT ON',
   TEXTO_BACK: ['RETURN TO THE PAUSE MENU'],
   AUMENTO: 0.05,           // SPEED y FIRE: +5% por nivel, sumados
   BOMBAS: 0.95,            // BOMBS: cada nivel deja las bombas al 95% de su velocidad
@@ -62,11 +84,33 @@ KF.tienda = {
   xNave: 0,                // dónde estaba la nave al abrir la tienda
   xTienda: 0,
 
-  // Nivel comprado de una mejora en la dificultad en curso; en la partida a
-  // dos las mejoras no cuentan (mejoras/dos-jugadores).
+  // Nivel en vigor de una mejora en la dificultad en curso: el comprado,
+  // salvo una skin o un cosmético quitado, que cuenta 0. En la partida a dos
+  // las mejoras no cuentan (mejoras/dos-jugadores).
   nivel: function (id) {
     if (KF.companero) return 0;
-    return KF.monedas.delNivel().mejoras[id] || 0;
+    var d = KF.monedas.delNivel();
+    return d.quitadas[id] ? 0 : d.mejoras[id] || 0;
+  },
+
+  // Mejora por su id.
+  mejora: function (id) {
+    for (var i = 0; i < this.MEJORAS.length; i++) if (this.MEJORAS[i].id === id) return this.MEJORAS[i];
+    return null;
+  },
+
+  // Pone o quita una skin o un cosmético comprado; solo puede haber una skin
+  // puesta, así que poner una quita las demás.
+  poner: function (m, puesto) {
+    var d = KF.monedas.delNivel(), self = this;
+    if (puesto) delete d.quitadas[m.id];
+    else d.quitadas[m.id] = true;
+    if (puesto && m.skin) {
+      this.MEJORAS.forEach(function (o) {
+        if (o.skin && o !== m && d.mejoras[o.id]) d.quitadas[o.id] = true;
+      });
+    }
+    KF.monedas.guardar();
   },
 
   factorVelocidad: function () { return 1 + this.AUMENTO * this.nivel('SPEED'); },
@@ -101,11 +145,12 @@ KF.tienda = {
     this.teclaElegir = null;
   },
 
-  // Precio y texto de la fila de una mejora: 'SPEED    LV 2    5'.
+  // Precio y texto de la fila de una mejora: 'SPEED    LV 2    5'. Una skin
+  // o un cosmético comprado dice si está puesto (ON) o no (OFF).
   textoMejora: function (m) {
-    var nivel = this.nivel(m.id);
+    var nivel = KF.monedas.delNivel().mejoras[m.id] || 0;
     var lleno = m.maximo && nivel >= m.maximo;
-    var precio = lleno ? (m.niveles ? 'MAX' : 'OWNED') : String(m.precio);
+    var precio = lleno ? (m.conmutable ? (this.nivel(m.id) ? 'ON' : 'OFF') : m.niveles ? 'MAX' : 'OWNED') : String(m.precio);
     var lv = m.maximo && !m.niveles ? '' : 'LV ' + nivel;
     var relleno = function (t, n) { while (t.length < n) t += ' '; return t; };
     var derecha = function (t, n) { while (t.length < n) t = ' ' + t; return t; };
@@ -117,7 +162,9 @@ KF.tienda = {
   // Líneas de la explicación de la fila marcada.
   explicacion: function () {
     var m = this.MEJORAS[this.opcion];
-    return m ? m.texto : this.TEXTO_BACK;
+    if (!m) return this.TEXTO_BACK;
+    if (m.conmutable && KF.monedas.delNivel().mejoras[m.id]) return [m.texto[0], this.nivel(m.id) ? this.TEXTO_PUESTO : this.TEXTO_QUITADO];
+    return m.texto;
   },
 
   // Compra la mejora marcada, o vuelve si está marcado BACK.
@@ -126,11 +173,16 @@ KF.tienda = {
     var m = this.MEJORAS[this.opcion];
     if (!m) { this.volver(); return; }
     var d = KF.monedas.delNivel(), nivel = d.mejoras[m.id] || 0;
-    if (m.maximo && nivel >= m.maximo) this.avisar(m.niveles ? 'ALREADY AT MAX' : 'ALREADY OWNED');
+    if (m.conmutable && nivel) {
+      var puesto = !this.nivel(m.id);
+      this.poner(m, puesto);
+      this.avisar(puesto ? 'ON' : 'OFF');
+    } else if (m.maximo && nivel >= m.maximo) this.avisar(m.niveles ? 'ALREADY AT MAX' : 'ALREADY OWNED');
     else if (d.saldo < m.precio) this.avisar('NEED ' + (m.precio - d.saldo) + ' MORE COINS');
     else {
       KF.monedas.gastar(m.precio);
       d.mejoras[m.id] = nivel + 1;
+      if (m.conmutable) this.poner(m, true);   // recién comprada, puesta
       KF.monedas.guardar();
       KF.powerups.recogidas++;   // suena como un power-up
       this.ponerEnLaNave(m.id);

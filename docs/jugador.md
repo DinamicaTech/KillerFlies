@@ -39,6 +39,7 @@ With the SHIELD upgrade (mejoras/escudo-y-apoyo) each new ship has a cyan ring t
 - 2026-10-20 17:56 · The ship is drawn with the look of its active power-up (spriteActual: KF.graficos.SPRITES_JUGADOR_PODER, or the normal ship with no power or with one without a look); with annihilation ready, a white halo 9 pixels in radius pulses around it. It returns to the normal look when the power is lost (on exploding, at a new wave or game, after using annihilation). The spare ships on the scoreboard keep the normal look. For power-ups/aspecto-nave.
 - 2026-10-21 20:22 · Derived from mejoras: The SPEED and FIRE upgrades (mejoras) raise the ship's top speeds and its shot speed by 5% per level in one-player games.
 - 2026-10-21 21:12 · Derived from mejoras/escudo-y-apoyo: the shield of the SHIELD upgrade and the support ships of the WINGMAN upgrade, as in the Summary.
+- 2026-10-22 11:15 · Derived from mejoras/skins: the ship of this device draws the bought skin that is on (SKIN BLUE or SKIN GOLD, each with its look for every power-up), the blue engine flame of TRAIL and the plasma explosion and fragments of BLAST, and keeps its power-up on the first death of the game with KEEP POWER; the other player's ship never does.
 
 ## Requirements
 - 2026-10-03 18:13 · The ship the player controls is at the bottom of the screen and can only move horizontally while it fires.
@@ -59,3 +60,4 @@ With the SHIELD upgrade (mejoras/escudo-y-apoyo) each new ship has a cyan ring t
 - 2026-10-20 17:56 · Derived from power-ups/aspecto-nave: draw the ship with the sprite of its active power-up.
 - 2026-10-21 20:22 · Derived from mejoras: apply the SPEED upgrade (+5% top speed per level) and the FIRE upgrade (+5% shot speed per level) in one-player games.
 - 2026-10-21 21:12 · Derived from mejoras/escudo-y-apoyo: carry the SHIELD shield (one hit) and up to two WINGMAN support ships that fire with the ship, both back with each new ship.
+- 2026-10-22 11:15 · Derived from mejoras/skins: draw the skin, the TRAIL flame and the BLAST explosion when they are on, and keep the power-up once per game with KEEP POWER.

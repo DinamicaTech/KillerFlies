@@ -16,6 +16,8 @@ KF.ataque = {
   SEPARACION_BOMBAS: 0.3,  // segundos entre bombas de una misma nave
   ESCOLTA_DX: 11,          // posición de cada escolta respecto a la amarilla
   ESCOLTA_DY: 11,
+  PESO_AMARILLA: 3,        // las amarillas atacan tres veces más a menudo que las demás
+  AUMENTO_AMARILLA: 0.1,   // YELLOW: +10% por nivel a ese peso
   ZIGZAG: 75,              // amplitud de la velocidad lateral del zigzag
   FRECUENCIA_ZIGZAG: 4.5,  // radianes por segundo del zigzag
   FACTOR_EMBESTIDA: 2,     // la embestida va al doble de velocidad
@@ -44,13 +46,20 @@ KF.ataque = {
     this.oyentesEscolta.push(fn);
   },
 
-  // Cuenta las naves de un grupo amarilla + dos rojas que caen fuera de la
-  // formación; la que vuelve a su hueco ya no está en atacantes.
+  // Cuenta las naves de un grupo amarilla + rojas de escolta que caen fuera
+  // de la formación; la que vuelve a su hueco ya no está en atacantes. El
+  // grupo suelta la cápsula al caer las tres o, con la mejora ESCORT (js/tienda.js),
+  // al caer la amarilla y una de sus rojas.
   contarCaida: function (nave) {
     for (var i = 0; i < this.atacantes.length; i++) {
       var a = this.atacantes[i];
       if (a.nave !== nave || !a.grupo) continue;
-      if (++a.grupo.caidas === 3) {
+      var g = a.grupo;
+      g.caidas++;
+      if (!a.lider) g.amarilla = true;
+      var basta = KF.tienda.nivel('ESCORT') > 0 ? g.amarilla && g.caidas >= 2 : g.caidas === 3;
+      if (basta && !g.soltada) {
+        g.soltada = true;
         for (var k = 0; k < this.oyentesEscolta.length; k++) this.oyentesEscolta[k](a.x, a.y);
       }
       return;
@@ -121,17 +130,22 @@ KF.ataque = {
     return n;
   },
 
-  // Elige al azar una nave en su hueco; las amarillas, algo más a menudo.
+  // Elige al azar una nave en su hueco; las amarillas, tres veces más a
+  // menudo, y con la mejora YELLOW (js/tienda.js) un 10% más por nivel.
   elegirNave: function () {
-    var candidatas = [];
+    var candidatas = [], pesos = [], total = 0;
+    var amarilla = this.PESO_AMARILLA * (1 + this.AUMENTO_AMARILLA * KF.tienda.nivel('YELLOW'));
     for (var i = 0; i < this.naves.length; i++) {
       var n = this.naves[i];
       if (!n.viva || !n.enFormacion) continue;
       candidatas.push(n);
-      if (n.tipo === 'amarilla') candidatas.push(n, n);
+      pesos.push(n.tipo === 'amarilla' ? amarilla : 1);
+      total += pesos[pesos.length - 1];
     }
     if (!candidatas.length) return null;
-    return candidatas[Math.floor(Math.random() * candidatas.length)];
+    var r = Math.random() * total;
+    for (i = 0; i < candidatas.length - 1 && r >= pesos[i]; i++) r -= pesos[i];
+    return candidatas[i];
   },
 
   // Las dos rojas en su hueco más próximas a la columna de la amarilla: las
@@ -154,8 +168,10 @@ KF.ataque = {
     var lider = this.crearAtacante(nave, lado, null, 0);
     if (nave.tipo === 'amarilla') {
       var escolta = this.elegirEscolta(nave);
-      // Solo la amarilla con dos rojas forma un grupo que suelta power-up.
-      var grupo = escolta.length === 2 ? { caidas: 0 } : null;
+      // Solo la amarilla con dos rojas forma un grupo que suelta power-up;
+      // con la mejora ESCORT, también con una.
+      var minimo = KF.tienda.nivel('ESCORT') > 0 ? 1 : 2;
+      var grupo = escolta.length >= minimo ? { caidas: 0 } : null;
       lider.grupo = grupo;
       for (var i = 0; i < escolta.length; i++) {
         // Con dos escoltas, una a cada lado; con una, del lado en que estaba.

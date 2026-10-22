@@ -31,7 +31,8 @@ const KF = {
   ataque: { alDestruirEscolta: nada },
   partida: { sumarRecambio: nada },
   red: { invitado: false },
-  combos: { cortar: nada }
+  combos: { cortar: nada },
+  tienda: { nivel: () => 0 }
 };
 const ctx = vm.createContext({ KF, document: documento, window: { addEventListener: nada }, Math, Object, Array, parseInt });
 for (const f of ['js/graficos.js', 'js/jugador.js', 'js/powerups.js']) {
