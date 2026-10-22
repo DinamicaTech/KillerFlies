@@ -13,7 +13,7 @@ Tests: tools/comprobar-perfiles.mjs in the "Pruebas" workflow (plus the updated 
 
 ## Decisions
 - 2026-10-21 20:22 · Created as a draft when the upgrades idea left the lab in phases.
-- 2026-10-22 11:21 · Built as in the Summary, with the owner's answers to the breakdown: up to 4 profiles per difficulty, shown for the difficulty marked in the menu; one hall of fame table with the profile's name pre-filled; perfects per profile; `?monedas=N` for the active profile; no change in two-player games. Deleting a profile is left pending.
+- 2026-10-22 11:21 · Built as in the Summary, with the owner's answers to the breakdown: up to 4 profiles per difficulty, shown for the difficulty marked in the menu; one hall of fame table with the profile's name pre-filled; perfects per profile; `?monedas=N` for the active profile; no change in two-player games. Deleting a profile is left pending, in the draft child mejoras/cuentas/borrar-perfil.
 - 2026-10-22 11:21 · Storage: killerflies.perfiles keeps the profiles of each difficulty ({ LEVEL: { activo, lista: [{ id, nombre }] } }); profile 0 (PLAYER) keeps the old keys, killerflies.cuenta.default and killerflies.perfect.<LEVEL>, and profile n uses killerflies.cuenta.<n> and killerflies.perfect.<LEVEL>.<n>, so nothing saved before is lost. Choosing a name that already exists in that difficulty activates that profile instead of creating another.
 
 ## Requirements
