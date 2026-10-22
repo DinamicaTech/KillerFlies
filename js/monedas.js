@@ -225,5 +225,6 @@ KF.monedas = {
 KF.monedas.SPRITES = KF.graficos.SPRITES_MONEDA;
 KF.monedas.SPRITE = KF.graficos.SPRITE_MONEDA;
 KF.enemigos.alDestruir(function (nave, motivo, autor, x, y) { KF.monedas.alDestruir(nave, x, y); });
-KF.monedas.cargarDeRegalo();
+// Cuando ya están cargadas las dificultades (js/dificultad.js va después).
+window.addEventListener('DOMContentLoaded', function () { KF.monedas.cargarDeRegalo(); });
 KF.registrar(KF.monedas);
