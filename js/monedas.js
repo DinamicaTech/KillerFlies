@@ -39,7 +39,8 @@ KF.monedas = {
   cache: null,             // datos de la cuenta, leídos una vez
 
   // Datos de la cuenta: { EASY: { saldo, oleadas: { n: recogidas },
-  // desafios: { n: recogidas }, mejoras: { id: nivel } }, … }.
+  // desafios: { n: recogidas }, mejoras: { id: nivel }, quitadas: { id: true } }, … };
+  // quitadas son las skins y los cosméticos comprados que no están puestos.
   datos: function () {
     if (!this.cache) this.cache = this.leer();
     return this.cache;
@@ -49,7 +50,7 @@ KF.monedas = {
   delNivel: function (nivel) {
     var nombre = KF.dificultad.NIVELES[nivel === undefined ? KF.dificultad.nivel : nivel];
     var d = this.datos();
-    if (!d[nombre]) d[nombre] = { saldo: 0, oleadas: {}, desafios: {}, mejoras: {} };
+    if (!d[nombre]) d[nombre] = { saldo: 0, oleadas: {}, desafios: {}, mejoras: {}, quitadas: {} };
     return d[nombre];
   },
 
@@ -92,7 +93,7 @@ KF.monedas = {
     KF.dificultad.NIVELES.forEach(function (nombre) {
       var d = datos && typeof datos === 'object' && datos[nombre];
       if (!d || typeof d !== 'object') return;
-      var nivel = { saldo: entero(d.saldo), oleadas: {}, desafios: {}, mejoras: {} };
+      var nivel = { saldo: entero(d.saldo), oleadas: {}, desafios: {}, mejoras: {}, quitadas: {} };
       var porOleada = function (origen, destino, maximo) {
         for (var k in origen || {}) {
           var n = parseInt(k, 10);
@@ -103,6 +104,9 @@ KF.monedas = {
       porOleada(d.desafios, nivel.desafios, KF.monedas.POR_DESAFIO);
       for (var id in d.mejoras || {}) {
         if (entero(d.mejoras[id]) > 0) nivel.mejoras[id] = entero(d.mejoras[id]);
+      }
+      for (id in d.quitadas || {}) {
+        if (d.quitadas[id] === true && nivel.mejoras[id]) nivel.quitadas[id] = true;
       }
       limpio[nombre] = nivel;
     });

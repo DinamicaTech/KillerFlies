@@ -47,10 +47,12 @@ KF.enemigos = {
   },
 
   dibujar: function (ctx) {
+    // Con el cosmético BLAST de la tienda (mejoras/skins), de plasma.
+    var sprites = KF.tienda.nivel('BLAST') > 0 ? KF.graficos.SPRITES_EXPLOSION_NAVE_PLASMA : this.SPRITES_EXPLOSION;
     for (var i = 0; i < this.explosiones.length; i++) {
       var e = this.explosiones[i];
       var fase = Math.floor(e.tiempo / this.DURACION_FASE);
-      KF.graficos.dibujar(ctx, this.SPRITES_EXPLOSION[fase], e.x, e.y);
+      KF.graficos.dibujar(ctx, sprites[fase], e.x, e.y);
     }
   }
 };

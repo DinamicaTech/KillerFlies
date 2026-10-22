@@ -23,6 +23,7 @@ The alien ships: seven types, each with its points and its maximum bombs per att
 - 2026-10-13 07:12 · Destroyed by whom: KF.enemigos.destruir(nave, x, y, motivo, autor) and the alDestruir listeners receive autor, the player ship that destroyed it (null on the guest of a two-player game), so the points go to that player.
 - 2026-10-16 08:42 · The ship-destroyed notification also gives the place where the ship explodes (x, y), so that Combos can show the points floating there.
 - 2026-10-16 10:30 · New child node enemigos/jefe: the mothership boss after every third wave.
+- 2026-10-22 11:15 · Derived from mejoras/skins: with the BLAST cosmetic on (mejoras/skins) the explosions of the alien ships use the plasma sprites.
 
 ## Requirements
 - 2026-10-03 18:13 · There are four types of alien ships (blue, purple, red and yellow) that give 10, 20, 30 and 50 points respectively when destroyed.
@@ -33,3 +34,4 @@ The alien ships: seven types, each with its points and its maximum bombs per att
 - 2026-10-04 12:05 · Derived from enemigos/formacion: three new ship types, green, orange and cyan, with their points (40, 60 and 80), their bombs (2, 0 and 3) and their attack style.
 - 2026-10-13 07:12 · Derived from multijugador: say which player ship destroyed each alien ship.
 - 2026-10-16 08:42 · Derived from marcador/combos: say where each destroyed ship explodes.
+- 2026-10-22 11:15 · Derived from mejoras/skins: draw the alien explosions in plasma colours while BLAST is on.

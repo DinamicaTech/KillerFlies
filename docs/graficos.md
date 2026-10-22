@@ -38,6 +38,7 @@ And the support ship of the WINGMAN upgrade: the player 1 ship, smaller, with a 
 - 2026-10-16 10:58 · Font: a single 5×7 pixel-art font for all texts, with digits, slash, '%', '<' and '>', letters A to Z and space, in js/graficos.js (KF.graficos.crearFuente(color), escribir and anchoTexto, with a scale to enlarge it). It comes from the digit font the scoreboard had; '<' and '>' frame the difficulty line of the start menu (partida/dificultad) and '%' shows the volumes in the pause menu (sonido/ajustes-sonido).
 - 2026-10-20 17:56 · Player ship with each power-up, for power-ups/aspecto-nave: dibujarJugador(ctx, palette, power) changes the interior colour (INTERIOR_PODER) and adds a detail per power, keeping the 13×13 size and the player's nose colour; KF.graficos.SPRITES_JUGADOR_PODER[player][power] holds them for both players. Rapid: yellow interior and two swept fins at the sides. Deep: violet interior and a long violet cannon through the nose. Bomb: orange interior and an orange diamond under the nose. Annihilation: white interior. Slow fire: dull grey interior and unlit nozzles. Triple: green interior and a cannon on the tip of each side engine. Extra life has no look of its own.
 - 2026-10-21 20:22 · Derived from mejoras: It also has the spinning silver coin, the little pilot (two walking steps), the shop with its striped awning and the red slow fire capsule (mejoras).
+- 2026-10-22 11:15 · Derived from mejoras/skins: it also has the sprites of the two skins (SKIN BLUE, SKIN GOLD) with every power-up variant, the blue engine flame (TRAIL), the plasma explosions and fragments (BLAST) and the nebula star colours (STARS), which the starfield uses while STARS is on.
 
 ## Requirements
 - 2026-10-03 18:13 · I attach two screenshots as visual reference. In the first one, a formation of a yellow ship and two red ones descends to attack. In the second one, a purple ship descends towards the player ship while two bombs (somewhat thick vertical white lines) are falling.
@@ -60,3 +61,4 @@ And the support ship of the WINGMAN upgrade: the player 1 ship, smaller, with a 
 - 2026-10-20 17:56 · Derived from power-ups/aspecto-nave: one player ship sprite for each power, for both player colours.
 - 2026-10-21 20:22 · Derived from mejoras: provide the sprites of the coin, the pilot, the shop and the red slow fire capsule.
 - 2026-10-21 21:12 · Derived from mejoras/escudo-y-apoyo: provide the support ship sprite.
+- 2026-10-22 11:15 · Derived from mejoras/skins: provide the skin, flame, plasma explosion and star colour variants of the cosmetics.
