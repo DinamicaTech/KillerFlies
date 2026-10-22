@@ -33,7 +33,7 @@ function cargar(guardado) {
     localStorage: { getItem: (k) => (almacen.has(k) ? almacen.get(k) : null), setItem: (k, v) => almacen.set(k, v) }
   };
   const ctx = vm.createContext({ KF, window: ventana, Math, performance: { now: () => 0 } });
-  for (const f of ['js/dificultad.js', 'js/perfect.js', 'js/ataque.js', 'js/partida.js']) {
+  for (const f of ['js/dificultad.js', 'js/perfiles.js', 'js/perfect.js', 'js/ataque.js', 'js/partida.js']) {
     vm.runInContext(readFileSync(f, 'utf8'), ctx, { filename: f });
   }
   return { KF, almacen };

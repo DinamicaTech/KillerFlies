@@ -11,8 +11,9 @@
 // del desafío que sigue a cada oleada también se recogen una sola vez.
 // Lo recogido se guarda en el navegador al momento, aparte para cada
 // dificultad: el saldo, las monedas recogidas en cada oleada y las mejoras
-// compradas en la tienda (js/tienda.js). Todo va bajo el nombre de una cuenta
-// ('default'), que serán varias en mejoras/cuentas.
+// compradas en la tienda (js/tienda.js). Cada dificultad tiene sus perfiles
+// de jugador (js/perfiles.js): todo esto es del perfil activo de la
+// dificultad, guardado bajo el número de su cuenta.
 // Con la mejora MAGNET, las monedas y las cápsulas de power-up cercanas van
 // solas hacia la nave.
 // Para hacer pruebas, abrir el juego con ?monedas=N suma N monedas al saldo
@@ -21,13 +22,12 @@
 KF.monedas = {
   POR_OLEADA: 5,
   POR_DESAFIO: 4,          // una por grupo del desafío
-  CLAVE: 'killerflies.cuenta.',   // más el nombre de la cuenta: 'killerflies.cuenta.default'
+  CLAVE: 'killerflies.cuenta.',   // más la cuenta: 'killerflies.cuenta.default' (perfil 0), 'killerflies.cuenta.2'…
   FACTOR_CAIDA: 0.5,       // caen a la mitad de la velocidad de las bombas, como las cápsulas
   GIRO: 0.12,              // segundos de cada fase del giro de la moneda
   RADIO_IMAN: 48,          // píxeles alrededor de la nave a los que llega el imán
   VELOCIDAD_IMAN: 70,      // píxeles por segundo hacia la nave con el imán
 
-  cuenta: 'default',
   monedas: [],             // {id, x, y, t, oleada, desafio}: desafio si es del desafío tras esa oleada
   naves: null,             // formación de la oleada planificada
   plan: [],                // números de enemigo destruido (1, 2…) que sueltan moneda
@@ -36,20 +36,25 @@ KF.monedas = {
   soltadasDesafio: 0,      // monedas soltadas en el desafío en curso
   limiteDesafio: 0,        // las que le faltaban al empezar
   recogidas: 0,            // monedas recogidas desde que empezó el juego (Sonido las observa)
-  cache: null,             // datos de la cuenta, leídos una vez
+  cache: {},               // datos de cada cuenta, leídos una vez: { cuenta: datos }
 
   // Datos de la cuenta: { EASY: { saldo, oleadas: { n: recogidas },
   // desafios: { n: recogidas }, mejoras: { id: nivel }, quitadas: { id: true } }, … };
   // quitadas son las skins y los cosméticos comprados que no están puestos.
-  datos: function () {
-    if (!this.cache) this.cache = this.leer();
-    return this.cache;
+  datos: function (cuenta) {
+    if (!this.cache[cuenta]) this.cache[cuenta] = this.leer(cuenta);
+    return this.cache[cuenta];
   },
 
-  // Los datos de una dificultad (por defecto, la de la partida en curso).
+  // Nombre de la cuenta del perfil número id.
+  cuenta: function (id) { return id ? String(id) : 'default'; },
+
+  // Los datos del perfil activo de una dificultad (por defecto, la de la
+  // partida en curso).
   delNivel: function (nivel) {
-    var nombre = KF.dificultad.NIVELES[nivel === undefined ? KF.dificultad.nivel : nivel];
-    var d = this.datos();
+    if (nivel === undefined) nivel = KF.dificultad.nivel;
+    var nombre = KF.dificultad.NIVELES[nivel];
+    var d = this.datos(this.cuenta(KF.perfiles.activo(nivel)));
     if (!d[nombre]) d[nombre] = { saldo: 0, oleadas: {}, desafios: {}, mejoras: {}, quitadas: {} };
     return d[nombre];
   },
@@ -75,17 +80,18 @@ KF.monedas = {
     return true;
   },
 
+  // Guarda las cuentas leídas.
   guardar: function () {
     try {
-      window.localStorage.setItem(this.CLAVE + this.cuenta, JSON.stringify(this.datos()));
+      for (var cuenta in this.cache) window.localStorage.setItem(this.CLAVE + cuenta, JSON.stringify(this.cache[cuenta]));
     } catch (e) { /* sin almacenamiento: dura solo la sesión */ }
   },
 
   // Lo guardado, quedándose solo con lo que tenga sentido.
-  leer: function () {
+  leer: function (cuenta) {
     var datos, limpio = {};
     try {
-      datos = JSON.parse(window.localStorage.getItem(this.CLAVE + this.cuenta));
+      datos = JSON.parse(window.localStorage.getItem(this.CLAVE + cuenta));
     } catch (e) {
       datos = null;
     }
@@ -113,7 +119,8 @@ KF.monedas = {
     return limpio;
   },
 
-  // Puerta trasera de pruebas: ?monedas=N en la dirección.
+  // Puerta trasera de pruebas: ?monedas=N en la dirección, para el perfil
+  // activo de cada dificultad.
   cargarDeRegalo: function () {
     var loc = window.location, m = loc && /[?&]monedas=(\d{1,6})(?=&|$)/.exec(loc.search);
     if (!m) return;

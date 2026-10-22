@@ -308,8 +308,11 @@ KF.tienda = {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
     ctx.fillRect(0, 0, KF.ANCHO, y - 12);
     p.escribirCentrado(ctx, this.LETRAS, 'SHOP', 24, 2);
-    var saldo = 'COINS ' + KF.monedas.saldo();
-    var x = (KF.ANCHO - g.anchoTexto(saldo) - 10) / 2;
+    // El perfil de jugador (js/perfiles.js) y su saldo.
+    var perfil = KF.perfiles.nombre() + '  ', saldo = 'COINS ' + KF.monedas.saldo();
+    var x = (KF.ANCHO - g.anchoTexto(perfil) - g.anchoTexto(saldo) - 10) / 2;
+    g.escribir(ctx, this.LETRAS_OPCION, perfil, x, 44);
+    x += g.anchoTexto(perfil);
     g.dibujar(ctx, KF.monedas.SPRITE, x + 3, 47);
     g.escribir(ctx, this.LETRAS_MONEDAS, saldo, x + 10, 44);
     for (var i = this.primera; i < this.primera + this.visibles(); i++) {
