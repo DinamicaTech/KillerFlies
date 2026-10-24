@@ -4,7 +4,7 @@
 // pestaña, ventana minimizada o móvil bloqueado) y nunca se reanuda sola.
 // Mientras dura, todo se congela (KF.detenido), el sonido se calla y se ve
 // 'PAUSED' en el centro, con cinco opciones debajo: CONTINUE (marcada),
-// SHOP, la tienda de mejoras (js/tienda.js, solo en la partida a uno),
+// SHOP, la tienda de mejoras (js/tienda.js),
 // MUSIC y SOUNDS con su volumen (sonido/ajustes-sonido, en js/sonido.js) y
 // RESTART, que empieza una partida nueva desde donde empezó esta (la oleada 1,
 // o la de su perfect: js/perfect.js). Las flechas arriba y
@@ -16,8 +16,9 @@
 // En la partida a dos la pausa es de los dos: cada mensaje de js/red.js
 // lleva quién ha pausado (z) y un número de versión (zv) que crece con cada
 // cambio, y gana el más nuevo; en empate, el del anfitrión. Solo ve y elige
-// las opciones quien pausó, salvo que el otro ya no esté; RESTART empieza
-// otra partida para los dos, como 'PLAY AGAIN' (js/red.js).
+// las opciones quien pausó, salvo que el otro ya no esté; SHOP abre su
+// tienda en su pantalla (mejoras/dos-jugadores) y RESTART empieza otra
+// partida para los dos, como 'PLAY AGAIN' (js/red.js).
 KF.pausa = {
   COLOR: '#ffff40',
   COLOR_BOTON: '#808080',
@@ -77,9 +78,9 @@ KF.pausa = {
     KF.sonido.ajustarSilencio();
   },
 
-  // Opciones del menú ahora mismo: en la partida a dos no hay tienda.
+  // Opciones del menú.
   opciones: function () {
-    return KF.companero || KF.red.activa() ? this.OPCIONES.filter(function (o) { return o !== 'SHOP'; }) : this.OPCIONES;
+    return this.OPCIONES;
   },
 
   // Partida a dos: estado de pausa recibido del otro dispositivo.

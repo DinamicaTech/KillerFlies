@@ -116,7 +116,7 @@ KF.Nave.prototype = {
     this.tiempoExplosion = 0;
     // Con la mejora KEEP POWER, la primera vez en la partida que la destruyen
     // con un power-up, la nave siguiente lo conserva.
-    if (this.poder && !this.poderSalvado && KF.tienda.nivel('KEEP POWER') > 0) this.poderSalvado = true;
+    if (this.poder && !this.poderSalvado && KF.tienda.nivelDe(this, 'KEEP POWER') > 0) this.poderSalvado = true;
     else this.poder = null;
     this.apoyos = [];
     KF.combos.cortar(this);
@@ -125,7 +125,7 @@ KF.Nave.prototype = {
 
   // Fragmentos desde el centro de la nave, en direcciones y velocidades al azar.
   lanzarFragmentos: function () {
-    var colores = this.cosmetico('BLAST') ? KF.graficos.COLORES_FRAGMENTOS_PLASMA : KF.graficos.COLORES_FRAGMENTOS;
+    var colores = KF.tienda.nivel('BLAST') > 0 ? KF.graficos.COLORES_FRAGMENTOS_PLASMA : KF.graficos.COLORES_FRAGMENTOS;
     var v = this.VELOCIDAD_FRAGMENTO;
     for (var i = 0; i < this.FRAGMENTOS; i++) {
       var angulo = Math.random() * Math.PI * 2;
@@ -160,12 +160,12 @@ KF.Nave.prototype = {
     this.objetivo = null;
     this.vx = 0;
     this.escudo = this.DURACION_ESCUDO;
-    // Cada nave nueva trae el escudo y las naves de apoyo que se hayan comprado
-    // (mejoras/escudo-y-apoyo); la del otro jugador, no.
-    var propia = !this.remoto && this === KF.jugador;
-    this.blindaje = propia && KF.tienda.nivel('SHIELD') > 0;
+    // Cada nave nueva trae el escudo y las naves de apoyo que haya comprado
+    // su jugador (mejoras/escudo-y-apoyo); en el invitado de la partida a dos
+    // los dice la foto del anfitrión (js/red.js).
+    this.blindaje = KF.tienda.nivelDe(this, 'SHIELD') > 0;
     this.apoyos = [];
-    var n = propia ? Math.min(2, KF.tienda.nivel('WINGMAN')) : 0;
+    var n = Math.min(2, KF.tienda.nivelDe(this, 'WINGMAN'));
     for (var i = 0; i < n; i++) this.apoyos.push({ lado: i === 0 ? -1 : 1 });
   },
 
@@ -227,7 +227,7 @@ KF.Nave.prototype = {
     var t = KF.teclas;
     var dir = (t.ArrowRight ? 1 : 0) - (t.ArrowLeft ? 1 : 0);
     // La mejora SPEED (js/tienda.js) sube las dos velocidades máximas.
-    var mejora = KF.tienda.factorVelocidad();
+    var mejora = KF.tienda.factorVelocidad(this);
     var maxima = this.VELOCIDAD * mejora, maximaMovil = this.VELOCIDAD_MOVIL * mejora;
     // Con naves de apoyo, la nave se queda más lejos del borde de su lado.
     var margen = this.ANCHO / 2, extra = this.SEPARACION_APOYO + this.ANCHO_APOYO / 2 - margen;
@@ -328,7 +328,7 @@ KF.Nave.prototype = {
   moverDisparo: function (dt) {
     var poder = this.poder, autor = this;
     // La mejora FIRE (js/tienda.js) acelera el disparo.
-    var v = this.VELOCIDAD_DISPARO * (poder === 'lento' ? 0.5 : 1) * KF.tienda.factorDisparo();
+    var v = this.VELOCIDAD_DISPARO * (poder === 'lento' ? 0.5 : 1) * KF.tienda.factorDisparo(this);
     var h = this.SPRITE_DISPARO.height;
     this.disparos = this.disparos.filter(function (d) {
       d.y -= v * dt;
@@ -361,10 +361,11 @@ KF.Nave.prototype = {
     });
   },
 
-  // Un cosmético o una skin de la tienda (mejoras/skins) puesto, solo en la
-  // nave de este dispositivo.
+  // Una skin o la llama TRAIL de la tienda (mejoras/skins) puesta por el
+  // jugador de esta nave: a dos, cada una se ve con las suyas en las dos
+  // pantallas (mejoras/dos-jugadores).
   cosmetico: function (id) {
-    return this === KF.jugador && KF.tienda.nivel(id) > 0;
+    return KF.tienda.nivelDe(this, id) > 0;
   },
 
   // El aspecto de la nave depende de su power-up (power-ups/aspecto-nave):
@@ -425,7 +426,8 @@ KF.Nave.prototype = {
       ctx.globalAlpha = 1;
     } else if (this.estado === 'explotando') {
       var fase = Math.floor(this.tiempoExplosion / this.DURACION_FASE);
-      var explosion = this.cosmetico('BLAST') ? g.SPRITES_EXPLOSION_JUGADOR_PLASMA : this.SPRITES_EXPLOSION;
+      // BLAST cambia las explosiones que se ven en la pantalla de quien la compró.
+      var explosion = KF.tienda.nivel('BLAST') > 0 ? g.SPRITES_EXPLOSION_JUGADOR_PLASMA : this.SPRITES_EXPLOSION;
       if (fase < explosion.length) {
         g.dibujar(ctx, explosion[fase], this.x, this.Y);
       }

@@ -39,6 +39,7 @@ Each capsule's power is chosen when it is dropped; with the RED SLOW upgrade (me
 - 2026-10-16 10:30 · The bomb and the annihilation take 5 from the mothership boss's health (enemigos/jefe) instead of destroying it; the power is kept while it is there.
 - 2026-10-21 20:22 · Derived from mejoras: Each capsule's power is chosen when it is dropped; with the RED SLOW upgrade (mejoras) the slow fire capsule falls in red, and with the MAGNET upgrade nearby capsules drift toward the ship.
 - 2026-10-22 11:15 · Derived from mejoras/skins: with KEEP POWER (mejoras/skins) the player keeps the power-up the first time in each game the ship is destroyed with one; with ESCORT the capsule also drops for a yellow and one escort.
+- 2026-10-24 10:58 · Derived from mejoras/dos-jugadores: in a two-player game the capsules drift toward each ship whose player owns MAGNET, and the snapshot tells the guest which capsule is the slow fire one, so RED SLOW shows it red on the screen of whoever bought it.
 
 ## Requirements
 - 2026-10-04 10:46 · idea: When a yellow with its two red escorts is destroyed while diving, a random power-up falls as if it were a bomb (a blinking capsule, the same for all and with the same probability; it gives no points); if the player picks it up, they get that power until the end of the wave. Possible ones: rapid shot (up to three active shots instead of one), deep shot (the shot goes through and destroys every ship in its path), bomb (on hitting a ship it explodes and destroys the ships wholly or partly inside a circle five ship widths across), annihilation (on firing, all enemy ships are destroyed), slow fire (power-down: the shot travels at half speed) and triple shot (three parallel projectiles).
@@ -73,3 +74,4 @@ Each capsule's power is chosen when it is dropped; with the RED SLOW upgrade (me
 - 2026-10-16 10:30 · Derived from enemigos/jefe: the bomb and annihilation take 5 from the mothership boss's health.
 - 2026-10-21 20:22 · Derived from mejoras: let the slow fire capsule fall in red with the RED SLOW upgrade, and let nearby capsules drift toward the ship with the MAGNET upgrade.
 - 2026-10-22 11:15 · Derived from mejoras/skins: keep the power-up once per game with KEEP POWER, and drop the capsule for a yellow and one escort with ESCORT.
+- 2026-10-24 10:58 · Derived from mejoras/dos-jugadores: pull the capsules toward each ship with MAGNET and show the red slow fire capsule only on the screen of whoever owns RED SLOW.

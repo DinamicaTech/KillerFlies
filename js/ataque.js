@@ -57,7 +57,7 @@ KF.ataque = {
       var g = a.grupo;
       g.caidas++;
       if (!a.lider) g.amarilla = true;
-      var basta = KF.tienda.nivel('ESCORT') > 0 ? g.amarilla && g.caidas >= 2 : g.caidas === 3;
+      var basta = KF.tienda.nivelJuego('ESCORT') > 0 ? g.amarilla && g.caidas >= 2 : g.caidas === 3;
       if (basta && !g.soltada) {
         g.soltada = true;
         for (var k = 0; k < this.oyentesEscolta.length; k++) this.oyentesEscolta[k](a.x, a.y);
@@ -134,7 +134,7 @@ KF.ataque = {
   // menudo, y con la mejora YELLOW (js/tienda.js) un 10% más por nivel.
   elegirNave: function () {
     var candidatas = [], pesos = [], total = 0;
-    var amarilla = this.PESO_AMARILLA * (1 + this.AUMENTO_AMARILLA * KF.tienda.nivel('YELLOW'));
+    var amarilla = this.PESO_AMARILLA * (1 + this.AUMENTO_AMARILLA * KF.tienda.nivelJuego('YELLOW'));
     for (var i = 0; i < this.naves.length; i++) {
       var n = this.naves[i];
       if (!n.viva || !n.enFormacion) continue;
@@ -170,7 +170,7 @@ KF.ataque = {
       var escolta = this.elegirEscolta(nave);
       // Solo la amarilla con dos rojas forma un grupo que suelta power-up;
       // con la mejora ESCORT, también con una.
-      var minimo = KF.tienda.nivel('ESCORT') > 0 ? 1 : 2;
+      var minimo = KF.tienda.nivelJuego('ESCORT') > 0 ? 1 : 2;
       var grupo = escolta.length >= minimo ? { caidas: 0 } : null;
       lider.grupo = grupo;
       for (var i = 0; i < escolta.length; i++) {

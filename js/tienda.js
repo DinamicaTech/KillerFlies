@@ -1,5 +1,5 @@
-// La tienda de mejoras (mejoras): la opción SHOP de la pausa (js/pausa.js),
-// solo en la partida a uno. Al elegirla aparece una tienda junto a la nave y
+// La tienda de mejoras (mejoras): la opción SHOP de la pausa (js/pausa.js).
+// Al elegirla aparece una tienda junto a la nave y
 // un piloto sale de ella y anda hasta la tienda; entonces se abre la lista de
 // mejoras con el saldo de monedas (js/monedas.js) de la dificultad en curso.
 // Las flechas arriba y abajo cambian de mejora y Enter o espacio (al
@@ -7,7 +7,7 @@
 // BACK devuelve el piloto a la nave y vuelve al menú de la pausa; P (o
 // cualquier cosa que acabe la pausa) cierra la tienda al momento.
 // Las mejoras son permanentes y valen para la dificultad con cuyas monedas se
-// compraron, en la partida a uno; se notan desde la compra, salvo SHIPS, que
+// compraron; se notan desde la compra, salvo SHIPS, que
 // da una nave de recambio más al empezar cada partida, hasta el tope de 5 (3
 // niveles), y SHIELD y WINGMAN, que llegan con la nave siguiente. BONUS
 // desbloquea la oleada desafío (js/partida.js). La lista muestra 8 filas y se
@@ -15,6 +15,13 @@
 // tienen tope: el equilibrio se hace con los precios.
 // Las skins y los cosméticos (mejoras/skins) se compran una vez y después su
 // fila los pone o los quita (ON/OFF); solo puede haber una skin puesta.
+// En la partida a dos (mejoras/dos-jugadores) cada jugador juega con las
+// mejoras de su perfil, en la dificultad del anfitrión, y los dos
+// dispositivos se mandan sus niveles (js/red.js). Las de la nave van con la
+// nave de quien las compró (nivelDe); BOMBS, YELLOW y ESCORT, que cambian a
+// los enemigos de los dos, usan la media de los dos niveles, redondeando
+// hacia abajo (nivelJuego); RED SLOW, BLAST y STARS solo cambian la
+// pantalla de quien las compró (nivel).
 KF.tienda = {
   // Cada una con su explicación, que se ve bajo la lista mientras está marcada.
   MEJORAS: [
@@ -83,14 +90,50 @@ KF.tienda = {
   teclaElegir: null,
   xNave: 0,                // dónde estaba la nave al abrir la tienda
   xTienda: 0,
+  otro: {},                // a dos, niveles en vigor del otro jugador: { id: nivel }
 
-  // Nivel en vigor de una mejora en la dificultad en curso: el comprado,
-  // salvo una skin o un cosmético quitado, que cuenta 0. En la partida a dos
-  // las mejoras no cuentan (mejoras/dos-jugadores).
+  // Nivel en vigor de una mejora de este dispositivo en la dificultad en
+  // curso: el comprado, salvo una skin o un cosmético quitado, que cuenta 0.
   nivel: function (id) {
-    if (KF.companero) return 0;
     var d = KF.monedas.delNivel();
     return d.quitadas[id] ? 0 : d.mejoras[id] || 0;
+  },
+
+  // Nivel de una mejora de la nave: el de este dispositivo para la suya y,
+  // a dos, el del otro jugador para la del otro.
+  nivelDe: function (nave, id) {
+    return KF.companero && nave === KF.companero ? this.otro[id] || 0 : this.nivel(id);
+  },
+
+  // Nivel de una mejora que cambia a los enemigos: a dos, la media de los
+  // dos jugadores, redondeando hacia abajo.
+  nivelJuego: function (id) {
+    return KF.companero ? Math.floor((this.nivel(id) + (this.otro[id] || 0)) / 2) : this.nivel(id);
+  },
+
+  // Niveles en vigor de este dispositivo, en el orden de MEJORAS, para el
+  // otro dispositivo de la partida a dos.
+  niveles: function () {
+    var self = this;
+    return this.MEJORAS.map(function (m) { return self.nivel(m.id); });
+  },
+
+  // Llegan los niveles del otro jugador. En el anfitrión, el escudo y las
+  // naves de apoyo que acaba de comprar (o que aún no sabía) llegan ya a su
+  // nave en juego, como a uno.
+  recibirNiveles: function (lista) {
+    if (!Array.isArray(lista)) return;
+    var antes = this.otro, otro = {}, self = this;
+    this.MEJORAS.forEach(function (m, i) {
+      var n = lista[i];
+      if (typeof n === 'number' && n > 0) otro[m.id] = Math.floor(n);
+    });
+    this.otro = otro;
+    if (!KF.companero || KF.red.invitado) return;
+    ['SHIELD', 'WINGMAN'].forEach(function (id) {
+      var mas = (otro[id] || 0) - (antes[id] || 0);
+      if (mas > 0) self.ponerEnLaNave(id, KF.companero, mas);
+    });
   },
 
   // Mejora por su id.
@@ -113,15 +156,15 @@ KF.tienda = {
     KF.monedas.guardar();
   },
 
-  factorVelocidad: function () { return 1 + this.AUMENTO * this.nivel('SPEED'); },
-  factorDisparo: function () { return 1 + this.AUMENTO * this.nivel('FIRE'); },
-  factorBombas: function () { return Math.pow(this.BOMBAS, this.nivel('BOMBS')); },
+  factorVelocidad: function (nave) { return 1 + this.AUMENTO * this.nivelDe(nave, 'SPEED'); },
+  factorDisparo: function (nave) { return 1 + this.AUMENTO * this.nivelDe(nave, 'FIRE'); },
+  factorBombas: function () { return Math.pow(this.BOMBAS, this.nivelJuego('BOMBS')); },
 
   abierta: function () { return this.fase !== null; },
 
   // Desde la pausa: la tienda aparece al lado de la nave, donde haya sitio.
   abrir: function () {
-    if (KF.companero || this.abierta()) return;
+    if (this.abierta()) return;
     this.xNave = KF.jugador.estado === 'viva' ? KF.jugador.x : KF.ANCHO / 2;
     this.xTienda = this.xNave + (this.xNave < KF.ANCHO / 2 ? 1 : -1) * this.DISTANCIA_TIENDA;
     this.fase = 'ida';
@@ -184,18 +227,21 @@ KF.tienda = {
       d.mejoras[m.id] = nivel + 1;
       if (m.conmutable) this.poner(m, true);   // recién comprada, puesta
       KF.monedas.guardar();
-      KF.powerups.recogidas++;   // suena como un power-up
-      this.ponerEnLaNave(m.id);
+      // Suena como un power-up, igual que una moneda: con el contador de las
+      // monedas, que a dos no pisa la foto del anfitrión.
+      KF.monedas.recogidas++;
+      this.ponerEnLaNave(m.id, KF.jugador);
       this.avisar(m.id === 'SHIPS' ? 'FROM NEXT GAME' : 'BOUGHT');
     }
   },
 
-  // El escudo y la nave de apoyo recién comprados llegan ya a la nave en juego.
-  ponerEnLaNave: function (id) {
-    var j = KF.jugador;
-    if (j.estado !== 'viva') return;
+  // El escudo y las n naves de apoyo (una, por defecto) recién compradas
+  // llegan ya a la nave en juego. En el invitado de la partida a dos lo hace
+  // el anfitrión al recibir sus niveles.
+  ponerEnLaNave: function (id, j, n) {
+    if (j.estado !== 'viva' || KF.red.invitado) return;
     if (id === 'SHIELD') j.blindaje = true;
-    if (id === 'WINGMAN' && j.apoyos.length < 2) {
+    for (var k = 0; id === 'WINGMAN' && k < (n || 1) && j.apoyos.length < 2; k++) {
       var libre = j.apoyos.some(function (a) { return a.lado < 0; }) ? 1 : -1;
       j.apoyos.push({ lado: libre });
     }

@@ -51,7 +51,8 @@ KF.powerups = {
     this.capsulas.push({ id: KF.nuevoId(), x: x, y: y, t: 0, poder: poder });
   },
 
-  // La cápsula se ve roja: es la del slow fire y se tiene la mejora RED SLOW.
+  // La cápsula se ve roja: es la del slow fire y se tiene la mejora RED SLOW
+  // (a dos, la de quien mira la pantalla; la foto dice cuál es la del slow fire).
   esRoja: function (k) {
     return k.poder === 'lento' && KF.tienda.nivel('RED SLOW') > 0;
   },

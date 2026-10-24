@@ -1,14 +1,21 @@
-// Monedas (mejoras): en la partida a uno, cada oleada principal tiene
-// POR_OLEADA monedas, y cada una solo se puede recoger una vez. Al empezar
-// la oleada se mira cuántas faltan por recoger en ella y solo caen esas:
-// todas menos una de enemigos destruidos al azar y la última siempre del
-// último enemigo de la oleada. La moneda cae como una cápsula y se recoge al
-// tocarla con la nave; si se escapa por abajo, sigue pendiente para otra
-// partida. La nave nodriza no tiene monedas, y en la partida a dos no cae
-// ninguna (mejoras/dos-jugadores).
+// Monedas (mejoras): cada oleada principal tiene POR_OLEADA monedas, y cada
+// una solo se puede recoger una vez. Al empezar la oleada se mira cuántas
+// faltan por recoger en ella y solo caen esas: todas menos una de enemigos
+// destruidos al azar y la última siempre del último enemigo de la oleada. La
+// moneda cae como una cápsula y se recoge al tocarla con la nave; si se
+// escapa por abajo, sigue pendiente para otra partida. La nave nodriza no
+// tiene monedas.
 // La oleada desafío, que en la partida a uno solo sale con la mejora BONUS,
-// suelta una moneda por cada grupo destruido entero, hasta POR_DESAFIO: las
-// del desafío que sigue a cada oleada también se recogen una sola vez.
+// suelta una moneda por cada grupo destruido entero, hasta POR_DESAFIO, para
+// quien tenga BONUS: las del desafío que sigue a cada oleada también se
+// recogen una sola vez.
+// En la partida a dos (mejoras/dos-jugadores) cada jugador tiene las suyas,
+// las que le faltan a él, así que caen de enemigos distintos para cada uno
+// (las dos últimas, del último enemigo, una al lado de la otra). Cada moneda
+// es de una nave (dueno) y solo la recoge esa; en cada pantalla las del otro
+// jugador se ven semitransparentes. El anfitrión mueve todas: el invitado le
+// dice cuántas le faltan (estadoInvitado) y recibe en cada foto las que ha
+// recogido (js/red.js), que guarda en su perfil al momento.
 // Lo recogido se guarda en el navegador al momento, aparte para cada
 // dificultad: el saldo, las monedas recogidas en cada oleada y las mejoras
 // compradas en la tienda (js/tienda.js). Cada dificultad tiene sus perfiles
@@ -28,15 +35,26 @@ KF.monedas = {
   RADIO_IMAN: 48,          // píxeles alrededor de la nave a los que llega el imán
   VELOCIDAD_IMAN: 70,      // píxeles por segundo hacia la nave con el imán
 
-  monedas: [],             // {id, x, y, t, oleada, desafio}: desafio si es del desafío tras esa oleada
+  SEPARACION: 4,           // a dos, píxeles a cada lado del sitio cuando caen las dos a la vez
+  ULTIMAS: 10,             // a dos, recogidas del invitado que repite cada foto
+
+  monedas: [],             // {id, x, y, t, oleada, desafio, dueno}: desafio si es del desafío tras esa oleada; dueno, el número de su nave
   naves: null,             // formación de la oleada planificada
-  plan: [],                // números de enemigo destruido (1, 2…) que sueltan moneda
+  planes: {},              // por número de nave: números de enemigo destruido (1, 2…) que sueltan su moneda
   destruidas: 0,           // enemigos de la formación destruidos en la oleada
   navesDesafio: null,      // naves del desafío en curso
-  soltadasDesafio: 0,      // monedas soltadas en el desafío en curso
-  limiteDesafio: 0,        // las que le faltaban al empezar
-  recogidas: 0,            // monedas recogidas desde que empezó el juego (Sonido las observa)
+  soltadasDesafio: {},     // por número de nave, monedas soltadas en el desafío en curso
+  limiteDesafio: {},       // por número de nave, las que le faltaban al empezar
+  recogidas: 0,            // monedas recogidas (y mejoras compradas) desde que empezó el juego (Sonido las observa)
   cache: {},               // datos de cada cuenta, leídos una vez: { cuenta: datos }
+  // Partida a dos. En el anfitrión: lo que ha dicho el invitado [oleada,
+  // faltan en ella, faltan en su desafío] y sus recogidas (entregadas en
+  // total, las últimas como oleada o -oleada si son del desafío). En el
+  // invitado: cuántas de esas ya ha guardado.
+  invitado: null,
+  entregadas: 0,
+  ultimas: [],
+  guardadas: 0,
 
   // Datos de la cuenta: { EASY: { saldo, oleadas: { n: recogidas },
   // desafios: { n: recogidas }, mejoras: { id: nivel }, quitadas: { id: true } }, … };
@@ -132,30 +150,63 @@ KF.monedas = {
     }
   },
 
-  // Hay monedas en esta partida: a uno, jugando y en el anfitrión (o solo).
+  // Hay monedas que mover en esta partida: jugando, a uno o en el anfitrión.
   enJuego: function () {
-    return KF.partida.estado === 'jugando' && !KF.companero && !KF.red.invitado;
+    return KF.partida.estado === 'jugando' && !KF.red.invitado;
   },
 
-  // Oleada nueva: elige qué enemigos destruidos soltarán las monedas que
-  // faltan; la última, siempre el último. Las que aún caen de la oleada
-  // anterior siguen cayendo.
+  // La nave de número n en juego, o null.
+  nave: function (n) {
+    for (var i = 0; i < KF.jugadores.length; i++) if (KF.jugadores[i].numero === n) return KF.jugadores[i];
+    return null;
+  },
+
+  // Cuántas le faltan a la nave n en la oleada en curso (desafio: en su
+  // desafío), o null si aún no se sabe: el invitado lo dice en sus mensajes.
+  faltanDe: function (n, desafio) {
+    var o = KF.partida.oleada, nave = this.nave(n);
+    if (!nave) return 0;
+    if (nave === KF.jugador) return desafio ? this.faltanDesafio(o) : this.faltan(o);
+    var e = this.invitado;
+    if (!e || e[0] !== o) return null;
+    return e[desafio ? 2 : 1];
+  },
+
+  // Oleada nueva: elige qué enemigos destruidos soltarán las monedas que le
+  // faltan a cada jugador; la última, siempre el último. Las que aún caen de
+  // la oleada anterior siguen cayendo.
   planificar: function () {
     this.naves = KF.formacion.naves;
     this.destruidas = 0;
-    this.plan = [];
-    var total = this.naves.length, faltan = Math.min(this.faltan(KF.partida.oleada), total);
-    if (!this.enJuego() || !faltan) return;
-    var posibles = [];
-    for (var i = 1; i < total; i++) posibles.push(i);
-    for (i = 0; i < faltan - 1; i++) {
-      this.plan.push(posibles.splice(Math.floor(Math.random() * posibles.length), 1)[0]);
-    }
-    this.plan.push(total);
+    this.planes = {};
+    this.planificarFaltan();
   },
 
-  // Un enemigo de la formación destruido: si le toca, suelta una moneda. En
-  // el desafío, la suelta la última nave de cada grupo.
+  // Planifica las de cada jugador en cuanto se sabe cuántas le faltan (las
+  // del invitado, al llegar su primer mensaje de la oleada), entre los
+  // enemigos que aún no se han destruido.
+  planificarFaltan: function () {
+    if (!this.enJuego() || this.naves !== KF.formacion.naves) return;
+    for (var i = 0; i < KF.jugadores.length; i++) {
+      var n = KF.jugadores[i].numero, faltan = this.faltanDe(n);
+      if (this.planes[n] || faltan === null) continue;
+      this.planes[n] = this.elegirEnemigos(faltan);
+    }
+  },
+
+  elegirEnemigos: function (faltan) {
+    var total = this.naves.length, plan = [], posibles = [];
+    if (!faltan || this.destruidas >= total) return plan;
+    for (var i = this.destruidas + 1; i < total; i++) posibles.push(i);
+    for (i = 0; i < faltan - 1 && posibles.length; i++) {
+      plan.push(posibles.splice(Math.floor(Math.random() * posibles.length), 1)[0]);
+    }
+    plan.push(total);
+    return plan;
+  },
+
+  // Un enemigo de la formación destruido: suelta la moneda de cada jugador
+  // al que le toque. En el desafío, la suelta la última nave de cada grupo.
   alDestruir: function (nave, x, y) {
     if (!this.enJuego()) return;
     if (KF.desafio.activo && KF.desafio.naves.indexOf(nave) >= 0) {
@@ -164,26 +215,57 @@ KF.monedas = {
     }
     if (this.naves !== KF.formacion.naves || this.naves.indexOf(nave) < 0) return;
     this.destruidas++;
-    if (this.plan.indexOf(this.destruidas) >= 0) {
-      this.monedas.push({ id: KF.nuevoId(), x: x, y: y, t: 0, oleada: KF.partida.oleada });
-    }
+    var duenos = [];
+    for (var n in this.planes) if (this.planes[n].indexOf(this.destruidas) >= 0) duenos.push(+n);
+    this.soltar(duenos, x, y, false);
   },
 
   alDestruirEnDesafio: function (nave, x, y) {
-    var d = KF.desafio;
+    var d = KF.desafio, self = this;
     if (this.navesDesafio !== d.naves) {
       this.navesDesafio = d.naves;
-      this.soltadasDesafio = 0;
-      this.limiteDesafio = this.faltanDesafio(KF.partida.oleada);
+      this.soltadasDesafio = {};
+      this.limiteDesafio = {};
     }
     var quedan = d.naves.some(function (n) { return n.grupo === nave.grupo && n.viva; });
-    if (quedan || this.soltadasDesafio >= this.limiteDesafio) return;
-    this.soltadasDesafio++;
-    this.monedas.push({ id: KF.nuevoId(), x: x, y: y, t: 0, oleada: KF.partida.oleada, desafio: true });
+    if (quedan) return;
+    var duenos = [];
+    KF.jugadores.forEach(function (j) {
+      var n = j.numero;
+      // A uno, sin BONUS no hay desafío; a dos sale siempre, pero sus
+      // monedas solo caen para quien la tenga.
+      if (KF.companero && KF.tienda.nivelDe(j, 'BONUS') <= 0) return;
+      if (self.limiteDesafio[n] === undefined) {
+        var faltan = self.faltanDe(n, true);
+        if (faltan === null) return;
+        self.limiteDesafio[n] = faltan;
+        self.soltadasDesafio[n] = 0;
+      }
+      if (self.soltadasDesafio[n] >= self.limiteDesafio[n]) return;
+      self.soltadasDesafio[n]++;
+      duenos.push(n);
+    });
+    this.soltar(duenos, x, y, true);
   },
 
-  // La nave recoge la moneda: cuenta para su oleada (o su desafío) y suma al saldo.
+  // Las monedas de esos jugadores caen en (x, y); si son dos, una al lado de la otra.
+  soltar: function (duenos, x, y, desafio) {
+    var self = this;
+    duenos.forEach(function (n, i) {
+      var dx = duenos.length > 1 ? (i ? 1 : -1) * self.SEPARACION : 0;
+      self.monedas.push({ id: KF.nuevoId(), x: x + dx, y: y, t: 0, oleada: KF.partida.oleada, desafio: desafio, dueno: n });
+    });
+  },
+
+  // Una nave recoge su moneda. La de este dispositivo cuenta para su oleada
+  // (o su desafío) y suma al saldo; la del invitado se le manda (js/red.js).
   recoger: function (moneda) {
+    if (moneda.dueno && moneda.dueno !== KF.jugador.numero) {
+      this.entregadas++;
+      this.ultimas.push(moneda.desafio ? -moneda.oleada : moneda.oleada);
+      if (this.ultimas.length > this.ULTIMAS) this.ultimas.shift();
+      return;
+    }
     var d = this.delNivel();
     if (moneda.desafio) d.desafios[moneda.oleada] = Math.min(this.POR_DESAFIO, (d.desafios[moneda.oleada] || 0) + 1);
     else d.oleadas[moneda.oleada] = Math.min(this.POR_OLEADA, (d.oleadas[moneda.oleada] || 0) + 1);
@@ -192,29 +274,64 @@ KF.monedas = {
     this.guardar();
   },
 
-  // Con el imán, el objeto k va hacia la nave si está cerca y por encima de ella.
-  atraer: function (k, dt) {
-    var j = KF.jugador;
+  // Partida a dos nueva (otra conexión): nada recibido ni entregado aún.
+  empezarDos: function () {
+    this.invitado = null;
+    this.entregadas = this.guardadas = 0;
+    this.ultimas = [];
+  },
+
+  // Invitado: lo que manda al anfitrión, [oleada, faltan en ella, faltan en su desafío].
+  estadoInvitado: function () {
+    var o = KF.partida.oleada;
+    return [o, this.faltan(o), this.faltanDesafio(o)];
+  },
+
+  // Anfitrión: llega lo que dice el invitado.
+  recibirInvitado: function (e) {
+    if (!Array.isArray(e) || e.length < 3) return;
+    this.invitado = e;
+    this.planificarFaltan();
+  },
+
+  // Invitado: llegan sus recogidas, [entregadas, últimas]; guarda las nuevas.
+  recibirRecogidas: function (r) {
+    if (!Array.isArray(r) || !Array.isArray(r[1])) return;
+    var nuevas = Math.min(r[0] - this.guardadas, r[1].length);
+    for (var i = r[1].length - nuevas; i < r[1].length; i++) {
+      var o = r[1][i];
+      this.recoger({ oleada: Math.abs(o), desafio: o < 0 });
+    }
+    this.guardadas = Math.max(this.guardadas, r[0]);
+  },
+
+  // Con el imán, el objeto k va hacia la nave j si está cerca y por encima de ella.
+  atraer: function (k, dt, j) {
     if (j.estado !== 'viva' || k.y > j.Y || Math.abs(k.x - j.x) > this.RADIO_IMAN || j.Y - k.y > this.RADIO_IMAN * 2) return;
     var paso = this.VELOCIDAD_IMAN * dt, dx = j.x - k.x;
     k.x += Math.abs(dx) <= paso ? dx : (dx > 0 ? paso : -paso);
   },
 
   actualizar: function (dt) {
+    // En el invitado, las monedas llegan en las fotos del anfitrión.
+    if (KF.red.invitado) return;
     if (this.naves !== KF.formacion.naves) this.planificar();
     if (!this.enJuego()) {
       this.monedas = [];
       return;
     }
-    var iman = KF.tienda.nivel('MAGNET') > 0, self = this;
-    if (iman) KF.powerups.capsulas.forEach(function (k) { self.atraer(k, dt); });
+    var self = this, s = this.SPRITE;
+    var imanes = KF.jugadores.filter(function (j) { return KF.tienda.nivelDe(j, 'MAGNET') > 0; });
+    imanes.forEach(function (j) { KF.powerups.capsulas.forEach(function (k) { self.atraer(k, dt, j); }); });
     var vy = KF.ataque.VELOCIDAD_BOMBA * KF.ataque.factorVelocidad * this.FACTOR_CAIDA;
-    var s = this.SPRITE;
     this.monedas = this.monedas.filter(function (m) {
+      var nave = self.nave(m.dueno || 1);
+      // Si su nave ya no está en la partida (el otro jugador se ha ido), fuera.
+      if (!nave) return false;
       m.t += dt;
       m.y += vy * dt;
-      if (iman) self.atraer(m, dt);
-      var c = KF.jugador.caja();
+      if (imanes.indexOf(nave) >= 0) self.atraer(m, dt, nave);
+      var c = nave.caja();
       if (c && m.x - s.width / 2 < c.x + c.ancho && m.x + s.width / 2 > c.x &&
           m.y - s.height / 2 < c.y + c.alto && m.y + s.height / 2 > c.y) {
         self.recoger(m);
@@ -224,11 +341,14 @@ KF.monedas = {
     });
   },
 
+  // Las monedas del otro jugador, semitransparentes, como su nave.
   dibujar: function (ctx) {
     for (var i = 0; i < this.monedas.length; i++) {
       var m = this.monedas[i];
       var fase = Math.floor(m.t / this.GIRO) % this.SPRITES.length;
+      if (m.dueno && m.dueno !== KF.jugador.numero) ctx.globalAlpha = KF.Nave.prototype.OPACIDAD_FANTASMA;
       KF.graficos.dibujar(ctx, this.SPRITES[fase], m.x, m.y);
+      ctx.globalAlpha = 1;
     }
   }
 };

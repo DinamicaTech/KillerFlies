@@ -3,8 +3,8 @@
 // y js/tienda.js con el resto del juego simulado y mira que cada oleada suelta
 // solo las monedas que le faltan (5 como mucho, la última del último enemigo),
 // que se guardan por dificultad y sobreviven al volver a abrir el juego, que
-// la tienda cobra, avisa sin saldo y aplica cada mejora, y que en la partida a
-// dos no hay monedas ni mejoras.
+// la tienda cobra, avisa sin saldo y aplica cada mejora. La partida a dos la
+// comprueba tools/comprobar-dos-jugadores.mjs.
 // Uso: node tools/comprobar-mejoras.mjs (desde la raíz del repositorio).
 // Lo ejecuta el workflow "Pruebas" en cada pull request.
 import { readFileSync } from 'node:fs';
@@ -19,7 +19,7 @@ function cargar(guardado, busqueda) {
   const almacen = new Map(guardado);
   const oyentes = [];
   const nave = {
-    estado: 'ausente', x: 112, Y: 264, puntos: 0, recambio: 0, proximaVida: 0, racha: 0, disparos: [],
+    numero: 1, estado: 'ausente', x: 112, Y: 264, puntos: 0, recambio: 0, proximaVida: 0, racha: 0, disparos: [],
     retirar() { this.estado = 'ausente'; }, aparecer() { this.estado = 'viva'; },
     caja() { return this.estado === 'viva' ? { x: this.x - 6.5, y: this.Y - 5.5, ancho: 13, alto: 11 } : null; }
   };
@@ -189,14 +189,6 @@ KF.dificultad.nivel = 0;
 comprobar(m.saldo() === 0 && t.nivel('SPEED') === 0 && m.faltan(1) === 5, 'EASY no debe tener las monedas ni las mejoras de NORMAL');
 KF.dificultad.nivel = 1;
 
-// A dos, ni monedas ni mejoras.
-KF.companero = {};
-comprobar(t.nivel('SPEED') === 0 && t.factorVelocidad() === 1, 'en la partida a dos las mejoras no deben contar');
-p.ponerOleada(4);
-m.actualizar(0);
-comprobar(limpiar(KF, destruir).length === 0, 'en la partida a dos no deben caer monedas');
-delete KF.companero;
-
 // Al volver a abrir el juego se recuerda todo; lo que no tenga sentido se ignora.
 const guardado = almacen.get(CLAVE);
 ({ KF } = cargar([[CLAVE, guardado]]));
@@ -225,11 +217,6 @@ comprobar(t.nivel('BONUS') === 1 && m.saldo() === 0, 'BONUS debe costar 10');
 limpiarYEsperar();
 comprobar(KF.desafio.activo, 'con BONUS debe salir el desafío tras la oleada');
 KF.desafio.activo = false;
-KF.companero = {};
-p.ponerOleada(4);
-KF.tienda.nivel = () => 0;
-comprobar(p.conDesafio(), 'en la partida a dos el desafío sale siempre');
-delete KF.companero;
 
 // Monedas del desafío: una por grupo destruido entero, hasta 4, y una sola vez.
 ({ KF, almacen, nave, destruir } = cargar([]));
@@ -291,9 +278,6 @@ elegirId('YELLOW'); elegirId('YELLOW'); elegirId('KEEP POWER');
 comprobar(t.nivel('YELLOW') === 2 && t.nivel('KEEP POWER') === 1 && m.saldo() === 5, 'YELLOW es acumulable y KEEP POWER se compra una vez');
 let regalo = cargar([[CLAVE, almacen.get(CLAVE)]]);
 comprobar(regalo.KF.tienda.nivel('SKIN BLUE') === 1 && regalo.KF.tienda.nivel('SKIN GOLD') === 0 && regalo.KF.tienda.nivel('STARS') === 0 && regalo.KF.tienda.nivel('TRAIL') === 1, 'al volver a abrir el juego debe recordar qué skins y cosméticos están puestos');
-KF.companero = {};
-comprobar(t.nivel('SKIN BLUE') === 0 && t.nivel('TRAIL') === 0, 'en la partida a dos no debe haber skins ni cosméticos');
-delete KF.companero;
 
 // Puerta trasera de pruebas: ?monedas=N suma N a cada dificultad y se quita de la dirección.
 regalo = cargar([[CLAVE, '{"NORMAL":{"saldo":3}}']], '?room=ABCD&monedas=100');

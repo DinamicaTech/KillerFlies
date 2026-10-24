@@ -73,3 +73,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Perfiles de jugador (mejoras/cuentas)
         run: node tools/comprobar-perfiles.mjs
+
+  dos-jugadores:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Monedas y mejoras en la partida a dos (mejoras/dos-jugadores)
+        run: node tools/comprobar-dos-jugadores.mjs

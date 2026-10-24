@@ -34,7 +34,7 @@ function cargar(guardado) {
     desafio: { activo: false, hecho: false, quitar: nada, empezar: nada },
     jefe: { CADA: 3, activo: false, hecho: false, quitar: nada, empezar: nada },
     powerups: { recogidas: 0 },
-    combos: {}, tienda: { nivel: () => 0 }, inclinacion: { calibrar: nada },
+    combos: {}, tienda: { nivel: () => 0, nivelDe: () => 0, nivelJuego: () => 0 }, inclinacion: { calibrar: nada },
     red: { activa: () => false, fase: null, cerrar: nada, alMenu: nada },
     jugador: nave, jugadores: [nave], tactil: {},
     alPulsarCorto: (f) => toques.push(f),
