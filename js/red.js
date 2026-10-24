@@ -14,6 +14,10 @@
 // Si se deja de recibir al otro jugador, la partida se pausa y se espera a
 // que vuelva; pasados ESPERA_VUELTA segundos el anfitrión sigue solo y el
 // invitado vuelve al menú.
+// Cada mensaje lleva también los niveles en vigor de las mejoras de quien
+// lo manda (u, js/tienda.js); el del invitado, cuántas monedas le faltan en
+// la oleada (mo), y la foto, las monedas que caen (mn) y las que ha recogido
+// el invitado (mr), que este guarda en su perfil (js/monedas.js).
 // Tras 'GAME OVER' la conexión sigue abierta: cada jugador vuelve al menú de
 // inicio, que ofrece 'PLAY AGAIN' mientras los dos sigan conectados, y con
 // que uno la elija empieza otra partida en los dos dispositivos. Elegir otra
@@ -106,6 +110,8 @@ KF.red = {
         r.anfitrion = true;
         r.entradas = new KF.Muestras();
         r.peticiones = 0;
+        KF.tienda.otro = {};
+        KF.monedas.empezarDos();
         KF.companero = new KF.Nave(2);
         KF.companero.remoto = true;
         KF.jugadores = [KF.jugador, KF.companero];
@@ -156,6 +162,8 @@ KF.red = {
         r.desfase = null;
         r.partidaNumero = 0;
         r.pideOtra = false;
+        KF.tienda.otro = {};
+        KF.monedas.empezarDos();
         // La nave de este dispositivo es la J2; la J1 la mueve el anfitrión.
         KF.companero = new KF.Nave(1);
         KF.companero.remoto = true;
@@ -318,7 +326,11 @@ KF.red = {
       return;
     }
     if ((this.anfitrion && m.f === 'n') || (this.invitado && m.f === 'e')) KF.pausa.recibir(m.z, m.zv, this.invitado);
-    if (this.anfitrion && m.f === 'n') this.entradas.meter(m);
+    if (this.anfitrion && m.f === 'n') {
+      this.entradas.meter(m);
+      if (m.u) KF.tienda.recibirNiveles(m.u);
+      if (m.mo) KF.monedas.recibirInvitado(m.mo);
+    }
     else if (this.invitado && m.f === 'e') this.meterFoto(m);
   },
 
@@ -374,6 +386,12 @@ KF.red = {
     else {
       var j = KF.jugador;
       m = { f: 'n', t: performance.now(), x: KF.redondear(j.x), vx: KF.redondear(j.vx), d: j.peticiones, o: this.pideOtra ? 1 : 0 };
+      // Sus mejoras y monedas, en cuanto sabe la dificultad de la partida (la
+      // del anfitrión, que llega en las fotos).
+      if (this.fotoAplicada) {
+        m.u = KF.tienda.niveles();
+        m.mo = KF.monedas.estadoInvitado();
+      }
     }
     m.z = KF.pausa.quien;
     m.zv = KF.pausa.version;
@@ -420,16 +438,20 @@ KF.red = {
         return [a.nave.i, R(a.x), R(a.y), R(a.angulo * 100), a.fase === 'vuelta' ? 1 : 0];
       }),
       b: lista(KF.ataque.bombas),
-      c: lista(KF.powerups.capsulas, true),
+      c: KF.powerups.capsulas.map(function (o) { return [o.id, R(o.x), R(o.y), R(o.t), o.poder === 'lento' ? 1 : 0]; }),
       w: lista(KF.powerups.ondas, true),
       r: KF.powerups.recogidas,
+      u: KF.tienda.niveles(),
+      mn: KF.monedas.monedas.map(function (o) { return [o.id, R(o.x), R(o.y), R(o.t), o.dueno || 1]; }),
+      mr: [KF.monedas.entregadas, KF.monedas.ultimas],
       d: KF.desafio.foto(),
       m: KF.jefe.foto(),
       p: KF.combos.flotantes.map(function (o) { return [o.id, R(o.x), R(o.y), R(o.t), o.puntos, o.numero]; }),
       j: KF.jugadores.map(function (j) {
         return [R(j.x), R(j.vx), est.indexOf(j.estado), R(j.escudo), KF.powerups.PODERES.indexOf(j.poder),
           j.recambio, j.puntos, j.salvas,
-          j.disparos.map(function (d) { return [d.id, d.x, R(d.y), d.bomba ? 1 : 0]; }), j.racha, j.capsulas];
+          j.disparos.map(function (d) { return [d.id, d.x, R(d.y), d.bomba ? 1 : 0]; }), j.racha, j.capsulas,
+          j.blindaje ? 1 : 0, j.apoyos.map(function (a) { return a.lado; })];
       })
     };
   },
@@ -495,7 +517,8 @@ KF.red = {
       };
     });
     KF.ataque.bombas = KF.interpolarLista(a.b, b.b, k).map(function (o) { return { id: o[0], x: o[1], y: o[2], vx: 0 }; });
-    KF.powerups.capsulas = KF.interpolarLista(a.c, b.c, k).map(function (o) { return { id: o[0], x: o[1], y: o[2], t: o[3] }; });
+    KF.powerups.capsulas = KF.interpolarLista(a.c, b.c, k).map(function (o) { return { id: o[0], x: o[1], y: o[2], t: o[3], poder: o[4] ? 'lento' : null }; });
+    KF.monedas.monedas = KF.interpolarLista(a.mn || [], b.mn || [], k).map(function (o) { return { id: o[0], x: o[1], y: o[2], t: o[3], dueno: o[4] }; });
     KF.powerups.ondas = KF.interpolarLista(a.w, b.w, k).map(function (o) { return { id: o[0], x: o[1], y: o[2], t: o[3] }; });
     // Los puntos flotantes de los combos, con su tiempo interpolado.
     var flotantesAntes = {};
@@ -549,6 +572,8 @@ KF.red = {
       n.enFormacion = c === '1';
     }
     KF.powerups.recogidas = f.r;
+    KF.tienda.recibirNiveles(f.u);
+    KF.monedas.recibirRecogidas(f.mr);
     KF.desafio.aplicarCambios(f.d);
     KF.jefe.aplicarCambios(f.m);
 
@@ -572,6 +597,8 @@ KF.red = {
       j.puntos = d[6];
       j.racha = d[9] || 0;
       j.capsulas = d[10] || 0;
+      j.blindaje = !!d[11];
+      j.apoyos = (d[12] || []).map(function (lado) { return { lado: lado }; });
       if (d[7] > j.salvas) j.destello = j.DURACION_DESTELLO;
       j.salvas = d[7];
     }

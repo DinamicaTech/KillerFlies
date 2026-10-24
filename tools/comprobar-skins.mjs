@@ -4,7 +4,7 @@
 // amarillas, que con ESCORT cae cápsula con la amarilla y una sola escolta,
 // que KEEP POWER guarda el power-up una vez por partida, que cada skin tiene
 // su variante para cada power-up y que TRAIL, BLAST y STARS cambian lo que se
-// dibuja; y que la nave del otro jugador no lleva nada de esto.
+// dibuja; y que a dos cada nave lleva la skin de su jugador.
 // Uso: node tools/comprobar-skins.mjs (desde la raíz del repositorio).
 // Lo ejecuta el workflow "Pruebas" en cada pull request.
 import { readFileSync } from 'node:fs';
@@ -23,7 +23,7 @@ const crearContexto = () => new Proxy({}, {
   set(obj, nombre, valor) { obj[nombre] = valor; return true; }
 });
 const documento = { createElement: () => ({ getContext: crearContexto }) };
-const niveles = {};
+const niveles = {}, otros = {};
 const KF = {
   ANCHO: 224, ALTO: 288, RESOLUCION: 4,
   registrar: nada,
@@ -35,7 +35,8 @@ const KF = {
   partida: { sumarRecambio: nada },
   red: { invitado: false },
   combos: { cortar: nada },
-  tienda: { nivel: (id) => niveles[id] || 0, factorVelocidad: () => 1, factorDisparo: () => 1, factorBombas: () => 1 }
+  tienda: { nivel: (id) => niveles[id] || 0, nivelJuego: (id) => niveles[id] || 0,
+    nivelDe: (nave, id) => (KF.companero && nave === KF.companero ? otros[id] : niveles[id]) || 0, factorVelocidad: () => 1, factorDisparo: () => 1, factorBombas: () => 1 }
 };
 const ctx = vm.createContext({ KF, document: documento, window: { addEventListener: nada }, Math, Object, Array, parseInt });
 for (const f of ['js/graficos.js', 'js/enemigos.js', 'js/jugador.js', 'js/ataque.js']) {
@@ -133,9 +134,14 @@ for (const id of ['SKIN BLUE', 'SKIN GOLD']) {
 }
 j.poder = null;
 comprobar(j.spriteActual() === j.SPRITE, 'sin skin la nave debe ser la normal');
+// A dos, cada nave lleva la skin de su jugador (mejoras/dos-jugadores).
 niveles['SKIN GOLD'] = 1;
-const otra = new KF.Nave(2);
-comprobar(otra.spriteActual() === otra.SPRITE, 'la nave del otro jugador no debe llevar la skin');
+const otra = KF.companero = new KF.Nave(2);
+comprobar(otra.spriteActual() === otra.SPRITE && j.spriteActual() === g.SPRITES_SKIN['SKIN GOLD'].normal, 'a dos, la skin de este jugador no debe verse en la nave del otro');
+otros['SKIN BLUE'] = 1;
+comprobar(otra.spriteActual() === g.SPRITES_SKIN['SKIN BLUE'].normal, 'a dos, la nave del otro jugador debe llevar su skin');
+delete otros['SKIN BLUE'];
+KF.companero = null;
 delete niveles['SKIN GOLD'];
 
 // TRAIL: la llama del motor, azul.

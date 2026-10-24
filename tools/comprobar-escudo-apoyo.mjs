@@ -3,7 +3,7 @@
 // y el resto del juego simulados y mira que el escudo aguanta un golpe y
 // vuelve con la nave siguiente, que las naves de apoyo disparan con la nave
 // sin contar para su máximo, que lo que las toca las destruye y que en la
-// partida a dos no hay ni escudo ni naves de apoyo.
+// partida a dos cada nave trae las de su jugador.
 // Uso: node tools/comprobar-escudo-apoyo.mjs (desde la raíz del repositorio).
 // Lo ejecuta el workflow "Pruebas" en cada pull request.
 import { readFileSync } from 'node:fs';
@@ -22,7 +22,7 @@ const crearContexto = () => new Proxy({}, {
   set(obj, nombre, valor) { obj[nombre] = valor; return true; }
 });
 const documento = { createElement: () => ({ getContext: crearContexto }) };
-const niveles = {};
+const niveles = {}, otros = {};
 const destruidas = [];
 const KF = {
   ANCHO: 224, ALTO: 288, RESOLUCION: 4,
@@ -36,7 +36,8 @@ const KF = {
   partida: { sumarRecambio: nada },
   red: { invitado: false },
   combos: { cortar: nada },
-  tienda: { nivel: (id) => (KF.companero ? 0 : niveles[id] || 0), factorVelocidad: () => 1, factorDisparo: () => 1, factorBombas: () => 1 }
+  tienda: { nivel: (id) => niveles[id] || 0, nivelJuego: (id) => niveles[id] || 0,
+    nivelDe: (nave, id) => (KF.companero && nave === KF.companero ? otros[id] : niveles[id]) || 0, factorVelocidad: () => 1, factorDisparo: () => 1, factorBombas: () => 1 }
 };
 const ctx = vm.createContext({ KF, document: documento, window: { addEventListener: nada }, Math, Object, Array, parseInt });
 for (const f of ['js/graficos.js', 'js/jugador.js', 'js/ataque.js']) {
@@ -116,10 +117,13 @@ comprobar(j.apoyos.length === 0, 'al explotar la nave se pierden sus naves de ap
 j.aparecer();
 comprobar(j.apoyos.length === 2, 'la nave siguiente debe traer las naves de apoyo');
 
-// A dos, nada de esto.
-KF.companero = new KF.Nave(2);
-j.aparecer();
-comprobar(!j.blindaje && j.apoyos.length === 0, 'en la partida a dos no debe haber escudo ni naves de apoyo');
+// A dos, cada nave trae las de su jugador (mejoras/dos-jugadores).
+const otra = KF.companero = new KF.Nave(2);
+j.aparecer(); otra.aparecer();
+comprobar(j.blindaje && j.apoyos.length === 2 && !otra.blindaje && otra.apoyos.length === 0, 'a dos, el escudo y las naves de apoyo de este jugador no deben ir en la nave del otro');
+otros.SHIELD = 1; otros.WINGMAN = 1;
+otra.aparecer();
+comprobar(otra.blindaje && otra.apoyos.length === 1, 'a dos, la nave del otro jugador debe traer su escudo y sus naves de apoyo');
 
 if (errores.length) {
   errores.forEach((e) => console.error('ERROR: ' + e));

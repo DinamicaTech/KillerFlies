@@ -30,7 +30,7 @@ function cargar(guardado) {
     desafio: { activo: false, hecho: false, quitar: nada, empezar() { this.activo = true; } },
     jefe: { CADA: 3, activo: false, hecho: false, quitar: nada, empezar() { this.activo = true; } },
     powerups: { recogidas: 0 },
-    combos: {}, tienda: { nivel: () => 0 }, inclinacion: { calibrar: nada },
+    combos: {}, tienda: { nivel: () => 0, nivelDe: () => 0, nivelJuego: () => 0 }, inclinacion: { calibrar: nada },
     red: { activa: () => false, fase: '', cerrar: nada },
     jugador: nave, jugadores: [nave], alPulsarCorto: nada, tactil: {},
     navesVivas: () => [nave].filter((n) => n.estado === 'viva')
