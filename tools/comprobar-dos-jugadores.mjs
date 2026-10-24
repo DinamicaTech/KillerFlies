@@ -142,11 +142,13 @@ comprobar(Math.abs(t.factorBombas() - 0.95) < 1e-9, 'las bombas deben ir con la 
 
 // Se destruye la oleada: 2 monedas para el anfitrión y 5 para el invitado;
 // las dos últimas, del último enemigo, una al lado de la otra.
-A.formacion.naves.forEach((n) => anfitrion.destruir(n, 80, 60));
+// (El último enemigo, en otro sitio: dos jugadores también pueden compartir
+// otro enemigo al azar.)
+A.formacion.naves.forEach((n, i, todas) => anfitrion.destruir(n, i === todas.length - 1 ? 150 : 80, 60));
 const suyas = (n) => A.monedas.monedas.filter((m) => m.dueno === n);
 comprobar(suyas(1).length === 2 && suyas(2).length === 5, 'deben caer 2 monedas para el anfitrión y 5 para el invitado, no ' + suyas(1).length + ' y ' + suyas(2).length);
-const ultimas = A.monedas.monedas.filter((m) => m.x !== 80);
-comprobar(ultimas.length === 2 && ultimas[0].x === 76 && ultimas[1].x === 84, 'las dos monedas del último enemigo deben caer una al lado de la otra');
+const ultimas = A.monedas.monedas.filter((m) => m.x > 120);
+comprobar(ultimas.length === 2 && ultimas[0].x === 146 && ultimas[1].x === 154, 'las dos monedas del último enemigo deben caer una al lado de la otra');
 
 // El invitado las ve todas, las del anfitrión semitransparentes.
 vuelta();
