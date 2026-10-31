@@ -2,8 +2,8 @@
 title: Hall of fame
 depends_on: [architecture/app-instalable]
 threads:
-  - Hall of fame | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi85PBYekPg2cZkUXJWUDppC
-  - Hall of fame (development) | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiGqXyeWUw66XK8RHE2zG5ty
+  - 2026-10-05 10:16 · Hall of fame | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi85PBYekPg2cZkUXJWUDppC
+  - 2026-10-16 11:35 · Hall of fame (development) | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiGqXyeWUw66XK8RHE2zG5ty
 ---
 ## Summary
 After 'GAME OVER' in a one-player game, a key or a short tap opens the hall of fame instead of going back to 'START GAME'. If the points make the top 10 saved in the browser (more than 0 and, with the table full, more than the tenth), 'NEW HIGH SCORE' asks for the player's name (up to 8 letters, digits or spaces, pre-filled with the name of the player profile, mejoras/cuentas): typed with the keyboard (Backspace deletes, Enter saves) or, on a touch screen, with an on-screen keyboard drawn in the game (A-Z, 0-9, SPACE, DEL, END). The name is saved with the wave reached and the points, and then 'HALL OF FAME' shows the 10 best (place, name, wave and points), the new one in yellow; it is shown even when the game did not get in. A key or a tap returns to 'START GAME'. One table for every difficulty; two-player games do not use it. Validated by the owner.

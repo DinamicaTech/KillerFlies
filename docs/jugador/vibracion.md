@@ -2,8 +2,8 @@
 title: Phone vibration
 depends_on: [power-ups, multijugador]
 threads:
-  - Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
-  - Phone vibration | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiMBmB3srJCYhT8Kqqg12G7w
+  - 2026-10-13 17:07 · Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
+  - 2026-10-16 09:59 · Phone vibration | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiMBmB3srJCYhT8Kqqg12G7w
 ---
 ## Summary
 On a phone, the device vibrates for 0.4 s when the player's ship explodes and for 0.06 s when it picks up a power-up capsule (any power, the extra life and the slow-fire power-down included). The extra lives from the challenge wave (partida/oleada-desafio) and from points (partida/vida-extra-por-puntos) do not vibrate. Nothing vibrates while the game is paused or the page is hidden, and an explosion blocked by the spawn shield is not an explosion. In a two-player game only the phone of the player it happens to vibrates: each ship counts its own capsules (KF.Nave.capsulas, sent to the guest in the host's snapshot). It uses the browser's vibration API (navigator.vibrate, in js/vibracion.js), which iPhone Safari does not offer, so it only vibrates on Android; on a PC nothing changes. It came from the creative lab.

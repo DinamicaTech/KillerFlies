@@ -2,11 +2,11 @@
 title: Pause
 depends_on: [partida, multijugador, sonido, sonido/ajustes-sonido, jugador/accelerometer-control, architecture]
 threads:
-  - Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
-  - Pause | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2dkB4NJNWoWWvUJAgpVGez
-  - Sound settings | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiA9ciq65uYqnPkDkSENqCxN
-  - Continue or restart | https://claude.ai/code/project/chan_01GmFabmbZMkMrshz1aTJxzL?thread=cmsg_01GmFabmbZMkMrshz1aTJxzL9E2JQbeitVhAUHzFtDxwf5
-  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-13 17:07 · Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
+  - 2026-10-13 17:16 · Pause | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2dkB4NJNWoWWvUJAgpVGez
+  - 2026-10-16 10:58 · Sound settings | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiA9ciq65uYqnPkDkSENqCxN
+  - 2026-10-15 08:06 · Continue or restart | https://claude.ai/code/project/chan_01GmFabmbZMkMrshz1aTJxzL?thread=cmsg_01GmFabmbZMkMrshz1aTJxzL9E2JQbeitVhAUHzFtDxwf5
+  - 2026-10-21 17:39 · Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 Pausing a game, in js/pausa.js (KF.pausa): the P key, or a tap on the small II button at the top centre of touch screens, pauses and resumes. While paused, 'PAUSED' is shown with five options under it: 'CONTINUE' (marked), 'SHOP' (the upgrade shop, mejoras; in a two-player game, for the player who paused), 'MUSIC' and 'SOUNDS' with their volume (sonido/ajustes-sonido) and 'RESTART', which starts a new game from where the one being left started (wave 1, or its perfect starting point, partida/empezar-tras-perfect); the up and down arrows change the option and Enter or space choose it, choosing MUSIC or SOUNDS lowers its volume one step, and a tap on an option chooses it while a tap elsewhere continues, without shooting. The game also pauses by itself when the page is hidden (tab change, minimised window or locked phone) and never resumes by itself. Everything freezes and the sound goes silent; on resuming, the phone's position becomes the centre of the tilt again. In a two-player game both devices pause, show 'PAUSED P1' or 'PAUSED P2', and only the player who paused sees the options and chooses; 'RESTART' starts a new game for both, as 'PLAY AGAIN' does, which helps when one of them has lost all their ships. It came from the creative lab and is validated by the owner, including the CONTINUE and RESTART menu.

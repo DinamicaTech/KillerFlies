@@ -2,8 +2,8 @@
 title: Sound settings
 depends_on: [sonido, partida/pausa, graficos]
 threads:
-  - Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
-  - Sound settings | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiA9ciq65uYqnPkDkSENqCxN
+  - 2026-10-13 17:07 · Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
+  - 2026-10-16 10:58 · Sound settings | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiA9ciq65uYqnPkDkSENqCxN
 ---
 ## Summary
 The player sets the volume of the music and of the sound effects separately, in the pause menu: 'MUSIC 100%' and 'SOUNDS 100%' between 'CONTINUE' and 'RESTART'. Each goes 100%, 75%, 50%, 25% or OFF; choosing it (Enter, space or a tap) lowers it one step and from OFF goes back to 100%, and the left and right arrows lower or raise it without wrapping. MUSIC is the background music and the wave-start tune; SOUNDS is everything else (shot, explosions, attack sound, power-up). Both are remembered in the browser; with nothing saved they are at 100%. In js/sonido.js (KF.sonido.niveles, cambiarVolumen) with one gain per group; the menu is in js/pausa.js. Tested by tools/comprobar-sonido.mjs on every pull request. Validated by the owner.

@@ -2,9 +2,9 @@
 title: Power-ups
 depends_on: [jugador, enemigos, enemigos/formacion, enemigos/ataque, graficos, sonido, partida]
 threads:
-  - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
-  - Real sounds | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFf1TgQJLpT3XvZn4f9CLXB
-  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-04 10:48 · Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
+  - 2026-10-06 15:35 · Real sounds | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFf1TgQJLpT3XvZn4f9CLXB
+  - 2026-10-21 17:39 · Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 Random power-ups, in js/powerups.js: when a yellow and its two red escorts are destroyed outside the formation, a blinking capsule falls at half the speed of a bomb (the same for every power and worth no points). If the player ship picks it up, it gets a random power, all with the same probability: rapid shot, deep shot, bomb, annihilation (single use), slow fire (a power-down) or triple shot, or else an extra life (one more spare ship, up to 5). It lasts until the end of the wave (the challenge wave that follows does not end it; its ships are also hit by the bomb and annihilation), the mothership boss does not end it either (enemigos/jefe), a new one replaces the previous one, and it is lost if the ship is destroyed. To test them, Shift+1…7 gives each power from the keyboard. Each pickup, extra life included, is counted in KF.powerups.recogidas so Sound can play its sound. In a two-player game the power belongs to whoever picks up the capsule.

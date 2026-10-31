@@ -2,7 +2,7 @@
 title: Upgrades
 depends_on: [partida, partida/pausa, partida/dificultad, marcador, jugador, enemigos/ataque, power-ups, sonido, graficos, architecture, architecture/app-instalable]
 threads:
-  - Monedas y tienda de mejoras | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-21 17:39 · Monedas y tienda de mejoras | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 Permanent upgrades bought with coins, to motivate the player to go further in order to power up the ship. Built in phases: coins and the base shop (phases 1 and 2) are done; phase 3, mejoras/escudo-y-apoyo (shield, support ships and the paid bonus screen), is done; phase 4, mejoras/skins (skins, cosmetics and the remaining upgrades), and phase 5, mejoras/cuentas (player profiles, up to 4 per difficulty), are done; phase 6, mejoras/dos-jugadores (coins and upgrades in the two-player game), is built and pending validation.

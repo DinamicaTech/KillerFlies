@@ -2,8 +2,8 @@
 title: Shield on spawn
 depends_on: []
 threads:
-  - Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
-  - Shield on spawn | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiF2yKDQhz2dpj7kMYn4YEgz
+  - 2026-10-05 11:52 · Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
+  - 2026-10-05 12:10 · Shield on spawn | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiF2yKDQhz2dpj7kMYn4YEgz
 ---
 ## Summary
 When it appears, the player ship blinks for two seconds and is invulnerable meanwhile; the alien ship that collides with it is destroyed and the bomb disappears.

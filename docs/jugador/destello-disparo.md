@@ -2,8 +2,8 @@
 title: Muzzle flash
 depends_on: []
 threads:
-  - Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
-  - Muzzle flash | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHLcZpng9XYCwPR9yuYwVSw
+  - 2026-10-05 11:52 · Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
+  - 2026-10-05 12:01 · Muzzle flash | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHLcZpng9XYCwPR9yuYwVSw
 ---
 ## Summary
 Each time the ship fires, a small flash (a white star with a yellow center) appears for 0.06 seconds at the tip of the cannon; it follows the ship and disappears if the ship explodes. Validated by the owner.

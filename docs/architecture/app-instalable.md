@@ -2,8 +2,8 @@
 title: Installable app
 depends_on: [architecture]
 threads:
-  - Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
-  - Installable app | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiTfqa7537QdfD323vsqh6W2
+  - 2026-10-13 17:07 · Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
+  - 2026-10-16 10:27 · Installable app | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiTfqa7537QdfD323vsqh6W2
 ---
 ## Summary
 The game can be installed on the phone's home screen as an app (a PWA): on Android from Chrome's menu ("Install app"), on iPhone from Safari's Share → "Add to Home Screen"; there is no install button inside the game. Its icon is the player's ship on a starry black background. Opened from the icon it runs in full screen and portrait, with no browser bars (on Android with no status bar either; on iPhone the status bar stays, Apple allows no more). The first visit with a connection saves the whole game on the device, so the one-player game, sounds included, is then played offline; the two-player game still needs a connection. With a connection each file is always asked to the server, so the latest published version is played. Opening index.html from disk works as before (no app, no offline copy). On iPhone the installed app keeps its own high scores, apart from Safari's; on Android they are shared. Validated by the owner.

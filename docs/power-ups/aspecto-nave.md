@@ -3,7 +3,7 @@ title: Look of the powered-up ship
 status: draft
 depends_on: []
 threads:
-  - Look of the powered-up ship | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiKnMhEbDrKQq5FAr4HocuWC
+  - 2026-10-05 10:14 · Look of the powered-up ship | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiKnMhEbDrKQq5FAr4HocuWC
 ---
 ## Summary
 The player ship changes its look while it has a power-up, with a different design for each power, and returns to its normal design when the power is lost or ends. It keeps its shape, its size and its nose colour (red for player 1, green for player 2); only the interior colour and one detail change: rapid shot, yellow with two swept fins; deep shot, violet with a long cannon through the nose; bomb, orange with a diamond under the nose; annihilation, white with a pulsing halo around the ship until it fires; slow fire, dull grey with unlit nozzles; triple shot, green with a cannon on each side engine. The extra life does not change it. Sprites in js/graficos.js, drawing in js/jugador.js, checked by tools/comprobar-aspecto-nave.mjs in the "Pruebas" workflow.

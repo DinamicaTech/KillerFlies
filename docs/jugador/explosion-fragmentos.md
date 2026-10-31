@@ -2,8 +2,8 @@
 title: Explosion with fragments
 depends_on: []
 threads:
-  - Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
-  - Explosion with fragments | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi84jLToNjHSuRTTfkLNAWVf
+  - 2026-10-05 11:52 · Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
+  - 2026-10-05 12:24 · Explosion with fragments | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi84jLToNjHSuRTTfkLNAWVf
 ---
 ## Summary
 When it explodes, the player ship throws out 16 fragments of 1 or 2 pixels in the colors of its explosion, which scatter from its center, slowing down a little, and fade out within one second. Validated by the owner.

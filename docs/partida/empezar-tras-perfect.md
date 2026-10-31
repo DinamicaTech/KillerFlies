@@ -2,7 +2,7 @@
 title: Start after a perfect
 depends_on: [partida, partida/dificultad, partida/pausa, marcador, architecture/app-instalable]
 threads:
-  - Start after a perfect | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiR3R8dKfDYyXxqMJULDEnib
+  - 2026-10-16 11:09 · Start after a perfect | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiR3R8dKfDYyXxqMJULDEnib
 ---
 ## Summary
 In a one-player game, clearing a main wave without losing any ship while it lasts (a 'perfect') saves in the browser, for that difficulty and the active player profile (mejoras/cuentas), a starting point: the next wave with the points the player had when its last ship was destroyed (the best points are kept if the perfect is repeated). In the start menu, under the difficulty and the profile lines, '< FROM WAVE n >' appears when the chosen difficulty has any perfect: it is reached with the down arrow, the left and right arrows go through the saved waves while it is marked, and choosing it starts a one-player game at that wave with those points and 2 spare ships; '1 PLAYER' still starts at wave 1. On a touch screen a tap on the line marks it, a tap on it when marked goes to the next saved wave and a tap elsewhere starts. RESTART in the pause repeats the starting point of the game being left. Code in js/perfect.js (KF.perfect) and js/partida.js; tested by tools/comprobar-perfect.mjs on every pull request. Validated by the owner by playing.

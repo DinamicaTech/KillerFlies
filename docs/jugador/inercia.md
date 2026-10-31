@@ -2,8 +2,8 @@
 title: Inertia
 depends_on: []
 threads:
-  - Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
-  - Inertia | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi8cTexby62CUgP4AmUMNEoh
+  - 2026-10-05 11:52 · Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
+  - 2026-10-05 12:38 · Inertia | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi8cTexby62CUgP4AmUMNEoh
 ---
 ## Summary
 The player ship no longer moves at a fixed speed: it accelerates to its top speed in 0.2 seconds and brakes to a stop in 0.15 seconds, with the arrows, when sliding a finger and when tilting the phone. The top speed is 90 pixels per second with the arrows and 120 with the phone controls (finger and tilt), because on a phone the game is harder.

@@ -2,8 +2,8 @@
 title: Combos
 depends_on: [marcador, jugador, enemigos, partida, partida/oleada-desafio, power-ups, multijugador, graficos]
 threads:
-  - Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
-  - Combos | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2cfjgx74GxxRcMCH7Lec7P
+  - 2026-10-13 17:07 · Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
+  - 2026-10-16 08:42 · Combos | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2cfjgx74GxxRcMCH7Lec7P
 ---
 ## Summary
 Points multiplier for destroying ships in a row without missing, in js/combos.js (KF.combos): each player ship keeps its streak (KF.Nave.racha). The first 5 ships in a row give their usual points, the 6th to the 10th double, the 11th to the 15th triple and from the 16th on quadruple. The streak goes back to zero when a shot leaves through the top without hitting anything (with the triple shot, only if none of its three projectiles hits) and when the player ship explodes. It also counts in the challenge wave and carries over from one wave to the next. Ships destroyed by collision, the bomb, the annihilation or the deep shot count like any other, and so does the mothership boss (enemigos/jefe), with its own points; a hit on it is not a lost shot. The points earned, already multiplied, float where each ship explodes: they rise 10 pixels and fade out in 0.8 seconds, in white (in a two-player game, in each player's colour). While the multiplier is active the scoreboard shows 'X2' to 'X4' under the points (in a two-player game, to the left of each player's points). In a two-player game the host computes the combos and sends the guest each player's streak and the floating points.
