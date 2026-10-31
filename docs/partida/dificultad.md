@@ -2,8 +2,8 @@
 title: Difficulty levels
 depends_on: [partida, enemigos/ataque, enemigos/formacion, enemigos/jefe, graficos, multijugador]
 threads:
-  - Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
-  - Difficulty levels | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi5nXSFnaSDCcojo6UjHX3wU
+  - 2026-10-13 17:07 · Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
+  - 2026-10-16 10:42 · Difficulty levels | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi5nXSFnaSDCcojo6UjHX3wU
 ---
 ## Summary
 The player chooses EASY, NORMAL or HARD in the start menu: a line '< NORMAL >' under the menu options, changed with the left and right arrows or with a tap on it (each tap goes to the next level). The choice is remembered in the browser; with nothing saved it is NORMAL. NORMAL is the game as it was before the levels. EASY makes everything 25% slower (formation block, dives, bombs, power-up capsules and the mothership boss), with one attacker less at a time (never fewer than one) and 30% more time between attacks; HARD makes everything 25% faster, with one attacker more at a time and 25% less time between attacks. The 5% increase per wave, the spare ships, the extra lives and the points are the same in every level, and there is a single high score for all of them. The formation behind the menu moves at the speed of the chosen level. In a two-player game the host's level applies to both: it reaches the guest in the snapshot. In js/dificultad.js (KF.dificultad: `elegido` is the level marked in the menu, `nivel` the one of the game in play); Game multiplies each wave's speed by it and Attack takes its attackers and pauses from it. Tested by tools/comprobar-dificultad.mjs on every pull request. Validated by the owner.

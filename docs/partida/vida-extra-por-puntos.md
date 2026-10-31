@@ -2,8 +2,8 @@
 title: Extra life from points
 depends_on: [partida, jugador, marcador, power-ups, sonido, multijugador, marcador/combos]
 threads:
-  - Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
-  - Extra life from points | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiV1h2zDMq5zcCryXFSArvd7
+  - 2026-10-13 17:07 · Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
+  - 2026-10-16 09:28 · Extra life from points | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiV1h2zDMq5zcCryXFSArvd7
 ---
 ## Summary
 Every 10,000 points (10,000, 20,000, 30,000…) the player gets one more spare ship, up to the cap of 5 spare ships, with the extra life power-up sound; the scoreboard shows it at once. With 5 spare ships already, crossing a mark gives nothing and plays no sound, and the next mark still counts. Points multiplied by combos (marcador/combos) count like any other. In a two-player game each player earns it with their own points. In js/partida.js (KF.partida.vidaExtraPorPuntos, PUNTOS_VIDA_EXTRA); each player ship keeps the points of its next extra life (KF.Nave.proximaVida), reset to 10,000 at the start of each game. In a two-player game the host computes it and the spare ships and the sound reach the guest in the usual snapshot. Validated by the owner.

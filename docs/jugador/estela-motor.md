@@ -2,8 +2,8 @@
 title: Engine trail
 depends_on: []
 threads:
-  - Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
-  - Engine trail | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQBdx8sringjXy3tdpEhHwb
+  - 2026-10-05 11:52 · Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
+  - 2026-10-05 12:43 · Engine trail | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQBdx8sringjXy3tdpEhHwb
 ---
 ## Summary
 While the player ship is moving, a small orange flame with a yellow tip flickers just below it.

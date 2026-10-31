@@ -2,12 +2,12 @@
 title: Attack
 depends_on: [enemigos, enemigos/formacion, jugador, graficos, architecture]
 threads:
-  - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
-  - Dive attacks | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFJ5MweEGxxYP7n8Day6kv9
-  - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
-  - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
-  - Escorts stop firing | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi5smrQFKAMrwWFX1Sq9bmj5
-  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-03 18:15 · New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - 2026-10-03 18:40 · Dive attacks | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFJ5MweEGxxYP7n8Day6kv9
+  - 2026-10-04 10:48 · Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
+  - 2026-10-04 12:02 · Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
+  - 2026-10-13 07:44 · Escorts stop firing | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi5smrQFKAMrwWFX1Sq9bmj5
+  - 2026-10-21 17:39 · Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 The attacks: a ship (or a yellow with its escort of reds) leaves the formation with a small parabola, turns, dives toward the player dropping bombs and, if it does not collide, exits at the bottom, reappears at the top and returns to its place. The new types come down in their own way: the green in zigzag, the orange rams in a straight line without bombs and the cyan stops at mid-screen and fires an aimed burst. One or two attacks start at a time and there are more with each wave, which also makes them faster; the difficulty level (partida/dificultad) takes one away in EASY and adds one in HARD. When the player's spare ship comes out, attacks wait two seconds. The yellow leaves with the two reds below it (or the nearest ones); if the yellow is destroyed during the attack, its reds stop dropping bombs. An attacking ship that collides with the player makes it explode and is destroyed; the player's shot also hits it.

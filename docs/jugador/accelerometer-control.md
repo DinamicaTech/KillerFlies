@@ -2,7 +2,7 @@
 title: Accelerometer control
 depends_on: [architecture, partida, multijugador]
 threads:
-  - Accelerometer control | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi9zLchRuiqrBNaJM9zRS8pR
+  - 2026-10-13 14:14 · Accelerometer control | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi9zLchRuiqrBNaJM9zRS8pR
 ---
 ## Summary
 On a phone, the player's ship also moves by tilting the device sideways: up to 3° of tilt it stays still, and from there its speed grows with the tilt up to 120 pixels per second at 30°, with the same inertia as the other controls (jugador/inercia). Tilt and finger work together without choosing a mode: while an arrow is pressed or a finger is sliding (or the ship is still reaching where the finger took it), the tilt is ignored. The position of the phone when the game starts, or when it resumes after a pause (partida/pausa), counts as the centre. Architecture reads the sensor (KF.inclinacion in js/base.js; on iPhone it asks for permission with the first short tap); Game calibrates the centre on starting and, in a two-player game, the guest calibrates it when its game starts. It came from the creative lab.

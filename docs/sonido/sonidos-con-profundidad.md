@@ -2,8 +2,8 @@
 title: Sounds with more depth
 depends_on: [power-ups, partida, enemigos/formacion]
 threads:
-  - Sounds with more depth | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiKtDX1VB4yqoMRuygVESB5t
-  - Real sounds | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFf1TgQJLpT3XvZn4f9CLXB
+  - 2026-10-05 10:17 · Sounds with more depth | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiKtDX1VB4yqoMRuygVESB5t
+  - 2026-10-06 15:35 · Real sounds | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFf1TgQJLpT3XvZn4f9CLXB
 ---
 ## Summary
 The synthesized sounds are replaced by eight recorded ones given by the owner (assets/sonidos, played from js/sonido.js): shot, enemy explosion, yellow ship explosion, player explosion, attack sound while ships dive, power-up pickup, a tune at the start of each wave and background music that speeds up, with rising pitch, from 100% to 200% as the wave's ships are destroyed, and goes silent while the player ship is destroyed.

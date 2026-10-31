@@ -2,9 +2,9 @@
 title: Formation
 depends_on: [enemigos, architecture, graficos, enemigos/ataque, partida]
 threads:
-  - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
-  - Enemy formation | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiC47GmNga6bpWeFB1oP6k6h
-  - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
+  - 2026-10-03 18:15 · New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - 2026-10-03 18:44 · Enemy formation | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiC47GmNga6bpWeFB1oP6k6h
+  - 2026-10-04 12:02 · Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
 ---
 ## Summary
 The block of alien ships at the top of the screen: its layout on a grid of 6 rows by 10 columns, different in each wave, and its horizontal movement from one side to the other. There are six formations (Clásica (Classic), Uve (V), Rombo (Diamond), Columnas (Columns), Ajedrez (Chessboard) and Fortaleza (Fortress)) that change the shape and the mix of the seven ship types; wave 1 is the arcade's classic one and from wave 7 onwards formations 2 to 6 repeat in order. The block turns around when the outermost living ship touches the edge and starts out crossing the screen in about 4 seconds; each ship keeps its slot so it can return to it after an attack.

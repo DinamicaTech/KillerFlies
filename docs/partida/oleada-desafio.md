@@ -3,9 +3,9 @@ title: Challenge wave
 status: draft
 depends_on: [enemigos, enemigos/formacion, jugador, marcador, power-ups, multijugador, sonido]
 threads:
-  - Challenge wave | https://claude.ai/code/project/chan_01GmFabmbZMkMrshz1aTJxzL?thread=cmsg_01GmFabmbZMkMrshz1aTJxzLRMDCMVrG6g779B1K1CqbZN
-  - Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
-  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-15 08:29 · Challenge wave | https://claude.ai/code/project/chan_01GmFabmbZMkMrshz1aTJxzL?thread=cmsg_01GmFabmbZMkMrshz1aTJxzLRMDCMVrG6g779B1K1CqbZN
+  - 2026-10-13 17:07 · Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
+  - 2026-10-21 17:39 · Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 The challenge wave, in js/desafio.js (KF.desafio): after clearing each wave, before the next one, 'CHALLENGE' is shown for 2 seconds and then four groups of six ships (blue, purple, green, red) cross the screen one after another along fixed curved paths (a loop from the top left, the same mirrored, a wave from left to right and a U-turn from the right), a group every 4 seconds, each ship taking 6 seconds to cross; about 20 seconds in all. They do not fire or collide with the player, and each one gives its usual points to whoever destroys it (the bomb and annihilation power-ups also reach them). If all of them are destroyed, 'PERFECT' and 'EXTRA SHIP' are shown and each player still in the game gets one more spare ship, up to the cap of 5, with the power-up sound. As soon as a ship leaves the screen alive the challenge ends: the rest vanish and 'NO BONUS' is shown. Two seconds after either message the next wave starts. Meanwhile the scoreboard shows 'CHALLENGE' instead of the wave, no capsules fall, the active power-up is kept and the background music plays at its starting speed. In a two-player game the host runs it and sends the guest its time and which ships are alive; the guest computes their positions. Pending the owner's validation.

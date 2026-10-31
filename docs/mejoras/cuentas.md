@@ -2,7 +2,7 @@
 title: Player accounts
 depends_on: [mejoras, partida, partida/empezar-tras-perfect, marcador/hall-of-fame, architecture]
 threads:
-  - Monedas y tienda de mejoras | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-21 17:39 · Monedas y tienda de mejoras | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 Phase 5 of the upgrades: player profiles, in js/perfiles.js (KF.perfiles), used by js/monedas.js, js/perfect.js, js/partida.js, js/salon-fama.js and js/tienda.js. Each difficulty has its own profiles, up to 4, and each profile its own coins, upgrades and perfects (partida/empezar-tras-perfect). The data saved before there were profiles is the first profile of each difficulty, PLAYER.

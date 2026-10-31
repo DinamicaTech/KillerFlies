@@ -2,10 +2,10 @@
 title: Enemies
 depends_on: [graficos]
 threads:
-  - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
-  - Enemy formation | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiC47GmNga6bpWeFB1oP6k6h
-  - Ship types | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFynq9GYHcEL7zVzxwoVjPM
-  - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
+  - 2026-10-03 18:15 · New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - 2026-10-03 18:44 · Enemy formation | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiC47GmNga6bpWeFB1oP6k6h
+  - 2026-10-03 19:05 · Ship types | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiFynq9GYHcEL7zVzxwoVjPM
+  - 2026-10-04 12:02 · Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
 ---
 ## Summary
 The alien ships: seven types, each with its points and its maximum bombs per attack: blue (10, 2), purple (20, 3), red (30, 4) and yellow (50, 4), the arcade ones, and three that appear from wave 2 with their own attack: green (40, 2, zigzag), orange (60, no bombs, rams) and cyan (80, 3, shooter). A ship dies when hit by a player shot or when it collides with the player: it explodes on the spot and sends a notification so its points get added. Its child nodes define the formations of each wave, the attacks and the mothership boss that comes after every third wave (enemigos/jefe).

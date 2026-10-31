@@ -3,7 +3,7 @@ title: Upgrades in the two-player game
 status: draft
 depends_on: [mejoras, multijugador, partida/pausa, enemigos/ataque, power-ups, jugador, mejoras/cuentas]
 threads:
-  - Monedas y tienda de mejoras | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-21 17:39 · Monedas y tienda de mejoras | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 Phase 6 of the upgrades: coins and upgrades in the two-player game (multijugador), built and pending the owner's validation.

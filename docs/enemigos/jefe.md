@@ -2,8 +2,8 @@
 title: Mothership boss
 depends_on: [enemigos, enemigos/ataque, partida, partida/oleada-desafio, jugador, power-ups, marcador/combos, graficos, sonido, multijugador]
 threads:
-  - Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
-  - Mothership boss | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiPQBuQhT7V38zTBR8RDkB4a
+  - 2026-10-13 17:07 · Ideas for improvements | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiWcuv7NRkbfswvJ7tJ1BGE3
+  - 2026-10-16 10:17 · Mothership boss | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiPQBuQhT7V38zTBR8RDkB4a
 ---
 ## Summary
 The mothership boss, in js/jefe.js (KF.jefe): after clearing every third wave (3, 6, 9…), before the challenge wave, 'MOTHERSHIP' is shown for 2 seconds while a large mothership (44×22 pixels, about four ships wide) comes down alone, with no formation. It then moves from side to side near the top and fires bursts of 3 bombs in a fan aimed at the nearest player ship, every 2 seconds, faster with each wave like everything else; it holds its fire while no player ship is in play, so the spare ship can come out. It takes 20 hits the first time, 30 the second, 40 the third and so on; a health bar above it shows what is left and each hit makes it flash white and play the alien explosion sound. Every player shot that touches it stops there (the deep shot included) and takes 1; the bomb and the annihilation power-ups take 5. When destroyed it explodes in a chain of explosions for 2 seconds and gives 2,000 points per appearance (2,000, 4,000, 6,000…), multiplied by the combo, to whoever lands the last hit; then the challenge wave and the next wave follow. Meanwhile no capsules fall, the active power-up is kept and the background music plays at its starting speed. In a two-player game the host runs it and sends the guest its time, phase and health; the guest computes its position. Validated by the owner.

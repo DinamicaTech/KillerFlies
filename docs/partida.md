@@ -2,14 +2,14 @@
 title: Game
 depends_on: [jugador, enemigos, enemigos/formacion, enemigos/ataque, marcador, graficos]
 threads:
-  - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
-  - Game cycle | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiCY7xaWMqRabakQpAk9ek7y
-  - Touch controls | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiXH1tXPjNtyfwDxWQKAi9AZ
-  - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
-  - Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
-  - Extra life from points | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiV1h2zDMq5zcCryXFSArvd7
-  - Difficulty levels | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi5nXSFnaSDCcojo6UjHX3wU
-  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-03 18:15 · New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - 2026-10-03 19:19 · Game cycle | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiCY7xaWMqRabakQpAk9ek7y
+  - 2026-10-04 10:16 · Touch controls | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiXH1tXPjNtyfwDxWQKAi9AZ
+  - 2026-10-04 10:48 · Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
+  - 2026-10-04 12:02 · Formations per wave | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi2wwGXnRV8WqcbjUNDcfcRR
+  - 2026-10-16 09:28 · Extra life from points | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiV1h2zDMq5zcCryXFSArvd7
+  - 2026-10-16 10:42 · Difficulty levels | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi5nXSFnaSDCcojo6UjHX3wU
+  - 2026-10-21 17:39 · Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 The game cycle, in js/partida.js: a 'START GAME' screen with the formation moving behind it and a menu ('1 PLAYER', 'CREATE GAME', 'JOIN GAME', and first 'PLAY AGAIN' after a two-player game while both players are still connected; any key or a short tap starts the selected option, '1 PLAYER' by default; under the options, the difficulty line '< NORMAL >', see partida/dificultad); successive waves with a challenge wave between one and the next (partida/oleada-desafio) and, after every third wave (3, 6, 9…), the mothership boss before it (enemigos/jefe), each wave 5% faster than the previous one in everything (block, dives and bombs), all of them multiplied by the difficulty level (partida/dificultad); three player ships (one in play and two spares, which the extra life power-up, the perfect challenge wave and every 10,000 points (partida/vida-extra-por-puntos) can raise up to five) and 'GAME OVER' on losing the last one, which stays until a key is pressed or a short tap is made and then returns to 'START GAME' (in a one-player game, through the hall of fame, marcador/hall-of-fame). It tells the scoreboard the wave; each player ship carries its spare ships and points. In a two-player game (multijugador) each player has their own ships and the game ends when neither has any. A one-player game can also start at a wave after a 'perfect' (a main wave cleared without losing a ship), with the points it had then, from the line '< FROM WAVE n >' under the difficulty (partida/empezar-tras-perfect). A game can be paused while playing, and restarted from the pause from where it started (partida/pausa).

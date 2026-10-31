@@ -2,8 +2,8 @@
 title: 21st-century ships
 depends_on: [enemigos]
 threads:
-  - Less pixelated ships | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi78ZNHwzRnK9ZGpD1boPKcb
-  - 21st-century ships | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiLhC4qt67cPrzNnZtpQV8tk
+  - 2026-10-05 11:45 · Less pixelated ships | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi78ZNHwzRnK9ZGpD1boPKcb
+  - 2026-10-05 13:00 · 21st-century ships | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiLhC4qt67cPrzNnZtpQV8tk
 ---
 ## Summary
 The seven enemy ships and the player's as "21st-century ships" with a retro flavour: drawn by code with smooth strokes, metallic gradients, highlights and lights, at four times the resolution of the logical screen, with the same colours, on-screen sizes and silhouette for each type. Bombs, shots, explosions, stars and texts stay pixelated.

@@ -2,7 +2,7 @@
 title: Shield, support ships and bonus screen
 depends_on: [mejoras, jugador, enemigos/ataque, partida, partida/oleada-desafio, graficos, sonido]
 threads:
-  - Monedas y tienda de mejoras | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-21 17:39 · Monedas y tienda de mejoras | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 Phase 3 of the upgrades, built in js/tienda.js, js/jugador.js, js/ataque.js, js/partida.js and js/monedas.js; one-player games only, like every upgrade. Three new shop rows:

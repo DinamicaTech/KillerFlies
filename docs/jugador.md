@@ -2,12 +2,12 @@
 title: Player
 depends_on: [enemigos/formacion, graficos, architecture]
 threads:
-  - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
-  - Player ship | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi8uEd3vf7FBd7b8W9rNHB1b
-  - Touch controls | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiXH1tXPjNtyfwDxWQKAi9AZ
-  - Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
-  - Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
-  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-03 18:15 · New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - 2026-10-03 18:43 · Player ship | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYi8uEd3vf7FBd7b8W9rNHB1b
+  - 2026-10-04 10:16 · Touch controls | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiXH1tXPjNtyfwDxWQKAi9AZ
+  - 2026-10-04 10:48 · Power-ups | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiY3L86CtecmpR7eakwWMJ1U
+  - 2026-10-05 11:52 · Draft stack in Player | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiQXFRhiCN6PbXHTCo4DqvzL
+  - 2026-10-21 17:39 · Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 The ship the player controls at the bottom of the screen: it moves horizontally with the arrow keys, by sliding a finger or by tilting the phone (jugador/accelerometer-control), fires with the space bar or a short tap on the touch screen, one shot at a time (the shot is freed when it hits a ship, in formation, diving or in the challenge wave, when it hits the mothership boss (enemigos/jefe), which stops every shot, the deep one included, or when it leaves through the top; the active power-up changes this), and explodes if a ship or a bomb hits it. It does not respawn by itself: Game makes it appear in the center when the game starts and with each spare ship, and outside a game it is not there. When it appears it blinks for two seconds and is invulnerable meanwhile (jugador/escudo-al-aparecer). When it fires, the cannon gives a brief flash (jugador/destello-disparo). When it explodes it throws out fragments that scatter and fade out (jugador/explosion-fragmentos). It accelerates and brakes smoothly, at 90 pixels per second at most with the arrows and 120 on a phone (jugador/inercia). While it moves, a small flame flickers under it (jugador/estela-motor). On an Android phone, the device vibrates when the ship explodes and when it picks up a power-up capsule (jugador/vibracion). Improvement pending in a child draft: shake on death. A shot that leaves through the top without hitting anything, or the ship exploding, breaks the player's combo (marcador/combos). In a two-player game (multijugador) there are two ships, J1 and J2 in different colours, each with its own power-up, spare ships and points. The ship's look shows its active power-up (power-ups/aspecto-nave).

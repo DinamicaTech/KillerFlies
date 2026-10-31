@@ -2,9 +2,9 @@
 title: Scoreboard
 depends_on: [enemigos, partida, architecture, jugador]
 threads:
-  - New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
-  - Scoreboard | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiEmsD9WvmtQFinsch84vnYn
-  - Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
+  - 2026-10-03 18:15 · New project | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiHGAxG3kiGCHW7KxfiKmG4e
+  - 2026-10-03 19:05 · Scoreboard | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiEmsD9WvmtQFinsch84vnYn
+  - 2026-10-21 17:39 · Coins and upgrade shop | https://claude.ai/code/project/chan_01Nf6u6M8g9LrAep6hHtGVYi?thread=cmsg_01Nf6u6M8g9LrAep6hHtGVYiNDbUVgsKqhuXcqotfYxjKT
 ---
 ## Summary
 The on-screen information: current and best wave at the top left ('CHALLENGE' during the challenge wave, partida/oleada-desafio), points and high score at the top right, and the spare ships at the bottom right; in a two-player game, the points of P1 and P2 in their ship's colour at the top right and each player's spare ships at the bottom (P1 left, P2 right). While a combo multiplier is active (marcador/combos), 'X2' to 'X4' is shown under the points (in a two-player game, to the left of each player's points). High scores are saved in the browser as soon as they are beaten. It shows the values Game gives it (wave, spare ships, game start), with the font from Graphics. The 'hall of fame' (asking for the name on entering the top 10 and showing the 10 best at the end of a one-player game) is the child node `marcador/hall-of-fame`.
